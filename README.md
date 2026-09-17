@@ -6,7 +6,26 @@
 \____/\__,_| \_/ \___|____/ \__\__,_|\___|_|\_\
 ```
 
+<p align="center">
+  <img src="characters/grak/grak_tan.png" alt="Grak — cavestack character" width="200">
+</p>
+
 > AI talk too much. CaveStack fix.
+
+## Meet Grak
+
+<p align="center">
+  <img src="characters/grak/grak_tan.png" alt="Grak" width="160">
+</p>
+
+Staff Engineer, Level: Cave. 12 years infra. Built the thing your thing runs on.
+Invented TTHW (Time To Human Work) — the 47 seconds engineers waste reading AI output.
+One day AI wrote 3 paragraphs of empathy for a one-line bug. Senior eng closed laptop.
+Went to cave. Became Grak.
+
+> Grak not a mascot. Grak is the agent.
+
+[Full resume →](characters/grak/GRAK.md)
 
 ![same /review, same patch, different default](docs/images/sidebyside-review.png)
 

@@ -261,6 +261,13 @@ code, pre, .mono {
   opacity: 0.85;
 }
 
+.hero-grak {
+  filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.3));
+  opacity: 0.9;
+  width: 140px;
+  height: auto;
+}
+
 /* ───────── INSTALL BOX (amber border — one of three amber uses) ───────── */
 .install {
   margin-top: 40px;
