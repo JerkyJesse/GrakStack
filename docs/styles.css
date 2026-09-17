@@ -229,43 +229,44 @@ code, pre, .mono {
   padding-bottom: clamp(48px, 8vw, 80px);
   position: relative;
 }
-.hero-inner {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: clamp(32px, 6vw, 80px);
+.hero-stack {
+  display: flex;
+  flex-direction: column;
   align-items: center;
+  text-align: center;
 }
-@media (max-width: 760px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-glyph { order: -1; max-width: 160px; }
+.hero-logo {
+  width: clamp(200px, 26vw, 320px);
+  height: auto;
+  filter: drop-shadow(0 0 28px rgba(255, 170, 0, 0.35));
 }
-.hero-copy .hero-sub {
+.hero-brand {
+  margin-top: 28px;
+  font-size: clamp(52px, 9vw, 96px);
+  line-height: 1.02;
+  letter-spacing: -0.02em;
+}
+.hero-stack .hero-sub {
   font-family: 'Satoshi', 'DM Sans', sans-serif;
   font-weight: 700;
-  font-size: clamp(18px, 2vw, 22px);
+  font-size: clamp(19px, 2.4vw, 26px);
   color: var(--cave-brown);
-  margin-top: 16px;
+  margin-top: 14px;
   letter-spacing: 0.02em;
   font-style: italic;
-  opacity: 0.88;
+  opacity: 0.9;
 }
-.hero-copy .lede {
+.hero-stack .lede {
   font-size: clamp(17px, 2vw, 20px);
   color: var(--text);
-  margin-top: 20px;
-  max-width: 56ch;
+  margin-top: 18px;
+  max-width: 62ch;
 }
-.hero-glyph {
-  width: clamp(180px, 18vw, 240px);
-  height: auto;
-  opacity: 0.85;
-}
-
-.hero-grak {
-  filter: drop-shadow(0 0 20px rgba(255, 170, 0, 0.3));
-  opacity: 0.9;
-  width: 200px;
-  height: auto;
+.hero-stack .install {
+  margin-top: 36px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 100%;
 }
 
 /* ───────── INSTALL BOX (amber border — one of three amber uses) ───────── */
