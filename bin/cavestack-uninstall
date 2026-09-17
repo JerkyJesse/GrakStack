@@ -13,6 +13,7 @@
 #   ~/.factory/skills/cavestack*     — Factory Droid skill install + per-skill symlinks
 #   ~/.kiro/skills/cavestack*        — Kiro skill install + per-skill symlinks
 #   ~/.cursor/skills/cavestack*      — Cursor skill install + per-skill symlinks
+#   ~/.config/opencode/agent/grak.md — Grak agent mode (OpenCode)
 #   ~/.cavestack/                    — global state (config, analytics, sessions, projects,
 #                                   repos, installation-id, browse error logs)
 #   .claude/skills/cavestack*        — project-local skill install (--local installs)
@@ -69,6 +70,7 @@ if [ "$FORCE" -eq 0 ]; then
   [ -d "$HOME/.factory/skills" ] && echo "  ~/.factory/skills/cavestack*"
   [ -d "$HOME/.kiro/skills" ] && echo "  ~/.kiro/skills/cavestack*"
   [ -d "$HOME/.cursor/skills" ] && echo "  ~/.cursor/skills/cavestack*"
+  { [ -f "$HOME/.config/opencode/agent/grak.md" ] || [ -L "$HOME/.config/opencode/agent/grak.md" ]; } && echo "  ~/.config/opencode/agent/grak.md"
   [ "$KEEP_STATE" -eq 0 ] && [ -d "$STATE_DIR" ] && echo "  $STATE_DIR"
 
   if [ -n "$_GIT_ROOT" ]; then
@@ -319,6 +321,20 @@ if [ -d "$CURSOR_SKILLS" ]; then
       _SKIPPED_DIRS+=("$_ITEM")
     fi
   done
+fi
+
+# ─── Remove OpenCode Grak agent mode ────────────────────────
+# install_opencode_agent writes a symlink on Unix and a real copy on Windows.
+# Provenance gate: only a symlink or a copy carrying the cavestack-managed
+# marker is deleted; a user's own grak.md is left in place.
+OPENCODE_AGENT="$HOME/.config/opencode/agent/grak.md"
+if [ -e "$OPENCODE_AGENT" ] || [ -L "$OPENCODE_AGENT" ]; then
+  if [ -L "$OPENCODE_AGENT" ] || grep -q 'cavestack-managed: grak agent mode' "$OPENCODE_AGENT" 2>/dev/null; then
+    rm -f "$OPENCODE_AGENT"
+    REMOVED+=("opencode/grak agent")
+  else
+    _SKIPPED_DIRS+=("$OPENCODE_AGENT")
+  fi
 fi
 
 # ─── Remove per-project .agents/ sidecar ─────────────────────

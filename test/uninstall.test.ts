@@ -233,6 +233,83 @@ describe('cavestack-uninstall', () => {
 });
 
 // ----------------------------------------------------------------------
+// Grak OpenCode agent mode (uninstall + setup wiring). Kept in its own
+// describe: the mock layout above builds symlinks (needs Developer Mode on
+// Windows), while these cases are pure file copies either shape installs.
+// ----------------------------------------------------------------------
+
+describe('cavestack-uninstall removes the Grak OpenCode agent mode', () => {
+  let tmpDir: string;
+  let mockHome: string;
+  let agentDir: string;
+
+  beforeEach(() => {
+    tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'cavestack-uninstall-grak-'));
+    mockHome = path.join(tmpDir, 'home');
+    agentDir = path.join(mockHome, '.config', 'opencode', 'agent');
+    fs.mkdirSync(agentDir, { recursive: true });
+  });
+
+  afterEach(() => {
+    fs.rmSync(tmpDir, { recursive: true, force: true });
+  });
+
+  function runUninstall(): { status: number | null; stdout: string; stderr: string } {
+    const r = spawnSync('bash', [UNINSTALL, '--force'], {
+      stdio: 'pipe',
+      encoding: 'utf-8',
+      env: {
+        ...process.env,
+        HOME: mockHome,
+        CAVESTACK_DIR: path.join(mockHome, '.claude', 'skills', 'cavestack'),
+        CAVESTACK_STATE_DIR: path.join(mockHome, '.cavestack'),
+      },
+      cwd: tmpDir,
+    });
+    return { status: r.status, stdout: r.stdout, stderr: r.stderr };
+  }
+
+  test('managed copy (cavestack-managed marker) is removed, other agent files survive', () => {
+    // Windows install shape: a real copy carrying the marker install_opencode_agent
+    // writes. Anything else in the agent dir is the user's and must survive.
+    fs.writeFileSync(
+      path.join(agentDir, 'grak.md'),
+      '---\nmode: primary\n---\n<!-- cavestack-managed: grak agent mode -->\n',
+    );
+    fs.writeFileSync(path.join(agentDir, 'my-own-agent.md'), '# mine\n');
+
+    const r = runUninstall();
+    expect(r.status).toBe(0);
+    expect(fs.existsSync(path.join(agentDir, 'grak.md'))).toBe(false);
+    expect(fs.existsSync(path.join(agentDir, 'my-own-agent.md'))).toBe(true);
+    expect(r.stdout).toContain('opencode/grak agent');
+  });
+
+  test("a user's own grak.md (no marker) survives and is listed", () => {
+    fs.writeFileSync(
+      path.join(agentDir, 'grak.md'),
+      '---\nmode: primary\n---\n# my own agent, same name\n',
+    );
+
+    const r = runUninstall();
+    expect(r.status).toBe(0);
+    expect(fs.existsSync(path.join(agentDir, 'grak.md'))).toBe(true);
+    expect(r.stderr).toContain('left in place');
+    expect(r.stderr).toContain('grak.md');
+  });
+
+  test.skipIf(process.platform === 'win32')('symlinked grak.md (Unix install shape) is removed', () => {
+    const src = path.join(tmpDir, 'grak-agent.md');
+    fs.writeFileSync(src, '---\nmode: primary\n---\n');
+    fs.symlinkSync(src, path.join(agentDir, 'grak.md'));
+
+    const r = runUninstall();
+    expect(r.status).toBe(0);
+    expect(fs.existsSync(path.join(agentDir, 'grak.md'))).toBe(false);
+  });
+});
+
+// ----------------------------------------------------------------------
 // Hook-cleanup ordering (phantom-hooks fix). Pre-v1.67.2, the settings
 // cleanup ran AFTER `rm -rf $CLAUDE_SKILLS/cavestack` — and SETTINGS_HOOK
 // resolves via $(dirname "$0") INSIDE that root, so a real global uninstall

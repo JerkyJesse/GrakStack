@@ -1465,6 +1465,23 @@ link_opencode_skill_dirs() {
   fi
 }
 
+# Install Grak as a selectable OpenCode agent mode (~/.config/opencode/agent/grak.md).
+# OpenCode reads primary agents from this dir; mode: primary makes `grak`
+# Tab-selectable. _link_or_copy symlinks on Unix, copies on Windows; the source
+# carries the cavestack-managed marker cavestack-uninstall checks before removal.
+install_opencode_agent() {
+  local cavestack_dir="$1"
+  local agent_src="$cavestack_dir/characters/grak/grak-agent.md"
+  local agent_dir="$HOME/.config/opencode/agent"
+
+  if [ ! -f "$agent_src" ]; then
+    echo "  warning: grak agent source missing — expected $agent_src" >&2
+    return 0
+  fi
+  mkdir -p "$agent_dir"
+  _link_or_copy "$agent_src" "$agent_dir/grak.md"
+}
+
 # ─── Helper: create a minimal ~/.cursor/skills/cavestack runtime root ──────────
 # Cursor scans ~/.cursor/skills. Same shape as the Codex/Factory/OpenCode
 # runtime roots: root SKILL.md from the generated tree + runtime assets only.
@@ -1894,9 +1911,11 @@ if [ "$INSTALL_OPENCODE" -eq 1 ]; then
   mkdir -p "$OPENCODE_SKILLS"
   create_opencode_runtime_root "$SOURCE_CAVESTACK_DIR" "$OPENCODE_CAVESTACK"
   link_opencode_skill_dirs "$SOURCE_CAVESTACK_DIR" "$OPENCODE_SKILLS"
+  install_opencode_agent "$SOURCE_CAVESTACK_DIR"
   echo "cavestack ready (opencode)."
   echo "  browse: $BROWSE_BIN"
   echo "  opencode skills: $OPENCODE_SKILLS"
+  echo "  grak agent: $HOME/.config/opencode/agent/grak.md"
 fi
 
 # 6d. Install for Cursor
