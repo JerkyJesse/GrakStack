@@ -27,6 +27,8 @@ Went to cave. Became Grak.
 
 [Full resume →](characters/grak/GRAK.md)
 
+On OpenCode, Grak is a selectable agent mode: `./setup --host opencode` installs `~/.config/opencode/agent/grak.md`. Tab to `grak` and every response comes back caveman-terse, full credentials in the personality.
+
 ![same /review, same patch, different default](docs/images/sidebyside-review.png)
 
 *Left: default verbose `/review`. Right: CaveStack `/review`, same patch. Same findings. ~250 words vs ~40.*
@@ -77,12 +79,14 @@ Open new Kiro session. All skills available. Caveman hooks skipped.
 ```bash
 ./setup --host codex      # OpenAI Codex CLI
 ./setup --host factory    # Factory Droid
-./setup --host opencode   # OpenCode
+./setup --host opencode   # OpenCode (+ Grak agent mode)
 ./setup --host slate
 ./setup --host openclaw
 ./setup --host hermes
 ./setup --host gbrain
 ```
+
+On OpenCode, setup also installs Grak as a selectable agent mode (`~/.config/opencode/agent/grak.md`). Restart OpenCode, Tab to `grak`.
 
 ### All detected hosts
 
