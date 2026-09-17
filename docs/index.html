@@ -3,24 +3,26 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>CaveStack — Why use many word when few do?</title>
-<meta name="description" content="Why use many word when few do? 40 Claude Code skills. Caveman voice. Catch bad work before ship. Savings in characters, not tokens — model-agnostic. Free OSS.">
+<title>CaveStack — AI talk too much. Grak fix.</title>
+<meta name="description" content="One caveman agent. Four commands: /grak, /review, /ship, /land. Zero dependencies. Finished, tested code, fast. Free OSS.">
 <meta name="theme-color" content="#0C0C0C">
 <link rel="canonical" href="https://cavestack.jerkyjesse.com/">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
 
 <!-- Open Graph -->
-<meta property="og:title" content="CaveStack — Why use many word when few do?">
-<meta property="og:description" content="40 Claude Code skills. Caveman voice. Catch bad work before ship. Free OSS.">
-<meta property="og:image" content="https://cavestack.jerkyjesse.com/characters/grak/grak_tan.png">
+<meta property="og:title" content="CaveStack — AI talk too much. Grak fix.">
+<meta property="og:description" content="One caveman agent. Four commands. Finished, tested code, fast. Free OSS.">
+<meta property="og:image" content="https://cavestack.jerkyjesse.com/characters/grak/grak-mark.png">
 <meta property="og:url" content="https://cavestack.jerkyjesse.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="CaveStack">
 
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="CaveStack — Why use many word when few do?">
-<meta name="twitter:description" content="40 Claude Code skills. Caveman voice. Catch bad work before ship. Free OSS.">
-<meta name="twitter:image" content="https://cavestack.jerkyjesse.com/characters/grak/grak_tan.png">
+<meta name="twitter:title" content="CaveStack — AI talk too much. Grak fix.">
+<meta name="twitter:description" content="One caveman agent. Four commands. Finished, tested code, fast. Free OSS.">
+<meta name="twitter:image" content="https://cavestack.jerkyjesse.com/characters/grak/grak-mark.png">
 
 <!-- Fonts -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -38,10 +40,10 @@
   "name": "CaveStack",
   "operatingSystem": "macOS, Linux, Windows",
   "applicationCategory": "DeveloperApplication",
-  "description": "40 Claude Code skills with caveman voice. Judgment layer that prevents bad work before it ships. Savings measured in characters — model-agnostic.",
+  "description": "One caveman agent with four commands: build, review, ship, land. Finished, tested code, fast. Zero dependencies.",
   "url": "https://cavestack.jerkyjesse.com/",
   "downloadUrl": "https://cavestack.jerkyjesse.com/install",
-  "softwareVersion": "1.3.0.0",
+  "softwareVersion": "3.0.0.0",
   "author": {
     "@type": "Person",
     "name": "JerkyJesse",
@@ -648,12 +650,13 @@
     <div class="container">
       <div class="hero-inner">
         <div class="hero-copy">
-          <div class="eyebrow">CaveStack · v1.0 shipped</div>
-          <h1>Why use many<br>word when few do?</h1>
-          <p class="hero-sub">Skills that think before code.</p>
+          <div class="eyebrow">CaveStack · v3.0.0.0 · the Grak release</div>
+          <h1>AI talk too much.<br>Grak fix.</h1>
+          <p class="hero-sub">One agent. Four commands. Zero dependencies.</p>
           <p class="lede">
-            40 Claude Code skills. Caveman voice. Catch bad work before ship.
-            Savings in characters, not tokens — model-agnostic. Free OSS.
+            Grak is a caveman staff engineer for your AI coding host.
+            Build, review, ship, land — fully finished code, fast.
+            Any repo. Any language. Free OSS.
           </p>
           <div class="install" role="group" aria-label="Install command">
             <code id="installCmd">curl -fsSL cavestack.jerkyjesse.com/install | sh</code>
@@ -663,7 +666,7 @@
         <svg class="hero-glyph flicker" role="img" aria-label="Cave handprint glyph">
           <use href="#glyph-hand"/>
         </svg>
-        <img src="characters/grak/grak_tan.png" alt="Grak" class="hero-grak" width="140">
+        <img src="characters/grak/grak-mark.png" alt="CaveStack" class="hero-grak" width="200">
       </div>
     </div>
   </section>
@@ -727,7 +730,7 @@ this should be ready to merge.</pre>
         <div class="compare-pane pane-caveman">
           <div class="pane-label">
             <span class="pane-dot amber"></span>
-            CaveStack · caveman mode
+            Grak · same findings
           </div>
           <pre># patch /review
 
@@ -755,72 +758,45 @@ Status: Fix #1, merge.</pre>
     </div>
   </section>
 
-  <!-- ═══════════════════════ SKILLS ═══════════════════════ -->
-  <section id="skills">
+  <!-- ═══════════════════════ COMMANDS ═══════════════════════ -->
+  <section id="commands">
     <div class="container">
-      <div class="eyebrow">40 skills · ship-ready</div>
-      <h2>Workflow you already want.</h2>
-      <p>Each skill: prompt + bash + review logic. Type slash. Get answer. No config.</p>
+      <div class="eyebrow">4 commands · the whole loop</div>
+      <h2>Build. Review. Ship. Land.</h2>
+      <p>Any repo, any language. No config. Done means landed.</p>
 
       <div class="skills-grid">
 
         <article class="skill-card">
-          <div class="skill-slash">/ship</div>
-          <div class="skill-desc">PR-ready check. Tests, changelog, version bump, dual review. Open PR when green.</div>
+          <div class="skill-slash">/grak</div>
+          <div class="skill-desc">Plain build. Finished, tested code, fast. Evidence pasted. No push.</div>
           <svg class="skill-glyph"><use href="#glyph-mammoth"/></svg>
-        </article>
-
-        <article class="skill-card">
-          <div class="skill-slash">/investigate</div>
-          <div class="skill-desc">Root-cause debug. Hypothesis → evidence → fix. Never guess.</div>
-          <svg class="skill-glyph"><use href="#glyph-spiral"/></svg>
-        </article>
-
-        <article class="skill-card">
-          <div class="skill-slash">/qa</div>
-          <div class="skill-desc">Headless browser test real site. Find bug before user do.</div>
-          <svg class="skill-glyph"><use href="#glyph-hand"/></svg>
         </article>
 
         <article class="skill-card">
           <div class="skill-slash">/review</div>
-          <div class="skill-desc">Code review on diff. Dual voices: Claude + Codex. Mark decisions.</div>
-          <svg class="skill-glyph"><use href="#glyph-mammoth"/></svg>
-        </article>
-
-        <article class="skill-card">
-          <div class="skill-slash">/office-hours</div>
-          <div class="skill-desc">Brainstorm + validate. Challenge premise. Adversarial review. Score 1-10.</div>
+          <div class="skill-desc">Pre-ship diff review. Findings only: file:line, severity, one-line fix.</div>
           <svg class="skill-glyph"><use href="#glyph-spiral"/></svg>
         </article>
 
         <article class="skill-card">
-          <div class="skill-slash">/autoplan</div>
-          <div class="skill-desc">Full auto pipeline: CEO → Design → Eng → DX. Write plan + logs to disk.</div>
+          <div class="skill-slash">/ship</div>
+          <div class="skill-desc">Run the project's tests. Commit, push, open the PR. Green or stop.</div>
           <svg class="skill-glyph"><use href="#glyph-hand"/></svg>
         </article>
 
         <article class="skill-card">
-          <div class="skill-slash">/design-review</div>
-          <div class="skill-desc">Visual audit + fix loop. Screenshot site. Flag kitsch. Enforce tokens.</div>
+          <div class="skill-slash">/land</div>
+          <div class="skill-desc">Merge when checks are green. Verify on the default branch. Report.</div>
           <svg class="skill-glyph"><use href="#glyph-mammoth"/></svg>
         </article>
 
-        <article class="skill-card">
-          <div class="skill-slash">/checkpoint</div>
-          <div class="skill-desc">Save progress mid-session. Resume anywhere. Context survive compaction.</div>
-          <svg class="skill-glyph"><use href="#glyph-spiral"/></svg>
-        </article>
-
-        <article class="skill-card">
-          <div class="skill-slash">/retro</div>
-          <div class="skill-desc">Weekly retro across projects. What shipped. What slipped. What to fix.</div>
-          <svg class="skill-glyph"><use href="#glyph-hand"/></svg>
-        </article>
       </div>
 
       <p style="margin-top: 32px; color: var(--text-dim); font-size: 14px;">
-        + 31 more. <a href="skills.html">See all 40 skills →</a>
+        Newcomer path: clone, <code>./setup</code>, Tab to <code>grak</code>,
+        <code>/grak</code>, <code>/ship</code>, <code>/land</code>.
+        Five commands from zero to landed.
       </p>
       <p style="margin-top: 8px; color: var(--text-dim); font-size: 13px;">
         Move cursor slow. Cave wall light up. Old paintings hide in dark.
@@ -835,56 +811,49 @@ Status: Fix #1, merge.</pre>
       <h2>How it work.</h2>
 
       <details class="docs-details">
-        <summary>Install, voice, philosophy, troubleshooting</summary>
+        <summary>Install, voice, hosts, uninstall, license</summary>
         <div class="docs-body">
 
           <h3>Install</h3>
-          <pre><code>curl -fsSL cavestack.jerkyjesse.com/install | sh</code></pre>
-          <p>Works on macOS, Linux, Windows (WSL or git bash). Script install skills to
-             <code>~/.claude/skills/cavestack/</code>. Symlinks them top-level so Claude Code
-             find them as <code>/qa</code>, <code>/ship</code>, rest.</p>
+          <pre><code>curl -fsSL cavestack.jerkyjesse.com/install | sh
+# pick your host:
+curl -fsSL cavestack.jerkyjesse.com/install | sh -s -- --host opencode</code></pre>
+          <p>Needs git. No bun, no node, no sudo. On Windows:
+             <code>irm https://cavestack.jerkyjesse.com/install.ps1 | iex</code>.</p>
+          <p>From a clone: <code>./setup --host opencode</code>. Refresh after a pull: same command.
+             All hosts: <code>./setup --host all</code>. Only hosts already installed:
+             <code>./setup --host auto</code>.</p>
 
-          <h3>Caveman voice</h3>
-          <p>Every skill speak compressed caveman. Drop articles. Drop filler. Fragments OK.
-             Code, commits, PRs stay normal prose. Always full mode. Kill per-session:
-             <code>stop caveman</code>. Resume: <code>/caveman</code>.</p>
+          <h3>Voice</h3>
+          <p>Grak speak compressed caveman. Drop articles. Drop filler. Fragments OK. Code, commits,
+             PRs stay normal prose. Locked to full — no lite/ultra toggles. Off per session:
+             <code>stop caveman</code>.</p>
 
-          <h3>Philosophy: judgment before code</h3>
-          <ul>
-            <li><strong>Completeness (P1):</strong> no partial work as done.</li>
-            <li><strong>Blast radius (P2):</strong> fix at root, not symptom.</li>
-            <li><strong>Pragmatic (P3):</strong> ship working, iterate later.</li>
-            <li><strong>DRY (P4):</strong> one source of truth.</li>
-            <li><strong>Explicit over clever (P5):</strong> no hidden magic.</li>
-            <li><strong>Bias toward action (P6):</strong> pick, commit, verify.</li>
-          </ul>
+          <h3>Finish doctrine</h3>
+          <p><strong>Ship fully finished code, fast.</strong> Finished means: compiles, runs, focused
+             tests pass with evidence pasted, edge cases named, no stubs, no TODOs, no "phase 2".
+             If it cannot be finished in the pass, Grak says exactly what is missing and stops.</p>
 
-          <h3>Model-agnostic metrics</h3>
-          <p>Savings measured in <strong>characters</strong>, not tokens. Numbers survive model
-             switch. 2,400-char answer stay 2,400 chars on Opus, Sonnet, Haiku, GPT, Gemini.
-             Token math lie across providers. Character math honest.</p>
+          <h3>Hosts</h3>
+          <pre><code>opencode   ~/.config/opencode/agent/grak.md + command/{grak,review,ship,land}.md
+claude     ~/.claude/agents/grak.md + ~/.claude/commands/
+cursor     ~/.cursor/agents/grak.md + ~/.cursor/commands/
+codex      ~/.codex/agents/grak.toml + ~/.codex/prompts/
+factory    ~/.factory/droids/grak.md + ~/.factory/commands/
+kiro       ~/.kiro/agents/grak.md
+slate      reads Claude Code config
+openclaw   ~/.openclaw/skills/cavestack/ (digest)
+hermes     ~/.hermes/skills/cavestack/ (digest)
+gbrain     ~/.gbrain/skills/cavestack/ (digest)</code></pre>
+          <p>On opencode, Grak is a selectable agent mode: Tab to <code>grak</code>.</p>
 
-          <h3>What's on disk</h3>
-          <pre><code>~/.claude/skills/cavestack/   # 40 skills
-~/.cavestack/projects/&lt;slug&gt;/ # plans, reviews, checkpoints, timeline
-~/.cavestack/analytics/       # local-only usage log
-~/.cavestack/config.yaml      # prefix, proactive mode, voice</code></pre>
-          <p>Nothing leave your machine. No telemetry. No calls to cavestack servers. No servers.</p>
-
-          <h3>Team mode</h3>
-          <p>Install once. Share via <code>./setup --team</code>. Teammate run same command.
-             Same skills. No vendoring into repo.</p>
-
-          <h3>Troubleshooting</h3>
-          <ul>
-            <li><strong>Skill not found:</strong> <code>bin/cavestack-relink</code> — rewrite symlinks.</li>
-            <li><strong>Caveman too terse:</strong> <code>stop caveman</code> — drop to normal prose for the session.</li>
-            <li><strong>Upgrade:</strong> <code>/cavestack-upgrade</code> or <code>cd ~/.claude/skills/cavestack &amp;&amp; git pull &amp;&amp; bun run build</code>.</li>
-            <li><strong>Proactive prompts annoy:</strong> <code>bin/cavestack-config set proactive false</code>.</li>
-          </ul>
+          <h3>Uninstall</h3>
+          <pre><code>./setup --host opencode --uninstall</code></pre>
+          <p>Only provably-owned files are removed — a marker or a symlink into the repo.
+             Your own files with the same names are kept and listed, never swept.</p>
 
           <h3>License</h3>
-          <p>MIT. Source: <a href="https://github.com/JerkyJesse/CaveStack">github.com/JerkyJesse/CaveStack</a>.
+          <p>MIT. Source: <a href="https://github.com/JerkyJesse/cavestack">github.com/JerkyJesse/cavestack</a>.
              Issues, ideas, PRs welcome.</p>
 
         </div>
@@ -902,22 +871,19 @@ Status: Fix #1, merge.</pre>
       <div class="foot-tag">why use many word when few do?</div>
     </div>
     <nav class="foot-links" aria-label="Footer">
-      <a href="skills.html">40 skills</a>
+      <a href="#commands">Commands</a>
       <a href="#docs">Docs</a>
-      <a href="https://github.com/JerkyJesse/CaveStack">GitHub</a>
-      <a href="https://github.com/JerkyJesse/CaveStack/issues">Issues</a>
-      <a href="https://github.com/JerkyJesse/CaveStack/blob/main/CHANGELOG.md">Changelog</a>
+      <a href="https://github.com/JerkyJesse/cavestack">GitHub</a>
+      <a href="https://github.com/JerkyJesse/cavestack/issues">Issues</a>
+      <a href="https://github.com/JerkyJesse/cavestack/blob/main/CHANGELOG.md">Changelog</a>
     </nav>
     <div class="foot-attrib">
-      <span>Personal fork of</span>
-      <a href="https://github.com/garrytan/gstack" rel="noopener">gstack</a>
-      <span>by Garry Tan.</span>
       <span>Caveman voice from</span>
       <a href="https://github.com/JuliusBrussee/caveman" rel="noopener">caveman</a>
       <span>by Julius Brussee.</span>
     </div>
     <div class="foot-meta">
-      <span>v1.3.0.0 · MIT</span>
+      <span>v3.0.0.0 · MIT</span>
       <span>Built by JerkyJesse</span>
       <span>Fire kept burning since 2026</span>
       <span>Grak keeps watch</span>

@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-repo-mode
-exec "$(dirname "$0")/cavestack-repo-mode" "$@"

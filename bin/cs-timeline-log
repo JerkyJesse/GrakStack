@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-timeline-log
-exec "$(dirname "$0")/cavestack-timeline-log" "$@"

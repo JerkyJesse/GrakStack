@@ -3,8 +3,6 @@
 * text=auto eol=lf
 
 # Windows-native scripts must stay CRLF
-*.bat text eol=crlf
-*.cmd text eol=crlf
 *.ps1 text eol=crlf
 
 # Explicit binary types (prevent accidental normalization)
@@ -16,16 +14,7 @@
 *.webp binary
 *.pdf binary
 *.zip binary
-*.gz binary
-*.tar binary
 *.woff binary
 *.woff2 binary
 *.ttf binary
 *.otf binary
-*.mp3 binary
-*.mp4 binary
-
-# Compiled Bun binaries (tracked by mistake — see CLAUDE.md)
-browse/dist/browse binary
-browse/dist/find-browse binary
-design/dist/design binary

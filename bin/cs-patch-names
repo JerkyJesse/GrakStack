@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-patch-names
-exec "$(dirname "$0")/cavestack-patch-names" "$@"

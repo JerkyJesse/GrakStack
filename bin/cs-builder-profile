@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-builder-profile
-exec "$(dirname "$0")/cavestack-builder-profile" "$@"
