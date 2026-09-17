@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.3.0.0] - 2026-09-17 — Grak gets a name, a face, and his own mode
+
+Grak is the cavestack character now, and on OpenCode he is also the agent. Logo and resume ship in `characters/grak/`; the same resume is baked into a selectable agent mode. Restart OpenCode, Tab to `grak`, and every response comes back caveman-terse with full technical substance.
+
+### Added
+
+- **Grak character** — `characters/grak/`: the logo (`grak_tan.png`) and the full resume (`GRAK.md`). Staff Engineer, Level: Cave. 12 years infra, compilers PhD, 10k+ PRs reviewed, inventor of TTHW. Featured in the README and the docs hero.
+- **Grak agent mode (OpenCode)** — `./setup --host opencode` installs `~/.config/opencode/agent/grak.md`, a primary agent carrying the full credentials and the caveman voice contract (auto-clarity exceptions intact; code, commits, and PRs stay normal prose).
+- **Provenance-gated uninstall** — `cavestack-uninstall` removes the Grak agent file only when it is a symlink or carries the cavestack-managed marker. A hand-written `grak.md` survives and is listed.
+
+### For contributors
+
+- `test/setup-opencode-grak-agent.test.ts` — static tripwires for the install wiring, frontmatter schema, credentials, and voice contract.
+- `test/uninstall.test.ts` — integration cases: managed copy removed, user copy kept, Unix symlink shape removed.
+
 ## [2.2.1.0] - 2026-08-24 — Windows Defender false positive is named, not silent
 
 Windows Defender can quarantine `browse/dist/server-node.mjs` as `Trojan:NPM/Stealer!AMTB`. That is a false positive on CaveStack's Node browse bundle. You now get **CS403** with the exclusion command instead of a vanishing file. `skill:check` no longer fails because the `/claude` skill has no generated SKILL.md. Importing browse CLI helpers no longer throws just because the bundle is missing.
