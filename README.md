@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="characters/grak/grak-mark.png" alt="CaveStack" width="240">
+  <img src="characters/grak/grak-mark.png" alt="CaveStack" width="280">
 </p>
 
 <h1 align="center">CaveStack</h1>
