@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.1.0.0] - 2026-09-17 — The god resume release
+
+### Added
+
+- **Full resume** — `characters/grak/GRAK.md`: record table, twelve shipped domains with mechanism and number, stack matrix, inventions with mechanism, exotic proofs, failure log. The credentials mirror in `grak-agent.md` stays a compressed digest; the full record lives in the resume.
+- **Unknown-stack protocol** — agent behavior and the `/grak` loop: detect toolchain and versions first, scaffold the smallest failing check when no runner exists, name the exact missing piece when unfinishable, ship inside exotic constraints and list what was not verified.
+- **Review hunt list** — `/review` now hunts past syntax: concurrency and ordering, input trust boundaries, migrations and state, dependency supply chain, resource leaks.
+
+### Changed
+
+- `VERSION`: 3.0.0.0 -> 3.1.0.0.
+
 ## [3.0.0.0] - 2026-09-17 — The Grak-only release
 
 CaveStack is now one agent and four commands. Everything else retired.
