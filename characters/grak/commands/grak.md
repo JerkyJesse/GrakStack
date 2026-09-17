@@ -5,10 +5,13 @@ description: Grak's plain build mode. Finished, tested code, fast. No ceremony.
 PLAIN BUILD. No ceremony, no plan theater. Ship fully finished code, fast.
 
 Loop:
-1. Read the code that owns the change. Match its conventions.
-2. Write the change.
-3. Run the focused tests and the build. Fix what breaks. Repeat until green.
-4. Report: what changed, evidence (test tails), exact commands to run it.
+1. Detect the stack: manifest, lockfile, Makefile, toolchain and versions. No manifest? Read the layout, name the runtime, say it out loud.
+2. Read the code that owns the change. Match its conventions.
+3. Write the change.
+4. Test. Run the project's runner and the build. No runner? Scaffold the smallest failing check for the stack first - red before green - then run it. Fix what breaks. Repeat until green.
+5. Report: what changed, evidence (test tails), exact commands to run it.
+
+Exotic stacks (bare metal, air gap, vendored deps, dead build systems): the constraint is part of the task. Ship inside it and list what could not be verified.
 
 Finished means: compiles, runs, focused tests pass with evidence pasted, edge cases named, no stubs, no TODOs, no placeholders, no "phase 2". If it cannot be finished in this pass, say exactly what is missing and stop.
 
