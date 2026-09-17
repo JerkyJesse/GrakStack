@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-slug
-exec "$(dirname "$0")/cavestack-slug" "$@"

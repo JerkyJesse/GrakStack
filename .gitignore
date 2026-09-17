@@ -1,51 +1,5 @@
-.env
-node_modules/
-dist/
-browse/dist/
-design/dist/
-make-pdf/dist/
-# diagram-render ships its built bundle (offline-at-install premise)
-!lib/diagram-render/dist/
-!lib/diagram-render/dist/**
-bin/cavestack-global-discover
-bin/cavestack-global-discover.exe
-.cavestack/
-.claude/skills/
-.claude/cavestack-rendered/
-.claude/settings.local.json
-.claude/*.lock
-.agents/
-.factory/
-.kiro/
-.opencode/
-.slate/
-.cursor/
-.openclaw/
-.hermes/
-.gbrain/
-.gbrain-source
-.context/
-extension/.auth.json
-# xterm assets are vendored from npm at build time; not source-of-truth.
-extension/lib/xterm.js
-extension/lib/xterm.css
-extension/lib/xterm-addon-fit.js
-.cavestack-worktrees/
-/tmp/
+.DS_Store
+Thumbs.db
 *.log
-*.bun-build
 .env
-.env.local
 .env.*
-!.env.example
-supabase/.temp/
-
-# Throughput analysis — local-only
-docs/throughput-*.json
-
-# gbrain local source-staging dir
-.sources/
-
-# SPM build output from the gen-accessors tool
-ios-qa/scripts/gen-accessors-tool/.build/
-ios-qa/scripts/gen-accessors-tool/Package.resolved

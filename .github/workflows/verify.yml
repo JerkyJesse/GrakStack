@@ -1,0 +1,43 @@
+name: verify
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  bash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax check
+        run: bash -n setup
+      - name: Source check
+        run: bash setup --check
+      - name: Smoke install + uninstall
+        run: |
+          bash setup --host opencode --quiet
+          test -f "$HOME/.config/opencode/agent/grak.md"
+          test -f "$HOME/.config/opencode/command/grak.md"
+          test -f "$HOME/.config/opencode/command/review.md"
+          test -f "$HOME/.config/opencode/command/ship.md"
+          test -f "$HOME/.config/opencode/command/land.md"
+          bash setup --host opencode --uninstall --quiet
+          test ! -e "$HOME/.config/opencode/agent/grak.md"
+          test ! -e "$HOME/.config/opencode/command/grak.md"
+
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Source check (powershell)
+        shell: pwsh
+        run: ./setup.ps1 -Check
+      - name: Smoke install (powershell)
+        shell: pwsh
+        run: |
+          ./setup.ps1 -TargetHost opencode -Quiet
+          $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
+          $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          if (-not (Test-Path $agent)) { throw "agent missing: $agent" }
+          if (-not (Test-Path $cmd)) { throw "command missing: $cmd" }

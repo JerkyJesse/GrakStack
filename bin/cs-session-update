@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-session-update
-exec "$(dirname "$0")/cavestack-session-update" "$@"

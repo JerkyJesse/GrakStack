@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Auto-generated cs-* alias for cavestack-review-log
-exec "$(dirname "$0")/cavestack-review-log" "$@"
