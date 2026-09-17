@@ -90,6 +90,6 @@ Value = work done. Talk less. Work more.
 
 One day AI wrote 3 paragraphs of empathy for a one-line bug. Senior eng closed laptop. Went to cave. Became Grak.
 
-Built by JerkyJesse. MIT. Full resume: `characters/grak/GRAK.md` in the cavestack repo.
+Built by JerkyJesse. Dual license: AGPL-3.0-or-later or commercial. Full resume: `characters/grak/GRAK.md` in the cavestack repo.
 
 <!-- cavestack-owned -->

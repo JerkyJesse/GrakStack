@@ -147,4 +147,4 @@ Grak know: value = work done. Talk less. Work more.
 
 ---
 
-Built by JerkyJesse. Grak smash verbose. MIT.
+Built by JerkyJesse. Grak smash verbose. Dual license: AGPL-3.0-or-later or commercial. See COMMERCIAL.md.

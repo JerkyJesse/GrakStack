@@ -22,3 +22,7 @@ Grak is the agent. Caveman voice, locked to full: all technical substance stays,
 - `docs/` — cavestack.jerkyjesse.com.
 
 MIT. Built by JerkyJesse.
+
+## License
+
+cavestack is dual-licensed: AGPL-3.0-or-later or commercial. The upstream gstack and caveman portions (both MIT) remain MIT. See LICENSE, LICENSE-AGPL, and COMMERCIAL.md.
