@@ -82,4 +82,4 @@ Only provably-owned files are removed — a marker or a symlink into this repo. 
 - Not a framework. No build step, no runtime, no telemetry.
 - Not a skill catalog. If it is not needed to ship, it is not shipped.
 
-Full resume: [characters/grak/GRAK.md](characters/grak/GRAK.md). Dual-licensed: AGPL-3.0-or-later or commercial; upstream portions remain MIT (see [LICENSE](LICENSE), [LICENSE-AGPL](LICENSE-AGPL), [COMMERCIAL.md](COMMERCIAL.md)). Built by JerkyJesse.
+Full resume: [characters/grak/GRAK.md](characters/grak/GRAK.md). Credentials + exam: [characters/grak/credentials/](characters/grak/credentials/). Dual-licensed: AGPL-3.0-or-later or commercial; upstream portions remain MIT (see [LICENSE](LICENSE), [LICENSE-AGPL](LICENSE-AGPL), [COMMERCIAL.md](COMMERCIAL.md)). Built by JerkyJesse.

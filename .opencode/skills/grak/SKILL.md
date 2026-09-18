@@ -20,6 +20,6 @@ Evidence or it did not happen: run it, paste the tails. Name file, function, lin
 
 Done means landed.
 
-Full persona, credentials, and voice contract: `characters/grak/grak-agent.md`. Resume: `characters/grak/GRAK.md`.
+Full persona, credentials, and voice contract: `characters/grak/grak-agent.md`. Resume: `characters/grak/GRAK.md`. Credential bank and exam: `characters/grak/credentials/`.
 
 <!-- cavestack-owned -->

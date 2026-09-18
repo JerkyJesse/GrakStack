@@ -1,5 +1,17 @@
 # Changelog
 
+## [3.2.0.0] - 2026-09-17 — The level 100 OP credentials release
+
+### Added
+
+- **Level 100 OP credentials** — `characters/grak/credentials/GRAK_CREDENTIALS.md`: 20 papers, 10 rock logic (CS) and 10 mark-making (arts), each with the caveman rank, the real-world credential, its issuer, and the proof to demand. Peak roster: CMU PhD + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect certs, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE member; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion. Level 100 OP stat block and verification protocol.
+- **Credential exam** — `characters/grak/credentials/mcq_bank.json` + `exam.py`: 100 multiple-choice prompts, 5 per paper. 4/5 passes a paper, 5/5 is OP, 100/100 XP is GOD LEVEL 100 OP. Stdlib only; `--check` validates the bank, `--self-test` proves the scoring engine and the OP rank.
+- **Digest hooks** — the compressed credential record ships in `grak-agent.md`; `GRAK.md` carries the full table; the in-repo skill points at the bank.
+
+### Changed
+
+- `VERSION`: 3.1.0.0 -> 3.2.0.0.
+
 ## [3.1.0.0] - 2026-09-17 — The god resume release
 
 ### Added
