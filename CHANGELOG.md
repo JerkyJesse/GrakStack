@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.3.1.0] - 2026-09-18 — The hardening release
+
+### Fixed
+
+- **Install through `sh` on dash** — `docs/install` now execs `bash "$DEST/setup"` and preflights bash; stock `sh` on Debian and Ubuntu is dash, which rejects `set -o pipefail`, so the documented `curl ... | sh` path could die before setup ran.
+- **Ownership gate resolves links** — `setup` / `setup.ps1` own a symlink only when it resolves into this repo, matching the stated cage rule. Foreign symlinks and files are kept and reported. A write replaces an owned link instead of following it into its target.
+- **Digest has one source** — the openclaw/hermes/gbrain digest lives at `characters/grak/digest.md`; both installers copy it.
+- **Windows curl installer default host** — `docs/install.ps1` defaults to `claude`, matching `./setup` and `docs/install`.
+
+### Changed
+
+- Loop copy: the "Five commands" count is gone (README, GRAK.md, site); the listed path was six steps.
+- CI: the Linux job adds the dash-path install, ownership-gate checks, and a bash-vs-PowerShell installer parity diff over nine hosts; the Windows job adds `exam.py --self-test` and an uninstall smoke.
+- `VERSION`: 3.3.0.0 -> 3.3.1.0.
+
 ## [3.3.0.0] - 2026-09-17 — The lore wiring release
 
 ### Added

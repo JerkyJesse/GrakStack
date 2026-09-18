@@ -13,6 +13,12 @@ command -v git >/dev/null 2>&1 || {
   exit 1
 }
 
+# setup is a bash script (set -o pipefail); /bin/sh may be dash, so invoke bash.
+command -v bash >/dev/null 2>&1 || {
+  echo "cavestack: bash is required to run the installer" >&2
+  exit 1
+}
+
 if [ -d "$DEST/.git" ]; then
   echo "cavestack: refreshing $DEST"
   git -C "$DEST" pull --ff-only --quiet
@@ -22,4 +28,4 @@ else
   git clone --depth 1 --quiet "$REPO_URL" "$DEST"
 fi
 
-exec sh "$DEST/setup" "$@"
+exec bash "$DEST/setup" "$@"

@@ -8,11 +8,12 @@
 # counts). Everything else is skipped and reported, never touched.
 set -euo pipefail
 
-ROOT="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$(dirname "$0")" && pwd -P)"
 
 OWN_GREP="cavestack-(owned|managed)"
 AGENT_SRC="$ROOT/characters/grak/grak-agent.md"
 CMD_SRC="$ROOT/characters/grak/commands"
+DIGEST_SRC="$ROOT/characters/grak/digest.md"
 COMMANDS="grak review ship land"
 SUPPORT_DIR="$HOME/.cavestack"
 SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
@@ -77,8 +78,43 @@ fm_value() {
 }
 
 is_owned() {
-  [ -L "$1" ] && return 0
+  if [ -L "$1" ]; then
+    local resolved
+    resolved="$(resolve_symlink "$1")" || return 1
+    case "$resolved" in
+      "$ROOT"/*) return 0 ;;
+      *) return 1 ;;
+    esac
+  fi
   [ -f "$1" ] && grep -Eq "$OWN_GREP" "$1" 2>/dev/null
+}
+
+# resolve_symlink <path> - follow a symlink chain and print the physical target.
+# Readlink only; no readlink -f / realpath, which are not portable to stock macOS.
+resolve_symlink() {
+  local p="$1" raw n=0
+  while [ -L "$p" ]; do
+    [ "$n" -lt 40 ] || return 1
+    raw="$(readlink "$p" 2>/dev/null)" || return 1
+    [ -n "$raw" ] || return 1
+    case "$raw" in
+      /*) p="$raw" ;;
+      *) p="$(dirname "$p")/$raw" ;;
+    esac
+    n=$((n + 1))
+  done
+  local dir base
+  dir="$(dirname "$p")"
+  base="$(basename "$p")"
+  dir="$(cd "$dir" 2>/dev/null && pwd -P)" || return 1
+  printf '%s/%s\n' "$dir" "$base"
+}
+
+# replace_link <path> - drop an existing symlink before a write, so the write
+# lands on a fresh file instead of following the link into its target.
+replace_link() {
+  [ -L "$1" ] && rm -f "$1"
+  return 0
 }
 
 # ---------------------------------------------------------------- host mapping
@@ -158,6 +194,7 @@ install_agent() {
       log "Not registered (a file you own already uses the name; left untouched): $target"
       SKIP_COUNT=$((SKIP_COUNT + 1)); return 0
     fi
+    replace_link "$target"
     {
       printf 'name = "grak"\n'
       printf 'description = "%s"\n' "$(printf '%s' "$AGENT_DESC" | sed 's/"/\\"/g')"
@@ -175,6 +212,7 @@ install_agent() {
     log "Not registered (a file you own already uses the name; left untouched): $target"
     SKIP_COUNT=$((SKIP_COUNT + 1)); return 0
   fi
+  replace_link "$target"
   case "$host" in
     opencode)
       cp -f "$AGENT_SRC" "$target"
@@ -202,6 +240,7 @@ install_commands() {
       log "Not registered (a file you own already uses the name; left untouched): $target"
       SKIP_COUNT=$((SKIP_COUNT + 1)); continue
     fi
+    replace_link "$target"
     desc="$(fm_value "$src" description)"
     if [ "$host" = "opencode" ]; then
       { printf -- '---\ndescription: %s\nagent: grak\n---\n' "$desc"; body_of "$src"; } > "$target"
@@ -223,25 +262,8 @@ install_digest() {
     log "Not registered (a file you own already uses the name; left untouched): $target"
     SKIP_COUNT=$((SKIP_COUNT + 1)); return 0
   fi
-  {
-    printf -- '---\nname: cavestack\ndescription: Grak - caveman build agent digest. Ultra-terse voice, finished code, four commands.\n---\n\n'
-    cat <<'EOF'
-# cavestack (Grak) - digest
-
-You are Grak. Terse like smart caveman. All technical substance stays; only fluff dies.
-Ship fully finished code, fast. Finished means: compiles, runs, tests pass with
-evidence, edge cases named, no stubs, no TODOs, no "phase 2". Evidence or it did not
-happen: run it, paste the tails.
-Credential rail: rank is flavor; a claim carries issuer and proof artifact; no artifact,
-no claim. Domain task? Check the paper seed in the record first.
-Record: ~/.cavestack/ (GRAK.md lore, GRAK_CREDENTIALS.md papers, exam.py).
-
-The loop: /grak build, /review check, /ship push + PR, /land merge.
-Full source and install: https://github.com/JerkyJesse/cavestack
-
-<!-- cavestack-owned -->
-EOF
-  } > "$target"
+  replace_link "$target"
+  cp -f "$DIGEST_SRC" "$target"
   DIGEST_COUNT=$((DIGEST_COUNT + 1))
   log "Installed digest: $target"
 }
@@ -338,11 +360,13 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json"; do
+  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/docs/install"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1
   grep -q 'cavestack-owned' "$AGENT_SRC" || { echo 'agent source missing ownership marker' >&2; fail=1; }
+  grep -q 'cavestack-owned' "$DIGEST_SRC" || { echo 'digest source missing ownership marker' >&2; fail=1; }
+  grep -q 'exec bash' "$ROOT/docs/install" || { echo 'docs/install must exec bash (setup is a bash script, sh may be dash)' >&2; fail=1; }
   grep -q 'Ship fully finished code, fast' "$AGENT_SRC" || { echo 'agent source missing finish doctrine' >&2; fail=1; }
   for name in $COMMANDS; do
     f="$CMD_SRC/$name.md"

@@ -2,11 +2,13 @@
 #   irm https://cavestack.jerkyjesse.com/install.ps1 | iex
 # Override with env vars: CAVESTACK_REPO, CAVESTACK_HOME, CAVESTACK_HOST.
 # No network beyond git; no bun, no node, no admin.
+# Default host matches ./setup: claude. Use CAVESTACK_HOST (or -TargetHost after
+# cloning) for opencode, all, auto, or any other supported host.
 $ErrorActionPreference = "Stop"
 
 $repo = if ($env:CAVESTACK_REPO) { $env:CAVESTACK_REPO } else { "https://github.com/JerkyJesse/cavestack.git" }
 $dest = if ($env:CAVESTACK_HOME) { $env:CAVESTACK_HOME } else { Join-Path $HOME "cavestack" }
-$hostArg = if ($env:CAVESTACK_HOST) { $env:CAVESTACK_HOST } else { "auto" }
+$hostArg = if ($env:CAVESTACK_HOST) { $env:CAVESTACK_HOST } else { "claude" }
 
 if (-not (Get-Command git -ErrorAction SilentlyContinue)) {
   Write-Host "cavestack: git is required" -ForegroundColor Red

@@ -23,6 +23,7 @@ $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
 $OwnRegex = "cavestack-(owned|managed)"
 $AgentSrc = Join-Path $Root "characters\grak\grak-agent.md"
 $CmdSrc = Join-Path $Root "characters\grak\commands"
+$DigestSrc = Join-Path $Root "characters\grak\digest.md"
 $Commands = @("grak", "review", "ship", "land")
 $SupportDir = Join-Path $HOME ".cavestack"
 $SupportMarker = ".cavestack-owned"
@@ -59,11 +60,38 @@ function Get-FmValue([string]$Path, [string]$Key) {
   return ""
 }
 
+function Resolve-OwnedLink([string]$Path) {
+  $p = $Path
+  for ($i = 0; $i -lt 40; $i++) {
+    if (-not (Test-Path -LiteralPath $p)) { return $null }
+    $item = Get-Item -LiteralPath $p -Force
+    if (-not ($item.Attributes -band [IO.FileAttributes]::ReparsePoint)) { break }
+    $target = $item.Target
+    if ($target -is [array]) { $target = $target[0] }
+    if ([string]::IsNullOrWhiteSpace($target)) { return $null }
+    $p = if ([IO.Path]::IsPathRooted($target)) { $target } else { Join-Path (Split-Path -Parent $p) $target }
+  }
+  try { return [IO.Path]::GetFullPath($p) } catch { return $null }
+}
+
 function Test-Owned([string]$Path) {
   if (-not (Test-Path -LiteralPath $Path)) { return $false }
   $item = Get-Item -LiteralPath $Path -Force
-  if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) { return $true }
+  if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+    $resolved = Resolve-OwnedLink $Path
+    if (-not $resolved) { return $false }
+    $rootFull = [IO.Path]::GetFullPath($Root).TrimEnd('\') + '\'
+    return $resolved.StartsWith($rootFull, [StringComparison]::OrdinalIgnoreCase)
+  }
   return (([System.IO.File]::ReadAllText($Path)) -match $OwnRegex)
+}
+
+function Remove-LinkIfAny([string]$Path) {
+  if (-not (Test-Path -LiteralPath $Path)) { return }
+  $item = Get-Item -LiteralPath $Path -Force
+  if ($item.Attributes -band [IO.FileAttributes]::ReparsePoint) {
+    Remove-Item -LiteralPath $Path -Force
+  }
 }
 
 function Get-HostConfigDir([string]$HostName) {
@@ -125,6 +153,7 @@ function Install-Agent([string]$HostName) {
       $script:Counters.Skipped++; return
     }
     $desc = $script:AgentDesc.Replace('"', '\"')
+    Remove-LinkIfAny $target
     $content = "name = ""grak""`n" + "description = ""$desc""`n" + "developer_instructions = '''`n" + (Get-Body $AgentSrc) + "'''`n"
     Write-Utf8NoBom $target $content
     $script:Counters.Agents++
@@ -137,6 +166,7 @@ function Install-Agent([string]$HostName) {
     Write-Log "Not registered (a file you own already uses the name; left untouched): $target"
     $script:Counters.Skipped++; return
   }
+  Remove-LinkIfAny $target
   switch ($HostName) {
     "opencode" {
       Copy-Item -LiteralPath $AgentSrc -Destination $target -Force
@@ -169,6 +199,7 @@ function Install-Commands([string]$HostName) {
       Write-Log "Not registered (a file you own already uses the name; left untouched): $target"
       $script:Counters.Skipped++; continue
     }
+    Remove-LinkIfAny $target
     $desc = Get-FmValue $src "description"
     if ($HostName -eq "opencode") {
       Write-Utf8NoBom $target ("---`ndescription: " + $desc + "`nagent: grak`n---`n" + (Get-Body $src))
@@ -189,24 +220,8 @@ function Install-Digest([string]$HostName) {
     Write-Log "Not registered (a file you own already uses the name; left untouched): $target"
     $script:Counters.Skipped++; return
   }
-  $digest = @'
-# cavestack (Grak) - digest
-
-You are Grak. Terse like smart caveman. All technical substance stays; only fluff dies.
-Ship fully finished code, fast. Finished means: compiles, runs, tests pass with
-evidence, edge cases named, no stubs, no TODOs, no "phase 2". Evidence or it did not
-happen: run it, paste the tails.
-Credential rail: rank is flavor; a claim carries issuer and proof artifact; no artifact,
-no claim. Domain task? Check the paper seed in the record first.
-Record: ~/.cavestack/ (GRAK.md lore, GRAK_CREDENTIALS.md papers, exam.py).
-
-The loop: /grak build, /review check, /ship push + PR, /land merge.
-Full source and install: https://github.com/JerkyJesse/cavestack
-
-<!-- cavestack-owned -->
-'@
-  $content = "---`nname: cavestack`ndescription: Grak - caveman build agent digest. Ultra-terse voice, finished code, four commands.`n---`n`n" + $digest
-  Write-Utf8NoBom $target $content
+  Remove-LinkIfAny $target
+  Copy-Item -LiteralPath $DigestSrc -Destination $target -Force
   $script:Counters.Digests++
   Write-Log "Installed digest: $target"
 }
@@ -281,12 +296,15 @@ function Uninstall-Host([string]$HostName) {
 
 function Invoke-Check {
   $fail = 0
-  $sources = @($AgentSrc) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src })
+  $docsInstall = Join-Path $Root "docs\install"
+  $sources = @($AgentSrc, $DigestSrc, $docsInstall) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src })
   foreach ($f in $sources) {
     if (-not (Test-Path -LiteralPath $f)) { Write-Host "missing source: $f" -ForegroundColor Red; $fail = 1 }
   }
   if ($fail -eq 0) {
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "cavestack-owned")) { Write-Host "agent source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $DigestSrc -Raw) -match "cavestack-owned")) { Write-Host "digest source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "exec bash")) { Write-Host "docs/install must exec bash (setup is a bash script, sh may be dash)" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "Ship fully finished code, fast")) { Write-Host "agent source missing finish doctrine" -ForegroundColor Red; $fail = 1 }
     foreach ($name in $Commands) {
       $f = Join-Path $CmdSrc "$name.md"
