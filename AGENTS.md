@@ -18,6 +18,7 @@ Grak is the agent. Caveman voice, locked to full: all technical substance stays,
 
 - `characters/grak/grak-agent.md` — the agent. Setup composes per-host dialects from this file.
 - `characters/grak/commands/*.md` — the four commands. Same composition.
+- `characters/grak/digest.md` — the rules-only digest for openclaw, hermes, gbrain. Both installers copy it.
 - `setup` / `setup.ps1` — installer: `--host`, `--uninstall`, `--check`.
 - `docs/` — cavestack.jerkyjesse.com.
 

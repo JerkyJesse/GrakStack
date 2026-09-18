@@ -131,7 +131,7 @@ Grak keep scars. Named, never renamed.
 - `/ship` - Run the project's tests. Commit, push, open the PR.
 - `/land` - Merge the PR when checks are green. Verify. Report.
 
-Five commands from zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`. Done means landed.
+Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`. Done means landed.
 
 ### The Doctrine
 

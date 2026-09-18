@@ -17,7 +17,7 @@ Grak is a caveman staff engineer for your AI coding host. He ships fully finishe
 | `/ship` | Run the project's tests. Commit, push, open the PR. |
 | `/land` | Merge the PR when checks are green. Verify. Report. |
 
-Five commands from zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`.
+Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`.
 
 ## Install
 

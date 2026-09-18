@@ -11,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Syntax check
-        run: bash -n setup
+        run: |
+          bash -n setup
+          sh -n docs/install
       - name: Source check
         run: bash setup --check
       - name: Smoke install + uninstall
@@ -31,6 +33,41 @@ jobs:
           test ! -e "$HOME/.config/opencode/agent/grak.md"
           test ! -e "$HOME/.config/opencode/command/grak.md"
           test ! -e "$HOME/.cavestack/GRAK.md"
+      - name: sh path install (dash runs docs/install)
+        run: |
+          export CAVESTACK_REPO="file://$PWD"
+          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-src"
+          export HOME="$RUNNER_TEMP/home-sh"
+          mkdir -p "$HOME"
+          sh docs/install --host opencode --quiet
+          test -f "$HOME/.config/opencode/agent/grak.md"
+          test -f "$HOME/.config/opencode/command/land.md"
+          test -f "$HOME/.cavestack/exam.py"
+          python3 "$HOME/.cavestack/exam.py" --check
+      - name: Ownership gate (foreign links and files kept, repo links removed)
+        run: |
+          export HOME="$RUNNER_TEMP/home-own"
+          mkdir -p "$HOME/.claude/agents" "$HOME/.claude/commands" "$RUNNER_TEMP/elsewhere"
+          printf 'user file\n' > "$RUNNER_TEMP/elsewhere/mine.md"
+          ln -s "$RUNNER_TEMP/elsewhere/mine.md" "$HOME/.claude/agents/grak.md"
+          printf 'user file\n' > "$HOME/.claude/commands/review.md"
+          bash setup --host claude --uninstall --quiet
+          test -L "$HOME/.claude/agents/grak.md"
+          test -f "$HOME/.claude/commands/review.md"
+          ln -s "$PWD/characters/grak/grak-agent.md" "$HOME/.claude/commands/ship.md"
+          bash setup --host claude --uninstall --quiet
+          test ! -e "$HOME/.claude/commands/ship.md"
+          echo "ownership gate ok"
+      - name: Installer parity (bash vs powershell)
+        run: |
+          for h in claude cursor codex factory opencode kiro openclaw hermes gbrain; do
+            B="$RUNNER_TEMP/h-bash-$h"; P="$RUNNER_TEMP/h-ps-$h"
+            mkdir -p "$B" "$P"
+            HOME="$B" bash setup --host "$h" --quiet >/dev/null
+            HOME="$P" pwsh -NoProfile -File ./setup.ps1 -TargetHost "$h" -Quiet >/dev/null
+            diff -r "$B" "$P" || { echo "installer drift for host: $h"; exit 1; }
+          done
+          echo "installer parity ok"
 
   windows:
     runs-on: windows-latest
@@ -52,3 +89,14 @@ jobs:
           if (-not (Test-Path $lore)) { throw "record missing: $lore" }
           if (-not (Test-Path $exam)) { throw "exam missing: $exam" }
           python $exam --check
+          python $exam --self-test
+      - name: Smoke uninstall (powershell)
+        shell: pwsh
+        run: |
+          ./setup.ps1 -TargetHost opencode -Uninstall -Quiet
+          $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
+          $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          $lore = Join-Path $HOME ".cavestack/GRAK.md"
+          if (Test-Path $agent) { throw "agent not removed: $agent" }
+          if (Test-Path $cmd) { throw "command not removed: $cmd" }
+          if (Test-Path $lore) { throw "record not removed: $lore" }
