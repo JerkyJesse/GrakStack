@@ -48,7 +48,7 @@
   "description": "One caveman agent with four commands: build, review, ship, land. Finished, tested code, fast. Zero dependencies.",
   "url": "https://cavestack.jerkyjesse.com/",
   "downloadUrl": "https://cavestack.jerkyjesse.com/install",
-  "softwareVersion": "3.0.0.0",
+  "softwareVersion": "3.2.0.0",
   "author": {
     "@type": "Person",
     "name": "JerkyJesse",
@@ -803,6 +803,48 @@ Status: Fix #1, merge.</pre>
     </div>
   </section>
 
+  <!-- ═══════════════════════ CREDENTIALS ═══════════════════════ -->
+  <section id="credentials">
+    <div class="container">
+      <div class="eyebrow">20 papers · ten rock logic · ten mark-making</div>
+      <h2>Level 100 OP.</h2>
+      <p>
+        Every paper carries a 5-question exam: pass at 4/5, OP at 5/5, 100/100 XP is
+        GOD LEVEL 100 OP. Rank is flavor — the real credential and its proof artifact
+        carry the claim.
+      </p>
+
+      <div class="skills-grid">
+        <article class="skill-card">
+          <div class="skill-slash">Rock logic</div>
+          <div class="skill-desc">CMU SCS PhD (compilers) + ACM Doctoral Dissertation Award · A.M. Turing
+            Award · ACM + IEEE Fellow · IMO gold + Putnam Fellow · ICPC world champion · AWS SA Professional
+            + GCP Professional Cloud Architect · CKA + CKS + RHCE · OSCP + CISSP · Cisco CCIE · NAE member.</div>
+          <svg class="skill-glyph"><use href="#glyph-mammoth"/></svg>
+        </article>
+        <article class="skill-card">
+          <div class="skill-slash">Mark-making</div>
+          <div class="skill-desc">Juilliard M.M. composition · RISD BFA illustration · CalArts character +
+            experimental animation · RCA MA visual communication · EGOT · Pulitzer · Nobel in Literature ·
+            MacArthur Fellowship · Palme d'Or · Venice Golden Lion.</div>
+          <svg class="skill-glyph"><use href="#glyph-hand"/></svg>
+        </article>
+      </div>
+
+      <details class="docs-details">
+        <summary>Run the exam · 100 questions</summary>
+        <div class="docs-body">
+          <pre><code>cd characters/grak/credentials
+python exam.py --check      # validate the bank: 20 papers, 100 questions
+python exam.py              # sit it, paper by paper
+python exam.py --self-test  # prove the scoring engine</code></pre>
+          <p>Bank: <a href="https://github.com/JerkyJesse/cavestack/tree/main/characters/grak/credentials">characters/grak/credentials/</a> ·
+             full table: <a href="https://github.com/JerkyJesse/cavestack/blob/main/characters/grak/GRAK.md">GRAK.md</a>.</p>
+        </div>
+      </details>
+    </div>
+  </section>
+
   <!-- ═══════════════════════ DETAILS (verbose docs, collapsed) ═══════════════════════ -->
   <section id="docs">
     <div class="container">
@@ -852,7 +894,11 @@ gbrain     ~/.gbrain/skills/cavestack/ (digest)</code></pre>
              Your own files with the same names are kept and listed, never swept.</p>
 
           <h3>License</h3>
-          <p>MIT. Source: <a href="https://github.com/JerkyJesse/cavestack">github.com/JerkyJesse/cavestack</a>.
+          <p>Dual-licensed: AGPL-3.0-or-later or commercial. Upstream portions (gstack, caveman) remain MIT.
+             See <a href="https://github.com/JerkyJesse/cavestack/blob/main/LICENSE">LICENSE</a>,
+             <a href="https://github.com/JerkyJesse/cavestack/blob/main/LICENSE-AGPL">LICENSE-AGPL</a>,
+             <a href="https://github.com/JerkyJesse/cavestack/blob/main/COMMERCIAL.md">COMMERCIAL.md</a>.</p>
+          <p>Source: <a href="https://github.com/JerkyJesse/cavestack">github.com/JerkyJesse/cavestack</a>.
              Issues, ideas, PRs welcome.</p>
 
         </div>
@@ -871,6 +917,7 @@ gbrain     ~/.gbrain/skills/cavestack/ (digest)</code></pre>
     </div>
     <nav class="foot-links" aria-label="Footer">
       <a href="#commands">Commands</a>
+      <a href="#credentials">Credentials</a>
       <a href="#docs">Docs</a>
       <a href="https://github.com/JerkyJesse/cavestack">GitHub</a>
       <a href="https://github.com/JerkyJesse/cavestack/issues">Issues</a>
@@ -882,7 +929,7 @@ gbrain     ~/.gbrain/skills/cavestack/ (digest)</code></pre>
       <span>by Julius Brussee.</span>
     </div>
     <div class="foot-meta">
-      <span>v3.0.0.0 · MIT</span>
+      <span>v3.2.0.0 · AGPL-3.0-or-later or commercial</span>
       <span>Built by JerkyJesse</span>
       <span>Fire kept burning since 2026</span>
       <span>Grak keeps watch</span>

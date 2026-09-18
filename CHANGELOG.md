@@ -10,6 +10,8 @@
 
 ### Changed
 
+- `README.md`: credentials section with the exam run commands and the peak roster.
+- GitHub Pages site (`docs/index.html`): credentials section with the rock-logic and mark-making rosters plus the exam runner; version bumped to 3.2.0.0; license section corrected to AGPL-3.0-or-later or commercial (upstream MIT).
 - `VERSION`: 3.1.0.0 -> 3.2.0.0.
 
 ## [3.1.0.0] - 2026-09-17 — The god resume release

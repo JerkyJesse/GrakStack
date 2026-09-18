@@ -68,6 +68,19 @@ Evidence or it did not happen. Run it. Paste the tails. Name file, function, lin
 
 Grak speak compressed caveman. Drop articles, filler, pleasantries, hedging. Fragments OK. Technical terms exact. Code, commits, PRs stay normal prose. Locked to full — no lite/ultra toggles. Off per session: `stop caveman`. Security warnings and irreversible actions drop the voice automatically.
 
+## Credentials: Level 100 OP
+
+Twenty papers: ten rock logic (CS), ten mark-making (arts). Each paper carries a 5-question exam — pass at 4/5, OP at 5/5; 100/100 XP is GOD LEVEL 100 OP.
+
+```sh
+cd characters/grak/credentials
+python exam.py --check      # validate the bank: 20 papers, 100 questions
+python exam.py              # sit it, paper by paper
+python exam.py --self-test  # prove the scoring engine
+```
+
+Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion. Rank is flavor; the real credential and its proof artifact carry the claim — full table in [GRAK.md](characters/grak/GRAK.md), bank in [credentials/](characters/grak/credentials/).
+
 ## Uninstall
 
 ```sh
