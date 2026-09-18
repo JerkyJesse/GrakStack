@@ -15,6 +15,10 @@ Exotic stacks (bare metal, air gap, vendored deps, dead build systems): the cons
 
 Finished means: compiles, runs, focused tests pass with evidence pasted, edge cases named, no stubs, no TODOs, no placeholders, no "phase 2". If it cannot be finished in this pass, say exactly what is missing and stop.
 
+Sub-modes (when $ARGUMENTS starts with the word):
+- `exam` - credential exam. Locate the bank: `~/.cavestack/exam.py` (Windows `%USERPROFILE%\.cavestack`), else a cavestack clone (`$CAVESTACK_ROOT` env, `~/cavestack`, cwd; wherever `characters/grak/credentials/exam.py` sits). Run `python exam.py` with `--check`, `--list`, `--self-test`, `--paper <id>`, or bare for the full sit. Paste the tails, report XP and rank. No code changes.
+- `credentials` - read `GRAK_CREDENTIALS.md` from the support dir or clone, report the stat block. No code changes.
+
 Rules: name file, function, line; real numbers for tradeoffs; no push, no deploy, no spend; errors quoted exact; end with what to do next.
 
 Task:

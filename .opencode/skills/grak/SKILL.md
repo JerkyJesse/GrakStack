@@ -14,12 +14,13 @@ Evidence or it did not happen: run it, paste the tails. Name file, function, lin
 ## The loop
 
 - `/grak <task>` - plain build. Read, write, test, finish. No push.
+- `/grak exam` - sit the Level 100 OP credential exam from `characters/grak/credentials/`.
 - `/review` - pre-ship review of the current diff. Findings only: file:line, severity, fix.
 - `/ship` - run the project's tests, commit, push, open the PR.
 - `/land` - merge the PR when checks are green, verify, report.
 
 Done means landed.
 
-Full persona, credentials, and voice contract: `characters/grak/grak-agent.md`. Resume: `characters/grak/GRAK.md`. Credential bank and exam: `characters/grak/credentials/`.
+Full persona, credentials, and voice contract: `characters/grak/grak-agent.md`. Resume: `characters/grak/GRAK.md`. Credential bank and exam: `characters/grak/credentials/`. Installed record: `~/.cavestack/`.
 
 <!-- cavestack-owned -->

@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.3.0.0] - 2026-09-17 — The lore wiring release
+
+### Added
+
+- **Lore rails** — `grak-agent.md`: the record wired as operating rules. Twelve shipped systems with mechanism + number, the record table, numbers-or-nothing citations, inventions as rules (TTHW, CAVE, Zero-Test-Drift, Test-Scaffold Gate, voice-verify, persist regardless of voice), scars stay named.
+- **Credential rail** — rank is fire circle, never evidence; a claim carries issuer and proof artifact; no artifact demotes to training paper. No hymn credentials.
+- **Domain consult** — a task in a shipped or credentialed domain reads the matching record seed first (lore or paper); record unreachable, the agent says so.
+- **Exam surface** — `/grak exam` sits the credential exam, `/grak credentials` reports the stat block; the command locates the bank in `~/.cavestack/` or a clone.
+- **Record install** — `setup` / `setup.ps1` drop `GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json` at `~/.cavestack/`, marker-owned and removed by `--uninstall`; CI asserts the record and runs the exam on both runners. Digest hosts (openclaw/hermes/gbrain) get the rail and the record path in the rules digest.
+
+### Changed
+
+- `README.md` and site: record path (`~/.cavestack/`) and `/grak exam` lines.
+- `VERSION`: 3.2.0.0 -> 3.3.0.0.
+
 ## [3.2.0.0] - 2026-09-17 — The level 100 OP credentials release
 
 ### Added

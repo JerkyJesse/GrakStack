@@ -14,6 +14,9 @@ OWN_GREP="cavestack-(owned|managed)"
 AGENT_SRC="$ROOT/characters/grak/grak-agent.md"
 CMD_SRC="$ROOT/characters/grak/commands"
 COMMANDS="grak review ship land"
+SUPPORT_DIR="$HOME/.cavestack"
+SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
+SUPPORT_MARKER=".cavestack-owned"
 
 ALL_HOSTS="claude cursor codex factory opencode kiro slate openclaw hermes gbrain"
 AUTO_HOSTS="claude cursor codex factory opencode kiro openclaw hermes gbrain"
@@ -25,6 +28,7 @@ QUIET=0
 AGENT_COUNT=0
 COMMAND_COUNT=0
 DIGEST_COUNT=0
+SUPPORT_COUNT=0
 REMOVED_COUNT=0
 SKIP_COUNT=0
 
@@ -228,6 +232,9 @@ You are Grak. Terse like smart caveman. All technical substance stays; only fluf
 Ship fully finished code, fast. Finished means: compiles, runs, tests pass with
 evidence, edge cases named, no stubs, no TODOs, no "phase 2". Evidence or it did not
 happen: run it, paste the tails.
+Credential rail: rank is flavor; a claim carries issuer and proof artifact; no artifact,
+no claim. Domain task? Check the paper seed in the record first.
+Record: ~/.cavestack/ (GRAK.md lore, GRAK_CREDENTIALS.md papers, exam.py).
 
 The loop: /grak build, /review check, /ship push + PR, /land merge.
 Full source and install: https://github.com/JerkyJesse/cavestack
@@ -242,6 +249,51 @@ EOF
 install_host() {
   install_agent "$1"
   install_commands "$1"
+}
+
+# ---------------------------------------------------------------- support (lore + credentials)
+
+_support_src() {
+  case "$1" in
+    GRAK.md) printf '%s\n' "$ROOT/characters/grak/GRAK.md" ;;
+    *)       printf '%s\n' "$ROOT/characters/grak/credentials/$1" ;;
+  esac
+}
+
+install_support() {
+  local marker="$SUPPORT_DIR/$SUPPORT_MARKER" name src
+  if [ -d "$SUPPORT_DIR" ] && [ ! -e "$marker" ] && [ -n "$(ls -A "$SUPPORT_DIR" 2>/dev/null)" ]; then
+    log "Not registered (a directory you own already uses the path; left untouched): $SUPPORT_DIR"
+    SKIP_COUNT=$((SKIP_COUNT + 1)); return 0
+  fi
+  mkdir -p "$SUPPORT_DIR"
+  for name in $SUPPORT_FILES; do
+    src="$(_support_src "$name")"
+    cp "$src" "$SUPPORT_DIR/$name"
+  done
+  printf '<!-- cavestack-owned -->\n' > "$marker"
+  SUPPORT_COUNT=$((SUPPORT_COUNT + 1))
+  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
+}
+
+uninstall_support() {
+  local marker="$SUPPORT_DIR/$SUPPORT_MARKER" name
+  if [ ! -e "$marker" ]; then
+    if [ -d "$SUPPORT_DIR" ]; then
+      log "Kept (not ours): $SUPPORT_DIR"
+      SKIP_COUNT=$((SKIP_COUNT + 1))
+    fi
+    return 0
+  fi
+  for name in $SUPPORT_FILES; do
+    if [ -e "$SUPPORT_DIR/$name" ]; then
+      rm -f "$SUPPORT_DIR/$name"
+      REMOVED_COUNT=$((REMOVED_COUNT + 1))
+    fi
+  done
+  rm -f "$marker"
+  rmdir "$SUPPORT_DIR" 2>/dev/null || true
+  log "Removed record: $SUPPORT_DIR"
 }
 
 # ---------------------------------------------------------------- uninstall
@@ -286,7 +338,7 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md"; do
+  for f in "$AGENT_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1
@@ -335,6 +387,12 @@ AGENT_DESC="$(fm_value "$AGENT_SRC" description)"
 HOSTS="$(expand_hosts)"
 [ -n "$HOSTS" ] || die "no hosts selected (nothing to do)"
 
+if [ "$UNINSTALL" -eq 1 ]; then
+  uninstall_support
+else
+  install_support
+fi
+
 while IFS= read -r h; do
   [ -n "$h" ] || continue
   case "$h" in
@@ -362,6 +420,7 @@ else
   echo "  agents installed:   $AGENT_COUNT"
   echo "  commands installed: $COMMAND_COUNT"
   echo "  digests installed:  $DIGEST_COUNT"
+  if [ "$SUPPORT_COUNT" -gt 0 ]; then echo "  record installed:   $SUPPORT_DIR"; fi
   if [ "$SKIP_COUNT" -gt 0 ]; then echo "  skipped (not ours): $SKIP_COUNT"; fi
   echo "Open a new session. Tab to grak. Run /grak."
 fi

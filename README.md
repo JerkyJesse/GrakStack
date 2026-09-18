@@ -79,6 +79,8 @@ python exam.py              # sit it, paper by paper
 python exam.py --self-test  # prove the scoring engine
 ```
 
+The installer drops the full record at `~/.cavestack/` — `GRAK.md` lore, `GRAK_CREDENTIALS.md` papers and proofs, `exam.py`, `mcq_bank.json`. From the loop: `/grak exam` runs the same runner, `/grak credentials` reports the stat block.
+
 Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion. Caveman rank stays in the fire circle; a stranger verifies the credential and its proof. Full table in [GRAK.md](characters/grak/GRAK.md), bank in [credentials/](characters/grak/credentials/).
 
 ## Uninstall

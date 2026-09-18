@@ -22,9 +22,15 @@ jobs:
           test -f "$HOME/.config/opencode/command/review.md"
           test -f "$HOME/.config/opencode/command/ship.md"
           test -f "$HOME/.config/opencode/command/land.md"
+          test -f "$HOME/.cavestack/GRAK.md"
+          test -f "$HOME/.cavestack/GRAK_CREDENTIALS.md"
+          test -f "$HOME/.cavestack/mcq_bank.json"
+          python3 "$HOME/.cavestack/exam.py" --check
+          python3 "$HOME/.cavestack/exam.py" --self-test
           bash setup --host opencode --uninstall --quiet
           test ! -e "$HOME/.config/opencode/agent/grak.md"
           test ! -e "$HOME/.config/opencode/command/grak.md"
+          test ! -e "$HOME/.cavestack/GRAK.md"
 
   windows:
     runs-on: windows-latest
@@ -41,3 +47,8 @@ jobs:
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
           if (-not (Test-Path $agent)) { throw "agent missing: $agent" }
           if (-not (Test-Path $cmd)) { throw "command missing: $cmd" }
+          $lore = Join-Path $HOME ".cavestack/GRAK.md"
+          $exam = Join-Path $HOME ".cavestack/exam.py"
+          if (-not (Test-Path $lore)) { throw "record missing: $lore" }
+          if (-not (Test-Path $exam)) { throw "exam missing: $exam" }
+          python $exam --check

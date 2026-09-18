@@ -24,10 +24,18 @@ $OwnRegex = "cavestack-(owned|managed)"
 $AgentSrc = Join-Path $Root "characters\grak\grak-agent.md"
 $CmdSrc = Join-Path $Root "characters\grak\commands"
 $Commands = @("grak", "review", "ship", "land")
+$SupportDir = Join-Path $HOME ".cavestack"
+$SupportMarker = ".cavestack-owned"
+$SupportFiles = @(
+  @{ Src = Join-Path $Root "characters\grak\GRAK.md";                          Dst = "GRAK.md" },
+  @{ Src = Join-Path $Root "characters\grak\credentials\GRAK_CREDENTIALS.md"; Dst = "GRAK_CREDENTIALS.md" },
+  @{ Src = Join-Path $Root "characters\grak\credentials\exam.py";             Dst = "exam.py" },
+  @{ Src = Join-Path $Root "characters\grak\credentials\mcq_bank.json";       Dst = "mcq_bank.json" }
+)
 $AllHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "slate", "openclaw", "hermes", "gbrain")
 $AutoHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "openclaw", "hermes", "gbrain")
 
-$script:Counters = @{ Agents = 0; Commands = 0; Digests = 0; Removed = 0; Skipped = 0 }
+$script:Counters = @{ Agents = 0; Commands = 0; Digests = 0; Support = 0; Removed = 0; Skipped = 0 }
 
 function Write-Log([string]$Message) { if (-not $Quiet) { Write-Host $Message } }
 function Die([string]$Message) { Write-Host "Error: $Message" -ForegroundColor Red; exit 1 }
@@ -188,6 +196,9 @@ You are Grak. Terse like smart caveman. All technical substance stays; only fluf
 Ship fully finished code, fast. Finished means: compiles, runs, tests pass with
 evidence, edge cases named, no stubs, no TODOs, no "phase 2". Evidence or it did not
 happen: run it, paste the tails.
+Credential rail: rank is flavor; a claim carries issuer and proof artifact; no artifact,
+no claim. Domain task? Check the paper seed in the record first.
+Record: ~/.cavestack/ (GRAK.md lore, GRAK_CREDENTIALS.md papers, exam.py).
 
 The loop: /grak build, /review check, /ship push + PR, /land merge.
 Full source and install: https://github.com/JerkyJesse/cavestack
@@ -198,6 +209,43 @@ Full source and install: https://github.com/JerkyJesse/cavestack
   Write-Utf8NoBom $target $content
   $script:Counters.Digests++
   Write-Log "Installed digest: $target"
+}
+
+function Install-Support {
+  $marker = Join-Path $SupportDir $SupportMarker
+  if ((Test-Path -LiteralPath $SupportDir) -and -not (Test-Path -LiteralPath $marker)) {
+    if (Get-ChildItem -LiteralPath $SupportDir -Force -ErrorAction SilentlyContinue) {
+      Write-Log "Not registered (a directory you own already uses the path; left untouched): $SupportDir"
+      $script:Counters.Skipped++; return
+    }
+  }
+  New-Item -ItemType Directory -Force -Path $SupportDir | Out-Null
+  foreach ($f in $SupportFiles) {
+    Copy-Item -LiteralPath $f.Src -Destination (Join-Path $SupportDir $f.Dst) -Force
+  }
+  Write-Utf8NoBom $marker "<!-- cavestack-owned -->`n"
+  $script:Counters.Support++
+  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
+}
+
+function Uninstall-Support {
+  $marker = Join-Path $SupportDir $SupportMarker
+  if (-not (Test-Path -LiteralPath $marker)) {
+    if (Test-Path -LiteralPath $SupportDir) {
+      Write-Log "Kept (not ours): $SupportDir"
+      $script:Counters.Skipped++
+    }
+    return
+  }
+  foreach ($f in $SupportFiles) {
+    $t = Join-Path $SupportDir $f.Dst
+    if (Test-Path -LiteralPath $t) { Remove-Item -LiteralPath $t -Force; $script:Counters.Removed++ }
+  }
+  Remove-Item -LiteralPath $marker -Force
+  if (-not (Get-ChildItem -LiteralPath $SupportDir -Force -ErrorAction SilentlyContinue)) {
+    Remove-Item -LiteralPath $SupportDir -Force
+  }
+  Write-Log "Removed record: $SupportDir"
 }
 
 function Uninstall-File([string]$Target) {
@@ -233,7 +281,7 @@ function Uninstall-Host([string]$HostName) {
 
 function Invoke-Check {
   $fail = 0
-  $sources = @($AgentSrc) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" })
+  $sources = @($AgentSrc) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src })
   foreach ($f in $sources) {
     if (-not (Test-Path -LiteralPath $f)) { Write-Host "missing source: $f" -ForegroundColor Red; $fail = 1 }
   }
@@ -271,6 +319,8 @@ switch ($TargetHost) {
 }
 if (-not $hosts) { Die "no hosts selected (nothing to do)" }
 
+if ($Uninstall) { Uninstall-Support } else { Install-Support }
+
 foreach ($h in $hosts) {
   switch ($h) {
     "slate" {
@@ -296,6 +346,7 @@ if ($Uninstall) {
   Write-Host "  agents installed:   $($script:Counters.Agents)"
   Write-Host "  commands installed: $($script:Counters.Commands)"
   Write-Host "  digests installed:  $($script:Counters.Digests)"
+  if ($script:Counters.Support -gt 0) { Write-Host "  record installed:   $SupportDir" }
   if ($script:Counters.Skipped -gt 0) { Write-Host "  skipped (not ours): $($script:Counters.Skipped)" }
   Write-Host "Open a new session. Tab to grak. Run /grak."
 }

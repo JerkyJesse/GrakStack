@@ -149,6 +149,7 @@ Multi-host. One brain, many caves.
 - OpenClaw, Hermes, GBrain (rules-only digest)
 
 Install: `./setup --host opencode` (or `all`, `auto`). No bun, no node, no network beyond git.
+Record: the installer drops the full lore and credential bank at `~/.cavestack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`), readable by any host.
 Reversible: `./setup --host opencode --uninstall`. Your files untouched.
 
 ### Controlling Grak
