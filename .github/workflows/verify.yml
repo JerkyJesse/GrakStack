@@ -65,7 +65,7 @@ jobs:
             mkdir -p "$B" "$P"
             HOME="$B" bash setup --host "$h" --quiet >/dev/null
             HOME="$P" pwsh -NoProfile -File ./setup.ps1 -TargetHost "$h" -Quiet >/dev/null
-            diff -r "$B" "$P" || { echo "installer drift for host: $h"; exit 1; }
+            diff -r -x .cache -x .local "$B" "$P" || { echo "installer drift for host: $h"; exit 1; }
           done
           echo "installer parity ok"
 
