@@ -1,6 +1,6 @@
 ---
 name: Bug report
-about: Something in cavestack is wrong
+about: Something in grakstack is wrong
 title: ""
 labels: bug
 assignees: ""
@@ -17,7 +17,7 @@ assignees: ""
 **What you expected**:
 
 **Evidence** (command and output — include the provenance stamp line from the
-installed file, and the output of `python3 ~/cavestack/characters/grak/rock_memory.py --check`
+installed file, and the output of `python3 ~/grakstack/characters/grak/rock_memory.py --check`
 if the install is in play):
 
 ```text

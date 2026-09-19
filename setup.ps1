@@ -1,14 +1,14 @@
 #requires -version 5.1
 <#
-cavestack setup (Windows native) - install the Grak agent, the grak-clone and
+grakstack setup (Windows native) - install the Grak agent, the grak-clone and
 grak-builder subagents, and the /grak, /review, /team, /ship, /land commands
 into supported AI coding hosts. No network, no bun, no node, no admin. Same
 contract as ./setup.
 
 The cage rule: never delete or edit a target without proof that we own it.
 A target is ours when it is a reparse point (symlink) resolving into this repo,
-when it carries the full provenance stamp (cavestack v<version> :: <hash12>), or
-when it carries an exact cavestack-owned / cavestack-managed marker line. A mere
+when it carries the full provenance stamp (grakstack v<version> :: <hash12>), or
+when it carries an exact grakstack-owned / grakstack-managed marker line. A mere
 mention of the marker text elsewhere in a file is not proof. Everything else is
 skipped and reported, never touched.
 #>
@@ -23,16 +23,16 @@ param(
 $ErrorActionPreference = "Stop"
 
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$OwnStampRegex = "cavestack v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ :: [0-9a-f]+"
-$OwnMarkerRegex = "(?m)^\s*(<!--\s*cavestack-(owned|managed)(\s*|:[^>]*?)-->\s*$|#\s*cavestack-(owned|managed)(\s*|:.*?)$)"
+$OwnStampRegex = "grakstack v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ :: [0-9a-f]+"
+$OwnMarkerRegex = "(?m)^\s*(<!--\s*grakstack-(owned|managed)(\s*|:[^>]*?)-->\s*$|#\s*grakstack-(owned|managed)(\s*|:.*?)$)"
 $AgentSrc = Join-Path $Root "characters\grak\grak-agent.md"
 $CmdSrc = Join-Path $Root "characters\grak\commands"
 $DigestSrc = Join-Path $Root "characters\grak\digest.md"
 $CloneMissionSrc = Join-Path $Root "characters\grak\clone-mission.md"
 $BuilderMissionSrc = Join-Path $Root "characters\grak\builder-mission.md"
 $Commands = @("grak", "review", "team", "ship", "land")
-$SupportDir = Join-Path $HOME ".cavestack"
-$SupportMarker = ".cavestack-owned"
+$SupportDir = Join-Path $HOME ".grakstack"
+$SupportMarker = ".grakstack-owned"
 $SupportFiles = @(
   @{ Src = Join-Path $Root "characters\grak\GRAK.md";                          Dst = "GRAK.md" },
   @{ Src = Join-Path $Root "characters\grak\credentials\GRAK_CREDENTIALS.md"; Dst = "GRAK_CREDENTIALS.md" },
@@ -58,7 +58,7 @@ function Add-Installed([string]$Path) { $script:Installed.Add($Path) | Out-Null 
 
 function Write-Receipt {
   $lines = New-Object System.Collections.Generic.List[string]
-  $lines.Add("cavestack $($script:Version)")
+  $lines.Add("grakstack $($script:Version)")
   $lines.Add("sha256 $($script:ManifestHash)")
   foreach ($f in $script:Installed) {
     if (Test-Path -LiteralPath $f) {
@@ -79,9 +79,9 @@ function Write-Utf8NoBom([string]$Path, [string]$Text) {
 
 function Add-CaveStamp([string]$Target, [string]$Kind) {
   $stamp = if ($Kind -eq "toml") {
-    "`n# cavestack v$($script:Version) :: $($script:Hash12)`n"
+    "`n# grakstack v$($script:Version) :: $($script:Hash12)`n"
   } else {
-    "`n<!-- cavestack v$($script:Version) :: $($script:Hash12) -->`n"
+    "`n<!-- grakstack v$($script:Version) :: $($script:Hash12) -->`n"
   }
   $text = [System.IO.File]::ReadAllText($Target) + $stamp
   Write-Utf8NoBom $Target $text
@@ -177,9 +177,9 @@ function Get-HostCommandsDir([string]$HostName) {
 
 function Get-HostDigestDir([string]$HostName) {
   switch ($HostName) {
-    "openclaw" { Join-Path $HOME ".openclaw\skills\cavestack" }
-    "hermes"   { Join-Path $HOME ".hermes\skills\cavestack" }
-    "gbrain"   { Join-Path $HOME ".gbrain\skills\cavestack" }
+    "openclaw" { Join-Path $HOME ".openclaw\skills\grakstack" }
+    "hermes"   { Join-Path $HOME ".hermes\skills\grakstack" }
+    "gbrain"   { Join-Path $HOME ".gbrain\skills\grakstack" }
     default    { "" }
   }
 }
@@ -362,7 +362,7 @@ function Install-Support {
     Copy-Item -LiteralPath $f.Src -Destination $t -Force
     Add-Installed $t
   }
-  Write-Utf8NoBom $marker "<!-- cavestack-owned -->`n"
+  Write-Utf8NoBom $marker "<!-- grakstack-owned -->`n"
   $script:Counters.Support++
   Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
 }
@@ -436,23 +436,23 @@ function Invoke-Check {
     if (-not (Test-Path -LiteralPath $f)) { Write-Host "missing source: $f" -ForegroundColor Red; $fail = 1 }
   }
   if ($fail -eq 0) {
-    if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "cavestack-owned")) { Write-Host "agent source missing ownership marker" -ForegroundColor Red; $fail = 1 }
-    if (-not ((Get-Content -LiteralPath $DigestSrc -Raw) -match "cavestack-owned")) { Write-Host "digest source missing ownership marker" -ForegroundColor Red; $fail = 1 }
-    if (-not ((Get-Content -LiteralPath $CloneMissionSrc -Raw) -match "cavestack-owned")) { Write-Host "clone mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "grakstack-owned")) { Write-Host "agent source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $DigestSrc -Raw) -match "grakstack-owned")) { Write-Host "digest source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $CloneMissionSrc -Raw) -match "grakstack-owned")) { Write-Host "clone mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
     if (-not (Get-FmValue $CloneMissionSrc "description")) { Write-Host "clone mission source missing description" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $CloneMissionSrc -Raw) -match "one clone of Grak")) { Write-Host "clone mission source missing clone duty" -ForegroundColor Red; $fail = 1 }
-    if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "cavestack-owned")) { Write-Host "builder mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "grakstack-owned")) { Write-Host "builder mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
     if (-not (Get-FmValue $BuilderMissionSrc "description")) { Write-Host "builder mission source missing description" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "one builder clone of Grak")) { Write-Host "builder mission source missing builder duty" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "exec bash")) { Write-Host "docs/install must exec bash (setup is a bash script, sh may be dash)" -ForegroundColor Red; $fail = 1 }
-    if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "CAVESTACK_VERSION")) { Write-Host "docs/install must pin the release tag (CAVESTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
-    if (-not ((Get-Content -LiteralPath $docsInstallPs -Raw) -match "CAVESTACK_VERSION")) { Write-Host "docs/install.ps1 must pin the release tag (CAVESTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "GRAKSTACK_VERSION")) { Write-Host "docs/install must pin the release tag (GRAKSTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $docsInstallPs -Raw) -match "GRAKSTACK_VERSION")) { Write-Host "docs/install.ps1 must pin the release tag (GRAKSTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "Ship fully finished code, fast")) { Write-Host "agent source missing finish doctrine" -ForegroundColor Red; $fail = 1 }
     foreach ($name in $Commands) {
       $f = Join-Path $CmdSrc "$name.md"
       if (-not (Get-FmValue $f "description")) { Write-Host "command $name missing description" -ForegroundColor Red; $fail = 1 }
       $raw = Get-Content -LiteralPath $f -Raw
-      if (-not ($raw -match "cavestack-owned")) { Write-Host "command $name missing ownership marker" -ForegroundColor Red; $fail = 1 }
+      if (-not ($raw -match "grakstack-owned")) { Write-Host "command $name missing ownership marker" -ForegroundColor Red; $fail = 1 }
       if (-not ($raw -match "ARGUMENTS")) { Write-Host "command $name missing `$ARGUMENTS" -ForegroundColor Red; $fail = 1 }
     }
   }
@@ -466,7 +466,7 @@ function Invoke-Check {
       $fail = 1
     }
   }
-  if ($fail -eq 0) { Write-Host "cavestack: check ok" }
+  if ($fail -eq 0) { Write-Host "grakstack: check ok" }
   else { exit 1 }
 }
 
@@ -512,11 +512,11 @@ foreach ($h in $hosts) {
 if (-not $Uninstall) { Write-Receipt }
 
 if ($Uninstall) {
-  Write-Host "cavestack uninstall complete."
+  Write-Host "grakstack uninstall complete."
   Write-Host "  removed:            $($script:Counters.Removed)"
   Write-Host "  skipped (not ours): $($script:Counters.Skipped)"
 } else {
-  Write-Host "cavestack ready ($TargetHost)."
+  Write-Host "grakstack ready ($TargetHost)."
   Write-Host "  agents installed:   $($script:Counters.Agents)"
   Write-Host "  clones installed:   $($script:Counters.Clones)"
   Write-Host "  builders installed: $($script:Counters.Builders)"

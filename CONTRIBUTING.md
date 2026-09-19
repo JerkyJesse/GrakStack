@@ -1,6 +1,6 @@
 # Contributing
 
-cavestack is a single-maintainer project. Issues are enabled; pull requests are
+grakstack is a single-maintainer project. Issues are enabled; pull requests are
 welcome when they are small and provable.
 
 ## Before you open a PR

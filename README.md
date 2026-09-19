@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="characters/grak/grak-mark.png" alt="CaveStack" width="280">
+  <img src="characters/grak/grak-mark.png" alt="GrakStack" width="280">
 </p>
 
-<h1 align="center">CaveStack</h1>
+<h1 align="center">GrakStack</h1>
 
 <p align="center"><strong>AI talk too much. Grak fix.</strong></p>
 
@@ -25,27 +25,27 @@ Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`.
 Needs git, plus curl or wget to verify release checksums. No bun, no node, no sudo.
 
 ```sh
-curl -fsSL https://cavestack.jerkyjesse.com/install | sh
+curl -fsSL https://grakstack.jerkyjesse.com/install | sh
 # or pick your host:
-curl -fsSL https://cavestack.jerkyjesse.com/install | sh -s -- --host opencode
+curl -fsSL https://grakstack.jerkyjesse.com/install | sh -s -- --host opencode
 ```
 
 Windows:
 
 ```powershell
-irm https://cavestack.jerkyjesse.com/install.ps1 | iex
+irm https://grakstack.jerkyjesse.com/install.ps1 | iex
 ```
 
 The installer checks out the latest release tag and verifies the checkout
 against the release's published `SHA256SUMS` asset before `setup` runs. Re-run
 the same command after a release to move to the new tag. Offline or airgapped:
-point `CAVESTACK_CHECKSUMS` at a local `SHA256SUMS` file.
+point `GRAKSTACK_CHECKSUMS` at a local `SHA256SUMS` file.
 
 From a clone:
 
 ```sh
-git clone https://github.com/JerkyJesse/cavestack ~/cavestack
-cd ~/cavestack
+git clone https://github.com/JerkyJesse/grakstack ~/grakstack
+cd ~/grakstack
 ./setup --host opencode     # or: --host all | --host auto
 ```
 
@@ -60,7 +60,7 @@ cd ~/cavestack
 | factory | `~/.factory/droids/grak.md` + `~/.factory/commands/` |
 | kiro | `~/.kiro/agents/grak.md` |
 | slate | reads Claude Code config — an alias for claude, no files of its own |
-| openclaw · hermes · gbrain | rules-only digest at `~/.<host>/skills/cavestack/` |
+| openclaw · hermes · gbrain | rules-only digest at `~/.<host>/skills/grakstack/` |
 
 Agent hosts also get `grak-clone` (read-only reviewer) and `grak-builder` (writable builder) for `/team`: opencode, claude, cursor, codex, factory, kiro, slate. On the digest hosts `/team` runs the lenses and workstreams as serial passes instead of subagents.
 
@@ -87,7 +87,7 @@ python exam.py              # sit it, paper by paper
 python exam.py --self-test  # prove the scoring engine
 ```
 
-The installer drops the full record at `~/.cavestack/` — `GRAK.md` lore, `GRAK_CREDENTIALS.md` papers and proofs, `exam.py`, `mcq_bank.json`. From the loop: `/grak exam` runs the same runner, `/grak credentials` reports the stat block.
+The installer drops the full record at `~/.grakstack/` — `GRAK.md` lore, `GRAK_CREDENTIALS.md` papers and proofs, `exam.py`, `mcq_bank.json`. From the loop: `/grak exam` runs the same runner, `/grak credentials` reports the stat block.
 
 Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion. Caveman rank stays in the fire circle; a stranger verifies the credential and its proof. Full table in [GRAK.md](characters/grak/GRAK.md), bank in [credentials/](characters/grak/credentials/).
 
@@ -105,7 +105,7 @@ Every installed file carries a provenance stamp, and the install receipt records
 every landed file's hash. From the clone the installer fetched:
 
 ```sh
-python3 ~/cavestack/characters/grak/rock_memory.py --check
+python3 ~/grakstack/characters/grak/rock_memory.py --check
 ```
 
 The check verifies the repo sources, the receipt, and every landed file. A

@@ -1,6 +1,6 @@
 # Commercial Licensing
 
-cavestack is dual-licensed:
+grakstack is dual-licensed:
 
 1. **GNU AGPL-3.0-or-later** — the fork modifications are free to use, modify,
    and distribute, including commercially, provided you comply with the AGPL.
@@ -15,7 +15,7 @@ To purchase a commercial license, contact: mechapip@mechapip.com
 
 ## Upstream portions
 
-cavestack began as a fork of [gstack](https://github.com/garrytan/gstack) (MIT,
+grakstack began as a fork of [gstack](https://github.com/garrytan/gstack) (MIT,
 Copyright (c) 2026 Garry Tan) with [caveman](https://github.com/JuliusBrussee/caveman)
 (MIT, Copyright (c) 2025 Julius Brussee) integrated. Portions derived from
 either project remain under their MIT licenses — see [LICENSE](LICENSE) for the

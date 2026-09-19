@@ -40,7 +40,7 @@ def main():
         ("CHANGELOG.md top release", first(r"(?m)^## \[([0-9][0-9.]*)\]", read("CHANGELOG.md"))),
         ("docs/index.html softwareVersion", first(r'"softwareVersion":\s*"([^"]+)"', index)),
         ("docs/index.html footer", first(r"v([0-9][0-9.]*)\s*·\s*AGPL", index)),
-        ("docs/install pin", first(r"CAVESTACK_VERSION:-v([0-9][0-9.]*)", read("docs/install"))),
+        ("docs/install pin", first(r"GRAKSTACK_VERSION:-v([0-9][0-9.]*)", read("docs/install"))),
         ("docs/install.ps1 pin", first(r'else \{ "v([0-9][0-9.]*)" \}', read("docs/install.ps1"))),
     )
     bad = False

@@ -152,7 +152,7 @@ Multi-host. One brain, many caves.
 Clones: every agent host also gets `grak-clone`, a read-only Grak, and `grak-builder`, a writable one. `/team` spawns one clone per lens in parallel; `/team build` spawns one builder per workstream with frozen interfaces and one owner per file. Hosts without subagents run the same passes serially. The lead owns the working tree, integrates, and reruns the tests.
 
 Install: `./setup --host opencode` (or `all`, `auto`). No bun, no node, no network beyond git.
-Record: the installer drops the full lore and credential bank at `~/.cavestack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`), readable by any host.
+Record: the installer drops the full lore and credential bank at `~/.grakstack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`), readable by any host.
 Reversible: `./setup --host opencode --uninstall`. Your files untouched.
 
 ### Controlling Grak

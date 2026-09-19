@@ -34,7 +34,7 @@ def main(argv):
     commit = result.stdout.strip()
     manifest = ROOT / "characters/grak/ROCK_MEMORY.sha256"
     manifest_hash = hashlib.sha256(manifest.read_bytes()).hexdigest()
-    print("# cavestack release checksums")
+    print("# grakstack release checksums")
     print("%s  ROCK_MEMORY.sha256" % manifest_hash)
     print("%s  %s" % (commit, tag))
     return 0

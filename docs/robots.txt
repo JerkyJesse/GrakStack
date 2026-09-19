@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://cavestack.jerkyjesse.com/sitemap.xml
+Sitemap: https://grakstack.jerkyjesse.com/sitemap.xml

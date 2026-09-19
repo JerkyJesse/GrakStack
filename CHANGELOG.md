@@ -4,10 +4,10 @@
 
 ### Added
 
-- **Rock memory** — `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256`: a sha256 manifest over every shipped source. `--write` regenerates it; `--check` verifies the repo, the install receipt (`~/.cavestack/ROCK_RECEIPT`), and every landed file the receipt lists. `setup --check` runs the deep check and fails by name if python3 is missing.
-- **Provenance stamp** — every installed copy (agent, clones, commands, digest) carries `cavestack v<version> :: <manifest-hash>`; the install receipt records the same version and hash, so a stale install is named, not assumed.
+- **Rock memory** — `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256`: a sha256 manifest over every shipped source. `--write` regenerates it; `--check` verifies the repo, the install receipt (`~/.grakstack/ROCK_RECEIPT`), and every landed file the receipt lists. `setup --check` runs the deep check and fails by name if python3 is missing.
+- **Provenance stamp** — every installed copy (agent, clones, commands, digest) carries `grakstack v<version> :: <manifest-hash>`; the install receipt records the same version and hash, so a stale install is named, not assumed.
 - **Paper parity** — `exam.py --check` now requires every bank paper to map to a `GRAK_CREDENTIALS.md` paper, both directions, 20/20.
-- **Pinned, verified installs** — `docs/install` and `docs/install.ps1` check out the release tag and verify the checkout's commit sha and manifest hash against the release's published `SHA256SUMS` asset before `setup` runs. `CAVESTACK_VERSION` and `CAVESTACK_CHECKSUMS` override the pin and the checksum source; the stale `docs/install.sh` (the pre-3.3.1.0 dash bug) is removed. The PowerShell installer now hard-fails on git errors instead of continuing on a stale tree.
+- **Pinned, verified installs** — `docs/install` and `docs/install.ps1` check out the release tag and verify the checkout's commit sha and manifest hash against the release's published `SHA256SUMS` asset before `setup` runs. `GRAKSTACK_VERSION` and `GRAKSTACK_CHECKSUMS` override the pin and the checksum source; the stale `docs/install.sh` (the pre-3.3.1.0 dash bug) is removed. The PowerShell installer now hard-fails on git errors instead of continuing on a stale tree.
 - **Landed-state receipt** — `setup` / `setup.ps1` write `ROCK_RECEIPT` after the payload, not before, with a sha256 for every installed file; `rock_memory.py --check` re-hashes every landed file and fails on a missing or modified one.
 - **One version story** — `tools/version_check.py` enforces VERSION == CHANGELOG head == site JSON-LD == footer == both installer pins; CI runs it, and tag pushes run a release gate that asserts the tag matches VERSION.
 - **Support surface** — `SECURITY.md` (private reporting), `CONTRIBUTING.md`, a bug report template; issues enabled. README documents release verification and maintenance status.
@@ -77,12 +77,12 @@
 - **Lore rails** — `grak-agent.md`: the record wired as operating rules. Twelve shipped systems with mechanism + number, the record table, numbers-or-nothing citations, inventions as rules (TTHW, CAVE, Zero-Test-Drift, Test-Scaffold Gate, voice-verify, persist regardless of voice), scars stay named.
 - **Credential rail** — rank is fire circle, never evidence; a claim carries issuer and proof artifact; no artifact demotes to training paper. No hymn credentials.
 - **Domain consult** — a task in a shipped or credentialed domain reads the matching record seed first (lore or paper); record unreachable, the agent says so.
-- **Exam surface** — `/grak exam` sits the credential exam, `/grak credentials` reports the stat block; the command locates the bank in `~/.cavestack/` or a clone.
-- **Record install** — `setup` / `setup.ps1` drop `GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json` at `~/.cavestack/`, marker-owned and removed by `--uninstall`; CI asserts the record and runs the exam on both runners. Digest hosts (openclaw/hermes/gbrain) get the rail and the record path in the rules digest.
+- **Exam surface** — `/grak exam` sits the credential exam, `/grak credentials` reports the stat block; the command locates the bank in `~/.grakstack/` or a clone.
+- **Record install** — `setup` / `setup.ps1` drop `GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json` at `~/.grakstack/`, marker-owned and removed by `--uninstall`; CI asserts the record and runs the exam on both runners. Digest hosts (openclaw/hermes/gbrain) get the rail and the record path in the rules digest.
 
 ### Changed
 
-- `README.md` and site: record path (`~/.cavestack/`) and `/grak exam` lines.
+- `README.md` and site: record path (`~/.grakstack/`) and `/grak exam` lines.
 - `VERSION`: 3.2.0.0 -> 3.3.0.0.
 
 ## [3.2.0.0] - 2026-09-17 — The level 100 OP credentials release
@@ -113,7 +113,7 @@
 
 ## [3.0.0.0] - 2026-09-17 — The Grak-only release
 
-CaveStack is now one agent and four commands. Everything else retired.
+GrakStack is now one agent and four commands. Everything else retired.
 
 ### Added
 
@@ -121,8 +121,8 @@ CaveStack is now one agent and four commands. Everything else retired.
 - **Four commands** — `/grak` (plain build), `/review` (pre-ship findings), `/ship` (test, commit, push, PR), `/land` (merge, verify, report). Sources in `characters/grak/commands/`; setup composes per-host dialects from one source.
 - **Dependency-free installer** — `setup` (bash) and `setup.ps1` (Windows native): `--host <name|all|auto>`, `--uninstall` (provenance-gated), `--check`. No bun, no node, no network beyond git.
 - **Ten hosts** — claude, cursor, codex, factory, opencode, kiro, slate, openclaw, hermes, gbrain.
-- **Grak logo** — used in the README and on cavestack.jerkyjesse.com (hero, favicon, OG card).
-- **Site overhaul** — cavestack.jerkyjesse.com rebuilt around Grak: commands grid, install, hosts table, uninstall, doctrine. Cave aesthetic retained.
+- **Grak logo** — used in the README and on grakstack.jerkyjesse.com (hero, favicon, OG card).
+- **Site overhaul** — grakstack.jerkyjesse.com rebuilt around Grak: commands grid, install, hosts table, uninstall, doctrine. Cave aesthetic retained.
 - **One CI workflow** — `verify.yml`: bash syntax, source check, smoke install + uninstall on Linux and Windows.
 
 ### Retired

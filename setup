@@ -1,29 +1,29 @@
 #!/usr/bin/env bash
-# cavestack setup - install the Grak agent, the grak-clone and grak-builder
+# grakstack setup - install the Grak agent, the grak-clone and grak-builder
 # subagents, and the /grak, /review, /team, /ship, /land commands into supported
 # AI coding hosts. No network, no bun, no node, no sudo.
 #
 # The cage rule: never delete or edit a target without proof that we own it.
 # A target is ours when it is a symlink resolving into this repo, when it
-# carries the full provenance stamp (cavestack v<version> :: <hash12>), or when
-# it carries an exact cavestack-owned / cavestack-managed marker line. A mere
+# carries the full provenance stamp (grakstack v<version> :: <hash12>), or when
+# it carries an exact grakstack-owned / grakstack-managed marker line. A mere
 # mention of the marker text elsewhere in a file is not proof. Everything else
 # is skipped and reported, never touched.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")" && pwd -P)"
 
-OWN_STAMP_RE='cavestack v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ :: [0-9a-f][0-9a-f]*'
-OWN_MARKER_RE='^(<!--[[:space:]]*cavestack-(owned|managed)([[:space:]:][^>]*)?[[:space:]]*-->|#[[:space:]]*cavestack-(owned|managed)([[:space:]:].*)?)[[:space:]]*$'
+OWN_STAMP_RE='grakstack v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ :: [0-9a-f][0-9a-f]*'
+OWN_MARKER_RE='^(<!--[[:space:]]*grakstack-(owned|managed)([[:space:]:][^>]*)?[[:space:]]*-->|#[[:space:]]*grakstack-(owned|managed)([[:space:]:].*)?)[[:space:]]*$'
 AGENT_SRC="$ROOT/characters/grak/grak-agent.md"
 CMD_SRC="$ROOT/characters/grak/commands"
 CLONE_MISSION_SRC="$ROOT/characters/grak/clone-mission.md"
 BUILDER_MISSION_SRC="$ROOT/characters/grak/builder-mission.md"
 DIGEST_SRC="$ROOT/characters/grak/digest.md"
 COMMANDS="grak review team ship land"
-SUPPORT_DIR="$HOME/.cavestack"
+SUPPORT_DIR="$HOME/.grakstack"
 SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
-SUPPORT_MARKER=".cavestack-owned"
+SUPPORT_MARKER=".grakstack-owned"
 
 ALL_HOSTS="claude cursor codex factory opencode kiro slate openclaw hermes gbrain"
 AUTO_HOSTS="claude cursor codex factory opencode kiro openclaw hermes gbrain"
@@ -43,7 +43,7 @@ SKIP_COUNT=0
 
 usage() {
   cat <<'EOF'
-cavestack setup - Grak agent + grak-clone/grak-builder subagents + /grak, /review, /team, /ship, /land commands
+grakstack setup - Grak agent + grak-clone/grak-builder subagents + /grak, /review, /team, /ship, /land commands
 
 Usage: ./setup [options]
 
@@ -51,7 +51,7 @@ Options:
   --host <name>     Install for a specific host: claude, cursor, codex, factory,
                     opencode, kiro, slate, openclaw, hermes, gbrain, all, auto.
                     Default: claude.
-  --uninstall       Remove only provably-owned cavestack items for the selected
+  --uninstall       Remove only provably-owned grakstack items for the selected
                     host(s). Everything else is left untouched.
   --check           Verify the repo's own sources (sources, markers, doctrine, rock memory).
   -q, --quiet       Suppress progress output; print only the final summary.
@@ -163,7 +163,7 @@ write_receipt() {
   local f
   mkdir -p "$SUPPORT_DIR"
   {
-    printf 'cavestack %s\n' "$VERSION"
+    printf 'grakstack %s\n' "$VERSION"
     printf 'sha256 %s\n' "$MANIFEST_HASH"
     printf '%s\n' "$INSTALLED_LIST" | while IFS= read -r f; do
       [ -n "$f" ] || continue
@@ -172,11 +172,11 @@ write_receipt() {
   } > "$SUPPORT_DIR/ROCK_RECEIPT"
 }
 
-# cavestack_stamp <file> - the provenance line appended to an installed copy.
-cavestack_stamp() {
+# grakstack_stamp <file> - the provenance line appended to an installed copy.
+grakstack_stamp() {
   case "$1" in
-    *.toml) printf '\n# cavestack v%s :: %s\n' "$VERSION" "$HASH12" ;;
-    *)      printf '\n<!-- cavestack v%s :: %s -->\n' "$VERSION" "$HASH12" ;;
+    *.toml) printf '\n# grakstack v%s :: %s\n' "$VERSION" "$HASH12" ;;
+    *)      printf '\n<!-- grakstack v%s :: %s -->\n' "$VERSION" "$HASH12" ;;
   esac
 }
 
@@ -222,9 +222,9 @@ _host_commands_dir() {
 
 _host_digest_dir() {
   case "$1" in
-    openclaw) printf '%s\n' "$HOME/.openclaw/skills/cavestack" ;;
-    hermes)   printf '%s\n' "$HOME/.hermes/skills/cavestack" ;;
-    gbrain)   printf '%s\n' "$HOME/.gbrain/skills/cavestack" ;;
+    openclaw) printf '%s\n' "$HOME/.openclaw/skills/grakstack" ;;
+    hermes)   printf '%s\n' "$HOME/.hermes/skills/grakstack" ;;
+    gbrain)   printf '%s\n' "$HOME/.gbrain/skills/grakstack" ;;
     *) printf '%s\n' "" ;;
   esac
 }
@@ -265,7 +265,7 @@ install_agent() {
       body_of "$AGENT_SRC"
       printf "'''\n"
     } > "$target"
-    cavestack_stamp "$target" >> "$target"
+    grakstack_stamp "$target" >> "$target"
     record_installed "$target"
     AGENT_COUNT=$((AGENT_COUNT + 1))
     log "Installed agent: $target"
@@ -289,7 +289,7 @@ install_agent() {
       { printf -- '---\nname: grak\ndescription: %s\n---\n' "$AGENT_DESC"; body_of "$AGENT_SRC"; } > "$target"
       ;;
   esac
-  cavestack_stamp "$target" >> "$target"
+  grakstack_stamp "$target" >> "$target"
   record_installed "$target"
   AGENT_COUNT=$((AGENT_COUNT + 1))
   log "Installed agent: $target"
@@ -323,7 +323,7 @@ install_companion() {
       body_of "$mission_src"
       printf "'''\n"
     } > "$target"
-    cavestack_stamp "$target" >> "$target"
+    grakstack_stamp "$target" >> "$target"
     record_installed "$target"
     log "Installed companion: $target"
     return 0
@@ -368,7 +368,7 @@ install_companion() {
       { printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       ;;
   esac
-  cavestack_stamp "$target" >> "$target"
+  grakstack_stamp "$target" >> "$target"
   record_installed "$target"
   log "Installed companion: $target"
   return 0
@@ -405,7 +405,7 @@ install_commands() {
     else
       { printf -- '---\ndescription: %s\n---\n' "$desc"; body_of "$src"; } > "$target"
     fi
-    cavestack_stamp "$target" >> "$target"
+    grakstack_stamp "$target" >> "$target"
     record_installed "$target"
     COMMAND_COUNT=$((COMMAND_COUNT + 1))
     log "Installed command: $target"
@@ -424,7 +424,7 @@ install_digest() {
   fi
   replace_link "$target"
   cp -f "$DIGEST_SRC" "$target"
-  cavestack_stamp "$target" >> "$target"
+  grakstack_stamp "$target" >> "$target"
   record_installed "$target"
   DIGEST_COUNT=$((DIGEST_COUNT + 1))
   log "Installed digest: $target"
@@ -458,7 +458,7 @@ install_support() {
     cp "$src" "$SUPPORT_DIR/$name"
     record_installed "$SUPPORT_DIR/$name"
   done
-  printf '<!-- cavestack-owned -->\n' > "$marker"
+  printf '<!-- grakstack-owned -->\n' > "$marker"
   SUPPORT_COUNT=$((SUPPORT_COUNT + 1))
   log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
 }
@@ -534,22 +534,22 @@ check() {
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1
-  grep -q 'cavestack-owned' "$AGENT_SRC" || { echo 'agent source missing ownership marker' >&2; fail=1; }
-  grep -q 'cavestack-owned' "$DIGEST_SRC" || { echo 'digest source missing ownership marker' >&2; fail=1; }
-  grep -q 'cavestack-owned' "$CLONE_MISSION_SRC" || { echo 'clone mission source missing ownership marker' >&2; fail=1; }
+  grep -q 'grakstack-owned' "$AGENT_SRC" || { echo 'agent source missing ownership marker' >&2; fail=1; }
+  grep -q 'grakstack-owned' "$DIGEST_SRC" || { echo 'digest source missing ownership marker' >&2; fail=1; }
+  grep -q 'grakstack-owned' "$CLONE_MISSION_SRC" || { echo 'clone mission source missing ownership marker' >&2; fail=1; }
   [ -n "$(fm_value "$CLONE_MISSION_SRC" description)" ] || { echo 'clone mission source missing description' >&2; fail=1; }
   grep -q 'one clone of Grak' "$CLONE_MISSION_SRC" || { echo 'clone mission source missing clone duty' >&2; fail=1; }
-  grep -q 'cavestack-owned' "$BUILDER_MISSION_SRC" || { echo 'builder mission source missing ownership marker' >&2; fail=1; }
+  grep -q 'grakstack-owned' "$BUILDER_MISSION_SRC" || { echo 'builder mission source missing ownership marker' >&2; fail=1; }
   [ -n "$(fm_value "$BUILDER_MISSION_SRC" description)" ] || { echo 'builder mission source missing description' >&2; fail=1; }
   grep -q 'one builder clone of Grak' "$BUILDER_MISSION_SRC" || { echo 'builder mission source missing builder duty' >&2; fail=1; }
   grep -q 'exec bash' "$ROOT/docs/install" || { echo 'docs/install must exec bash (setup is a bash script, sh may be dash)' >&2; fail=1; }
-  grep -q 'CAVESTACK_VERSION' "$ROOT/docs/install" || { echo 'docs/install must pin the release tag (CAVESTACK_VERSION)' >&2; fail=1; }
-  grep -q 'CAVESTACK_VERSION' "$ROOT/docs/install.ps1" || { echo 'docs/install.ps1 must pin the release tag (CAVESTACK_VERSION)' >&2; fail=1; }
+  grep -q 'GRAKSTACK_VERSION' "$ROOT/docs/install" || { echo 'docs/install must pin the release tag (GRAKSTACK_VERSION)' >&2; fail=1; }
+  grep -q 'GRAKSTACK_VERSION' "$ROOT/docs/install.ps1" || { echo 'docs/install.ps1 must pin the release tag (GRAKSTACK_VERSION)' >&2; fail=1; }
   grep -q 'Ship fully finished code, fast' "$AGENT_SRC" || { echo 'agent source missing finish doctrine' >&2; fail=1; }
   for name in $COMMANDS; do
     f="$CMD_SRC/$name.md"
     [ -n "$(fm_value "$f" description)" ] || { echo "command $name missing description" >&2; fail=1; }
-    grep -q 'cavestack-owned' "$f" || { echo "command $name missing ownership marker" >&2; fail=1; }
+    grep -q 'grakstack-owned' "$f" || { echo "command $name missing ownership marker" >&2; fail=1; }
     grep -q 'ARGUMENTS' "$f" || { echo "command $name missing \$ARGUMENTS" >&2; fail=1; }
   done
   if [ "$fail" -eq 0 ]; then
@@ -561,7 +561,7 @@ check() {
     fi
   fi
   if [ "$fail" -eq 0 ]; then
-    echo "cavestack: check ok"
+    echo "grakstack: check ok"
   else
     exit 1
   fi
@@ -628,11 +628,11 @@ if [ "$UNINSTALL" -eq 0 ]; then
 fi
 
 if [ "$UNINSTALL" -eq 1 ]; then
-  echo "cavestack uninstall complete."
+  echo "grakstack uninstall complete."
   echo "  removed:          $REMOVED_COUNT"
   echo "  skipped (not ours): $SKIP_COUNT"
 else
-  echo "cavestack ready ($HOST)."
+  echo "grakstack ready ($HOST)."
   echo "  agents installed:   $AGENT_COUNT"
   echo "  clones installed:   $CLONE_COUNT"
   echo "  builders installed: $BUILDER_COUNT"

@@ -4,14 +4,14 @@
 
 Only the latest tagged release is supported. Installs are pinned to a release
 tag and verified against the release's published `SHA256SUMS` asset before
-`setup` runs; `python3 ~/cavestack/characters/grak/rock_memory.py --check`
+`setup` runs; `python3 ~/grakstack/characters/grak/rock_memory.py --check`
 verifies the installed state.
 
 ## Reporting a vulnerability
 
 Use GitHub's private vulnerability reporting:
 
-https://github.com/JerkyJesse/cavestack/security/advisories/new
+https://github.com/JerkyJesse/grakstack/security/advisories/new
 
 Do not open a public issue for a security problem.
 

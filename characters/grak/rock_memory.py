@@ -3,7 +3,7 @@
 
 --write   regenerate ROCK_MEMORY.sha256 over every file the installers ship
 --check   verify the repo against the manifest; when an install receipt exists
-          (~/.cavestack/ROCK_RECEIPT, CAVESTACK_HOME overrides), verify the
+          (~/.grakstack/ROCK_RECEIPT, GRAKSTACK_HOME overrides), verify the
           record, report the record current or stale, and re-hash every landed
           file the receipt lists (--no-receipt skips the record check)
 
@@ -24,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 ROOT = HERE.parent.parent
 MANIFEST = HERE / "ROCK_MEMORY.sha256"
 RECEIPT = (
-    Path(os.environ.get("CAVESTACK_HOME", str(Path.home() / ".cavestack")))
+    Path(os.environ.get("GRAKSTACK_HOME", str(Path.home() / ".grakstack")))
     / "ROCK_RECEIPT"
 )
 
@@ -139,7 +139,7 @@ def check_receipt():
     manifest_hash = ""
     landed = []
     for line in RECEIPT.read_text(encoding="utf-8").splitlines():
-        if line.startswith("cavestack "):
+        if line.startswith("grakstack "):
             version = line.split(None, 1)[1].strip()
         elif line.startswith("sha256 "):
             manifest_hash = line.split(None, 1)[1].strip()

@@ -40,84 +40,84 @@ jobs:
           grep -q 'mode: subagent' "$HOME/.config/opencode/agent/grak-builder.md"
           grep -q 'Builder duty' "$HOME/.config/opencode/agent/grak-builder.md"
           ! grep -q 'edit: deny' "$HOME/.config/opencode/agent/grak-builder.md"
-          test -f "$HOME/.cavestack/GRAK.md"
-          test -f "$HOME/.cavestack/GRAK_CREDENTIALS.md"
-          test -f "$HOME/.cavestack/mcq_bank.json"
-          python3 "$HOME/.cavestack/exam.py" --check
+          test -f "$HOME/.grakstack/GRAK.md"
+          test -f "$HOME/.grakstack/GRAK_CREDENTIALS.md"
+          test -f "$HOME/.grakstack/mcq_bank.json"
+          python3 "$HOME/.grakstack/exam.py" --check
           python3 characters/grak/rock_memory.py --check
-          python3 "$HOME/.cavestack/exam.py" --self-test
-          test -f "$HOME/.cavestack/ROCK_RECEIPT"
+          python3 "$HOME/.grakstack/exam.py" --self-test
+          test -f "$HOME/.grakstack/ROCK_RECEIPT"
           python3 characters/grak/rock_memory.py --check
-          grep -q 'cavestack v' "$HOME/.config/opencode/agent/grak.md"
-          grep -q 'cavestack v' "$HOME/.config/opencode/agent/grak-clone.md"
+          grep -q 'grakstack v' "$HOME/.config/opencode/agent/grak.md"
+          grep -q 'grakstack v' "$HOME/.config/opencode/agent/grak-clone.md"
           bash setup --host opencode --uninstall --quiet
           test ! -e "$HOME/.config/opencode/agent/grak.md"
           test ! -e "$HOME/.config/opencode/agent/grak-clone.md"
           test ! -e "$HOME/.config/opencode/agent/grak-builder.md"
           test ! -e "$HOME/.config/opencode/command/grak.md"
           test ! -e "$HOME/.config/opencode/command/team.md"
-          test ! -e "$HOME/.cavestack/GRAK.md"
-          test ! -e "$HOME/.cavestack/ROCK_RECEIPT"
+          test ! -e "$HOME/.grakstack/GRAK.md"
+          test ! -e "$HOME/.grakstack/ROCK_RECEIPT"
       - name: Freeze release inputs
         run: |
           V="v$(tr -d '[:space:]' < VERSION)"
           git tag -f "$V" HEAD
           MANIFEST_SHA="$(sha256sum characters/grak/ROCK_MEMORY.sha256 | awk '{print $1}')"
           COMMIT="$(git rev-parse HEAD)"
-          { echo "# cavestack release checksums"; echo "$MANIFEST_SHA  ROCK_MEMORY.sha256"; echo "$COMMIT  $V"; } > "$RUNNER_TEMP/SHA256SUMS"
+          { echo "# grakstack release checksums"; echo "$MANIFEST_SHA  ROCK_MEMORY.sha256"; echo "$COMMIT  $V"; } > "$RUNNER_TEMP/SHA256SUMS"
           echo "frozen $V at $COMMIT"
       - name: Pinned install (sh runs docs/install, verified against checksums)
         run: |
           V="v$(tr -d '[:space:]' < VERSION)"
           COMMIT="$(git rev-parse HEAD)"
-          export CAVESTACK_REPO="file://$PWD"
-          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-src"
-          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
+          export GRAKSTACK_REPO="file://$PWD"
+          export GRAKSTACK_HOME="$RUNNER_TEMP/grakstack-src"
+          export GRAKSTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
           export HOME="$RUNNER_TEMP/home-sh"
           mkdir -p "$HOME"
           OUT="$(sh docs/install --host opencode --quiet)"
           printf '%s\n' "$OUT"
-          printf '%s\n' "$OUT" | grep -q "cavestack: verified $V ($COMMIT)"
+          printf '%s\n' "$OUT" | grep -q "grakstack: verified $V ($COMMIT)"
           test -f "$HOME/.config/opencode/agent/grak.md"
           test -f "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.config/opencode/agent/grak-builder.md"
           test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/land.md"
-          test -f "$HOME/.cavestack/exam.py"
-          python3 "$HOME/.cavestack/exam.py" --check
-          test "$(git -C "$CAVESTACK_HOME" rev-parse HEAD)" = "$COMMIT"
+          test -f "$HOME/.grakstack/exam.py"
+          python3 "$HOME/.grakstack/exam.py" --check
+          test "$(git -C "$GRAKSTACK_HOME" rev-parse HEAD)" = "$COMMIT"
       - name: Pin negative (bad checksum aborts before setup)
         run: |
           COMMIT="$(git rev-parse HEAD)"
           sed "s/^$COMMIT /0000000000000000000000000000000000000000 /" "$RUNNER_TEMP/SHA256SUMS" > "$RUNNER_TEMP/BADSUMS"
-          export CAVESTACK_REPO="file://$PWD"
-          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-bad"
-          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/BADSUMS"
+          export GRAKSTACK_REPO="file://$PWD"
+          export GRAKSTACK_HOME="$RUNNER_TEMP/grakstack-bad"
+          export GRAKSTACK_CHECKSUMS="$RUNNER_TEMP/BADSUMS"
           export HOME="$RUNNER_TEMP/home-bad"
           mkdir -p "$HOME"
           if sh docs/install --host opencode --quiet; then
             echo "expected checksum failure"; exit 1
           fi
           test ! -e "$HOME/.config/opencode/agent/grak.md"
-          test ! -e "$HOME/.cavestack/GRAK.md"
+          test ! -e "$HOME/.grakstack/GRAK.md"
           echo "pin negative ok"
       - name: Landed receipt (tamper fails, reinstall heals)
         run: |
-          export CAVESTACK_REPO="file://$PWD"
-          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
+          export GRAKSTACK_REPO="file://$PWD"
+          export GRAKSTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
           export HOME="$RUNNER_TEMP/home-tamper"
-          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-tamper"
+          export GRAKSTACK_HOME="$RUNNER_TEMP/grakstack-tamper"
           mkdir -p "$HOME"
           sh docs/install --host opencode --quiet
-          unset CAVESTACK_HOME
+          unset GRAKSTACK_HOME
           python3 characters/grak/rock_memory.py --check | grep -q "record: current"
           printf '\nuser edit\n' >> "$HOME/.config/opencode/agent/grak.md"
           if python3 characters/grak/rock_memory.py --check; then
             echo "expected modified-file failure"; exit 1
           fi
-          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-tamper"
+          export GRAKSTACK_HOME="$RUNNER_TEMP/grakstack-tamper"
           sh docs/install --host opencode --quiet
-          unset CAVESTACK_HOME
+          unset GRAKSTACK_HOME
           python3 characters/grak/rock_memory.py --check | grep -q "record: current"
           echo "landed receipt ok"
       - name: Ownership gate (foreign links and files kept, repo links removed)
@@ -133,10 +133,10 @@ jobs:
           ln -s "$PWD/characters/grak/grak-agent.md" "$HOME/.claude/commands/ship.md"
           bash setup --host claude --uninstall --quiet
           test ! -e "$HOME/.claude/commands/ship.md"
-          printf 'the cavestack-owned marker is described in the docs\n' > "$HOME/.claude/commands/grak.md"
+          printf 'the grakstack-owned marker is described in the docs\n' > "$HOME/.claude/commands/grak.md"
           bash setup --host claude --uninstall --quiet
           test -f "$HOME/.claude/commands/grak.md"
-          printf '<!-- cavestack-owned -->\n' > "$HOME/.claude/commands/grak.md"
+          printf '<!-- grakstack-owned -->\n' > "$HOME/.claude/commands/grak.md"
           bash setup --host claude --uninstall --quiet
           test ! -e "$HOME/.claude/commands/grak.md"
           echo "ownership gate ok"
@@ -149,9 +149,9 @@ jobs:
             HOME="$P" pwsh -NoProfile -File ./setup.ps1 -TargetHost "$h" -Quiet >/dev/null
             # the receipt records absolute landed paths; normalize each HOME
             # prefix before the diff so the comparison is content, not location
-            if [ -f "$B/.cavestack/ROCK_RECEIPT" ] && [ -f "$P/.cavestack/ROCK_RECEIPT" ]; then
-              sed -i "s|$B|<HOME>|g" "$B/.cavestack/ROCK_RECEIPT"
-              sed -i "s|$P|<HOME>|g" "$P/.cavestack/ROCK_RECEIPT"
+            if [ -f "$B/.grakstack/ROCK_RECEIPT" ] && [ -f "$P/.grakstack/ROCK_RECEIPT" ]; then
+              sed -i "s|$B|<HOME>|g" "$B/.grakstack/ROCK_RECEIPT"
+              sed -i "s|$P|<HOME>|g" "$P/.grakstack/ROCK_RECEIPT"
             fi
             diff -r -x .cache -x .local "$B" "$P" || { echo "installer drift for host: $h"; exit 1; }
           done
@@ -182,17 +182,17 @@ jobs:
           if (-not ((Get-Content -LiteralPath $clone -Raw) -match "Clone duty")) { throw "clone missing clone duty" }
           if (-not ((Get-Content -LiteralPath $builder -Raw) -match "mode: subagent")) { throw "builder missing subagent mode" }
           if (-not ((Get-Content -LiteralPath $builder -Raw) -match "Builder duty")) { throw "builder missing builder duty" }
-          $lore = Join-Path $HOME ".cavestack/GRAK.md"
-          $exam = Join-Path $HOME ".cavestack/exam.py"
+          $lore = Join-Path $HOME ".grakstack/GRAK.md"
+          $exam = Join-Path $HOME ".grakstack/exam.py"
           if (-not (Test-Path $lore)) { throw "record missing: $lore" }
           if (-not (Test-Path $exam)) { throw "exam missing: $exam" }
           python $exam --check
           python $exam --self-test
           python characters/grak/rock_memory.py --check
-          $receipt = Join-Path $HOME ".cavestack/ROCK_RECEIPT"
+          $receipt = Join-Path $HOME ".grakstack/ROCK_RECEIPT"
           if (-not (Test-Path $receipt)) { throw "receipt missing: $receipt" }
-          if (-not ((Get-Content -LiteralPath $agent -Raw) -match "cavestack v")) { throw "agent missing stamp" }
-          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "cavestack v")) { throw "clone missing stamp" }
+          if (-not ((Get-Content -LiteralPath $agent -Raw) -match "grakstack v")) { throw "agent missing stamp" }
+          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "grakstack v")) { throw "clone missing stamp" }
       - name: Smoke uninstall (powershell)
         shell: pwsh
         run: |
@@ -202,7 +202,7 @@ jobs:
           $builder = Join-Path $HOME ".config/opencode/agent/grak-builder.md"
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
           $team = Join-Path $HOME ".config/opencode/command/team.md"
-          $lore = Join-Path $HOME ".cavestack/GRAK.md"
+          $lore = Join-Path $HOME ".grakstack/GRAK.md"
           if (Test-Path $agent) { throw "agent not removed: $agent" }
           if (Test-Path $clone) { throw "clone not removed: $clone" }
           if (Test-Path $builder) { throw "builder not removed: $builder" }
@@ -217,18 +217,18 @@ jobs:
           $manifest = (Get-FileHash characters/grak/ROCK_MEMORY.sha256 -Algorithm SHA256).Hash.ToLower()
           $commit = (git rev-parse HEAD).Trim()
           $sums = Join-Path $env:RUNNER_TEMP "SHA256SUMS"
-          "# cavestack release checksums`n$manifest  ROCK_MEMORY.sha256`n$commit  $version`n" | Set-Content -NoNewline $sums
-          $env:CAVESTACK_REPO = $PWD.Path
-          $env:CAVESTACK_CHECKSUMS = $sums
-          $env:CAVESTACK_HOME = Join-Path $env:RUNNER_TEMP "pin-src"
-          $env:CAVESTACK_HOST = "opencode"
+          "# grakstack release checksums`n$manifest  ROCK_MEMORY.sha256`n$commit  $version`n" | Set-Content -NoNewline $sums
+          $env:GRAKSTACK_REPO = $PWD.Path
+          $env:GRAKSTACK_CHECKSUMS = $sums
+          $env:GRAKSTACK_HOME = Join-Path $env:RUNNER_TEMP "pin-src"
+          $env:GRAKSTACK_HOST = "opencode"
           pwsh -NoProfile -File ./docs/install.ps1
           if ($LASTEXITCODE -ne 0) { throw "docs/install.ps1 failed: $LASTEXITCODE" }
           $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
           if (-not (Test-Path $agent)) { throw "agent missing after pinned install" }
-          $actual = (git -C $env:CAVESTACK_HOME rev-parse HEAD).Trim()
+          $actual = (git -C $env:GRAKSTACK_HOME rev-parse HEAD).Trim()
           if ($actual -ne $commit) { throw "checkout commit drift: $actual != $commit" }
-          $env:CAVESTACK_HOME = Join-Path $HOME ".cavestack"
+          $env:GRAKSTACK_HOME = Join-Path $HOME ".grakstack"
           python characters/grak/rock_memory.py --check
           if ($LASTEXITCODE -ne 0) { throw "record check failed after pinned install" }
           ./setup.ps1 -TargetHost opencode -Uninstall -Quiet
