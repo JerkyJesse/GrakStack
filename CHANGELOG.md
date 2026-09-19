@@ -1,5 +1,19 @@
 # Changelog
 
+## [3.6.0.0] - 2026-09-18 — The rock memory release
+
+### Added
+
+- **Rock memory** — `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256`: a sha256 manifest over every shipped source. `--write` regenerates it; `--check` verifies the repo and reports the installed record (`~/.cavestack/ROCK_RECEIPT`) current or stale. `setup --check` runs the deep check when python3 is present.
+- **Provenance stamp** — every installed copy (agent, clones, commands, digest) carries `cavestack v<version> :: <manifest-hash>`; the install receipt records the same version and hash, so a stale install is named, not assumed.
+- **Paper parity** — `exam.py --check` now requires every bank paper to map to a `GRAK_CREDENTIALS.md` paper, both directions, 20/20.
+
+### Changed
+
+- `setup` / `setup.ps1`: both installers read `VERSION` + the manifest hash, write `ROCK_RECEIPT`, stamp every composed file, run the deep source check, and remove the receipt on uninstall.
+- CI: rock-memory and paper-parity checks added to both jobs; the smoke install asserts the stamp and the current record.
+- `VERSION`: 3.5.0.0 -> 3.6.0.0.
+
 ## [3.5.0.0] - 2026-09-18 — The build team release
 
 ### Added

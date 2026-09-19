@@ -50,7 +50,7 @@ Options:
                     Default: claude.
   --uninstall       Remove only provably-owned cavestack items for the selected
                     host(s). Everything else is left untouched.
-  --check           Verify the repo's own sources (sources, markers, doctrine).
+  --check           Verify the repo's own sources (sources, markers, doctrine, rock memory).
   -q, --quiet       Suppress progress output; print only the final summary.
   -h, --help        Show this help and exit.
 
@@ -120,6 +120,29 @@ resolve_symlink() {
 replace_link() {
   [ -L "$1" ] && rm -f "$1"
   return 0
+}
+
+# ---------------------------------------------------------------- provenance
+
+VERSION="$(tr -d '[:space:]' < "$ROOT/VERSION")"
+[ -n "$VERSION" ] || die "cannot read VERSION from $ROOT/VERSION"
+MANIFEST="$ROOT/characters/grak/ROCK_MEMORY.sha256"
+[ -f "$MANIFEST" ] || die "missing rock memory manifest: $MANIFEST"
+if command -v sha256sum >/dev/null 2>&1; then
+  MANIFEST_HASH="$(sha256sum "$MANIFEST" | awk '{print $1}')"
+elif command -v shasum >/dev/null 2>&1; then
+  MANIFEST_HASH="$(shasum -a 256 "$MANIFEST" | awk '{print $1}')"
+else
+  die "need sha256sum or shasum to compute the rock-memory hash"
+fi
+HASH12="$(printf '%s' "$MANIFEST_HASH" | cut -c1-12)"
+
+# cavestack_stamp <file> - the provenance line appended to an installed copy.
+cavestack_stamp() {
+  case "$1" in
+    *.toml) printf '\n# cavestack v%s :: %s\n' "$VERSION" "$HASH12" ;;
+    *)      printf '\n<!-- cavestack v%s :: %s -->\n' "$VERSION" "$HASH12" ;;
+  esac
 }
 
 # ---------------------------------------------------------------- host mapping
@@ -207,6 +230,7 @@ install_agent() {
       body_of "$AGENT_SRC"
       printf "'''\n"
     } > "$target"
+    cavestack_stamp "$target" >> "$target"
     AGENT_COUNT=$((AGENT_COUNT + 1))
     log "Installed agent: $target"
     return 0
@@ -229,6 +253,7 @@ install_agent() {
       { printf -- '---\nname: grak\ndescription: %s\n---\n' "$AGENT_DESC"; body_of "$AGENT_SRC"; } > "$target"
       ;;
   esac
+  cavestack_stamp "$target" >> "$target"
   AGENT_COUNT=$((AGENT_COUNT + 1))
   log "Installed agent: $target"
 }
@@ -261,6 +286,7 @@ install_companion() {
       body_of "$mission_src"
       printf "'''\n"
     } > "$target"
+    cavestack_stamp "$target" >> "$target"
     log "Installed companion: $target"
     return 0
   fi
@@ -304,6 +330,7 @@ install_companion() {
       { printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       ;;
   esac
+  cavestack_stamp "$target" >> "$target"
   log "Installed companion: $target"
   return 0
 }
@@ -339,6 +366,7 @@ install_commands() {
     else
       { printf -- '---\ndescription: %s\n---\n' "$desc"; body_of "$src"; } > "$target"
     fi
+    cavestack_stamp "$target" >> "$target"
     COMMAND_COUNT=$((COMMAND_COUNT + 1))
     log "Installed command: $target"
   done
@@ -356,6 +384,7 @@ install_digest() {
   fi
   replace_link "$target"
   cp -f "$DIGEST_SRC" "$target"
+  cavestack_stamp "$target" >> "$target"
   DIGEST_COUNT=$((DIGEST_COUNT + 1))
   log "Installed digest: $target"
 }
@@ -388,8 +417,9 @@ install_support() {
     cp "$src" "$SUPPORT_DIR/$name"
   done
   printf '<!-- cavestack-owned -->\n' > "$marker"
+  printf 'cavestack %s\nsha256 %s\n' "$VERSION" "$MANIFEST_HASH" > "$SUPPORT_DIR/ROCK_RECEIPT"
   SUPPORT_COUNT=$((SUPPORT_COUNT + 1))
-  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
+  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, ROCK_RECEIPT)"
 }
 
 uninstall_support() {
@@ -408,6 +438,7 @@ uninstall_support() {
     fi
   done
   rm -f "$marker"
+  rm -f "$SUPPORT_DIR/ROCK_RECEIPT"
   rmdir "$SUPPORT_DIR" 2>/dev/null || true
   log "Removed record: $SUPPORT_DIR"
 }
@@ -458,7 +489,7 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/docs/install"; do
+  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1
@@ -478,6 +509,9 @@ check() {
     grep -q 'cavestack-owned' "$f" || { echo "command $name missing ownership marker" >&2; fail=1; }
     grep -q 'ARGUMENTS' "$f" || { echo "command $name missing \$ARGUMENTS" >&2; fail=1; }
   done
+  if [ "$fail" -eq 0 ] && command -v python3 >/dev/null 2>&1; then
+    python3 "$ROOT/characters/grak/rock_memory.py" --check --no-receipt || fail=1
+  fi
   if [ "$fail" -eq 0 ]; then
     echo "cavestack: check ok"
   else

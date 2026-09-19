@@ -16,6 +16,10 @@ jobs:
           sh -n docs/install
       - name: Source check
         run: bash setup --check
+      - name: Rock memory check
+        run: python3 characters/grak/rock_memory.py --check --no-receipt
+      - name: Paper parity
+        run: python3 characters/grak/credentials/exam.py --check
       - name: Smoke install + uninstall
         run: |
           bash setup --host opencode --quiet
@@ -37,7 +41,12 @@ jobs:
           test -f "$HOME/.cavestack/GRAK_CREDENTIALS.md"
           test -f "$HOME/.cavestack/mcq_bank.json"
           python3 "$HOME/.cavestack/exam.py" --check
+          python3 characters/grak/rock_memory.py --check
           python3 "$HOME/.cavestack/exam.py" --self-test
+          test -f "$HOME/.cavestack/ROCK_RECEIPT"
+          python3 characters/grak/rock_memory.py --check
+          grep -q 'cavestack v' "$HOME/.config/opencode/agent/grak.md"
+          grep -q 'cavestack v' "$HOME/.config/opencode/agent/grak-clone.md"
           bash setup --host opencode --uninstall --quiet
           test ! -e "$HOME/.config/opencode/agent/grak.md"
           test ! -e "$HOME/.config/opencode/agent/grak-clone.md"
@@ -45,6 +54,7 @@ jobs:
           test ! -e "$HOME/.config/opencode/command/grak.md"
           test ! -e "$HOME/.config/opencode/command/team.md"
           test ! -e "$HOME/.cavestack/GRAK.md"
+          test ! -e "$HOME/.cavestack/ROCK_RECEIPT"
       - name: sh path install (dash runs docs/install)
         run: |
           export CAVESTACK_REPO="file://$PWD"
@@ -115,6 +125,11 @@ jobs:
           if (-not (Test-Path $exam)) { throw "exam missing: $exam" }
           python $exam --check
           python $exam --self-test
+          python characters/grak/rock_memory.py --check
+          $receipt = Join-Path $HOME ".cavestack/ROCK_RECEIPT"
+          if (-not (Test-Path $receipt)) { throw "receipt missing: $receipt" }
+          if (-not ((Get-Content -LiteralPath $agent -Raw) -match "cavestack v")) { throw "agent missing stamp" }
+          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "cavestack v")) { throw "clone missing stamp" }
       - name: Smoke uninstall (powershell)
         shell: pwsh
         run: |

@@ -5,7 +5,8 @@ Runner and validator for mcq_bank.json (20 papers, 5 questions each,
 100 questions, 100 XP max). Stdlib only. No network. No deps.
 
 Usage:
-    python exam.py --check       validate the bank structure and answer keys
+    python exam.py --check       validate the bank structure, answer keys, and
+                                 GRAK_CREDENTIALS.md parity
     python exam.py --self-test   run the scoring engine over the answer key
     python exam.py --list        list the papers
     python exam.py               take the exam, paper by paper
@@ -18,6 +19,7 @@ Rules: 1 correct answer = 1 XP. A paper passes at 4 of 5; a
 import argparse
 import json
 import os
+import re
 import sys
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcq_bank.json")
@@ -121,6 +123,26 @@ def validate(bank):
     if total_xp != rules.get("max_xp"):
         errors.append("paper xp sums to %d, rules.max_xp is %r"
                       % (total_xp, rules.get("max_xp")))
+
+    cred_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "GRAK_CREDENTIALS.md")
+    try:
+        with open(cred_path, "r", encoding="utf-8") as fh:
+            credentials = fh.read()
+        record_ids = set(re.findall(r"^\|\s*((?:CS|AR)\d{1,2})\s*\|", credentials, re.M))
+        if len(record_ids) != 20:
+            errors.append("expected 20 credentials papers, found %d" % len(record_ids))
+        bank_ids = set()
+        for paper in papers:
+            parts = str(paper.get("id", "")).split("-")
+            if len(parts) == 2 and parts[0] in ("cs", "ar") and parts[1].isdigit():
+                bank_ids.add(parts[0].upper() + str(int(parts[1])))
+        for missing in sorted(record_ids - bank_ids):
+            errors.append("credentials paper %s has no bank paper" % missing)
+        for orphan in sorted(bank_ids - record_ids):
+            errors.append("bank paper %s has no credentials line" % orphan)
+    except OSError:
+        errors.append("GRAK_CREDENTIALS.md missing")
+
     return errors
 
 
@@ -255,7 +277,10 @@ def cmd_check(bank):
         return 1
     questions = sum(len(p["questions"]) for p in bank["papers"])
     xp = sum(p["xp"] for p in bank["papers"])
-    print("check ok: %d papers, %d questions, %d XP max" % (len(bank["papers"]), questions, xp))
+    print(
+        "check ok: %d papers, %d questions, %d XP max; 20/20 match GRAK_CREDENTIALS.md"
+        % (len(bank["papers"]), questions, xp)
+    )
     return 0
 
 
