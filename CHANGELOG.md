@@ -14,6 +14,10 @@
 - CI: rock-memory and paper-parity checks added to both jobs; the smoke install asserts the stamp and the current record.
 - `VERSION`: 3.5.0.0 -> 3.6.0.0.
 
+### Fixed
+
+- `rock_memory.py`: source digests normalize CRLF to LF and the manifest is written LF, so `--check` verifies on any checkout (CI caught the Windows-committed CRLF drift).
+
 ## [3.5.0.0] - 2026-09-18 — The build team release
 
 ### Added

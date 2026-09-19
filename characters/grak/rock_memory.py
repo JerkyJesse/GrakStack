@@ -6,6 +6,8 @@
           (~/.cavestack/ROCK_RECEIPT, CAVESTACK_HOME overrides), report the
           record current or stale (--no-receipt skips the record check)
 
+Digests normalize CRLF to LF, so the manifest verifies on any checkout.
+
 Stdlib only. No network. No deps.
 """
 
@@ -43,7 +45,8 @@ SOURCES = (
 
 
 def digest(path):
-    return hashlib.sha256(path.read_bytes()).hexdigest()
+    data = path.read_bytes().replace(b"\r\n", b"\n")
+    return hashlib.sha256(data).hexdigest()
 
 
 def manifest_digest():
@@ -62,7 +65,8 @@ def write_manifest():
             print("rock-memory: missing source: %s" % rel, file=sys.stderr)
             return 1
         lines.append("%s  %s" % (digest(path), rel))
-    MANIFEST.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    with open(MANIFEST, "w", encoding="utf-8", newline="\n") as handle:
+        handle.write("\n".join(lines) + "\n")
     print(
         "rock-memory: wrote %s (%d files, v%s)"
         % (MANIFEST.name, len(lines), read_version())
