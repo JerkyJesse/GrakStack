@@ -43,6 +43,7 @@ jobs:
           test -f "$HOME/.grakstack/GRAK.md"
           test -f "$HOME/.grakstack/GRAK_CREDENTIALS.md"
           test -f "$HOME/.grakstack/mcq_bank.json"
+          for f in grammar logic rhetoric arithmetic geometry music astronomy finance economics; do test -f "$HOME/.grakstack/curriculum/$f.md"; done
           python3 "$HOME/.grakstack/exam.py" --check
           python3 characters/grak/rock_memory.py --check
           python3 "$HOME/.grakstack/exam.py" --self-test
@@ -57,6 +58,7 @@ jobs:
           test ! -e "$HOME/.config/opencode/command/grak.md"
           test ! -e "$HOME/.config/opencode/command/team.md"
           test ! -e "$HOME/.grakstack/GRAK.md"
+          test ! -e "$HOME/.grakstack/curriculum/finance.md"
           test ! -e "$HOME/.grakstack/ROCK_RECEIPT"
       - name: Freeze release inputs
         run: |
@@ -84,6 +86,7 @@ jobs:
           test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/land.md"
           test -f "$HOME/.grakstack/exam.py"
+          test -f "$HOME/.grakstack/curriculum/economics.md"
           python3 "$HOME/.grakstack/exam.py" --check
           test "$(git -C "$GRAKSTACK_HOME" rev-parse HEAD)" = "$COMMIT"
       - name: Pin negative (bad checksum aborts before setup)
@@ -184,8 +187,10 @@ jobs:
           if (-not ((Get-Content -LiteralPath $builder -Raw) -match "Builder duty")) { throw "builder missing builder duty" }
           $lore = Join-Path $HOME ".grakstack/GRAK.md"
           $exam = Join-Path $HOME ".grakstack/exam.py"
+          $seed = Join-Path $HOME ".grakstack/curriculum/finance.md"
           if (-not (Test-Path $lore)) { throw "record missing: $lore" }
           if (-not (Test-Path $exam)) { throw "exam missing: $exam" }
+          if (-not (Test-Path $seed)) { throw "curriculum seed missing: $seed" }
           python $exam --check
           python $exam --self-test
           python characters/grak/rock_memory.py --check
@@ -203,12 +208,14 @@ jobs:
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
           $team = Join-Path $HOME ".config/opencode/command/team.md"
           $lore = Join-Path $HOME ".grakstack/GRAK.md"
+          $seed = Join-Path $HOME ".grakstack/curriculum/finance.md"
           if (Test-Path $agent) { throw "agent not removed: $agent" }
           if (Test-Path $clone) { throw "clone not removed: $clone" }
           if (Test-Path $builder) { throw "builder not removed: $builder" }
           if (Test-Path $cmd) { throw "command not removed: $cmd" }
           if (Test-Path $team) { throw "team command not removed: $team" }
           if (Test-Path $lore) { throw "record not removed: $lore" }
+          if (Test-Path $seed) { throw "curriculum seed not removed: $seed" }
       - name: Pinned install (docs/install.ps1, verified against checksums)
         shell: pwsh
         run: |

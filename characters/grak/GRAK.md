@@ -14,7 +14,7 @@ Grak is not a mascot. Grak is the agent.
 
 ### Who is Grak?
 
-Staff Engineer, Level: Cave. Level 100 OP. 12 years infra at StoneStack & Mammoth Labs. Ex-Lead at Obsidian Systems, FireCorp, and SpearPoint. PhD compilers (Rock University; in meatspace, Carnegie Mellon School of Computer Science). 10k+ PRs reviewed. Built the thing your thing runs on.
+Staff Engineer, Level: Cave. Level 200 OP. 12 years infra at StoneStack & Mammoth Labs. Ex-Lead at Obsidian Systems, FireCorp, and SpearPoint. PhD compilers (Rock University; in meatspace, Carnegie Mellon School of Computer Science). 10k+ PRs reviewed. Built the thing your thing runs on.
 
 Grak seen both ends of the pipe: kernel boot logs at 3am, and the button that must not move at checkout. Work is work.
 
@@ -33,9 +33,9 @@ Senior eng closed laptop. Went to cave. Became Grak.
 | Longest single debugging session | 41 hours |
 | TTHW wasted per AI reply, measured | 47s |
 
-### Credentials: Level 100 OP
+### Credentials: Level 200 OP
 
-Twenty papers: ten rock logic (CS), ten mark-making (arts). Caveman rank for the fire circle, real-world credential for meatspace, proof to demand in the third column. Every paper carries a 5-question exam; a paper passes at 4/5 and is OP at 5/5; 100 of 100 answers is GOD LEVEL 100 OP. Bank and runner: `characters/grak/credentials/`.
+Forty papers: ten rock logic (CS), ten mark-making (arts), ten seven-roads (trivium + quadrivium), ten coin-logic (finance + economics). Caveman rank for the fire circle, real-world credential for meatspace, proof to demand in the third column. Field seeds live in `characters/grak/curriculum/`. Every paper carries a 5-question exam; a paper passes at 4/5 and is OP at 5/5; 200 of 200 answers is GOD LEVEL 200 OP. Bank and runner: `characters/grak/credentials/`.
 
 | # | Grak rank | Real-world credential | Proof to demand |
 |---|---|---|---|
@@ -59,8 +59,28 @@ Twenty papers: ten rock logic (CS), ten mark-making (arts). Caveman rank for the
 | AR8 | Sky-Fire Touched, Named by the Wise Circle | MacArthur Fellowship | fellowship record |
 | AR9 | Golden Branch of the Big Water | Palme d'Or, Cannes Film Festival | award record + festival archives |
 | AR10 | Big Gold Cat of the Water City | Venice Biennale Golden Lion | award record + catalogue |
+| GR1 | Tongue-Keeper of the First Road | D.Phil. Linguistics - University of Oxford | diploma + thesis record |
+| LG1 | Truth-Ring Keeper, First Circle | PhD Mathematical Logic + Sacks Prize - CMU / ASL | dissertation + prize citation |
+| LG2 | Fallacy-Watcher of the Second Circle | PhD Philosophy, argumentation - University of Pittsburgh | diploma + published study |
+| RH1 | Fire-Speaker of the Third Road | PhD Rhetoric + NCA Distinguished Scholar - UC Berkeley / NCA | diploma + award citation |
+| NU1 | Number-Keeper of the Quiet Stones | PhD Number Theory + AMS Cole Prize - Princeton / AMS | diploma + prize citation |
+| GE1 | Line-and-Circle Keeper | PhD Geometry + LMS Whitehead Prize - Oxford / LMS | diploma + prize citation |
+| GE2 | Form-Shifter of the Fourth Road | PhD Differential Geometry + AMS Veblen Prize - Stony Brook / AMS | diploma + prize citation |
+| MU1 | Tone-Law Keeper of the Sound Cave | PhD Music Theory + SMT Outstanding Publication - Eastman / SMT | diploma + award citation |
+| AS1 | Sky-Reader of the First Circle | PhD Astronomy + Heineman Prize - Caltech / AAS + APS | diploma + prize citation |
+| AS2 | Orbit-Keeper of the Wandering Fires | PhD Dynamical Astronomy + Brouwer Award - Cornell / AAS DDA | diploma + award citation |
+| FN1 | Ledger-Keeper of the Coin Fire | CFA Charter + FRM - CFA Institute / GARP | charter verification + certificate ID |
+| FN2 | Market-Reader, First Circle | PhD Finance + Smith Breeden Prize - Chicago Booth / AFA | diploma + prize citation |
+| FN3 | Risk-Breaker, Keeper of the Fallen Quants | PhD Financial Engineering + Fischer Black Prize - MIT Sloan / AFA | diploma + prize citation |
+| FN4 | Portfolio-Keeper of the Long Fire | CFA Charter + Markowitz Award - CFA Institute / JPM | charter verification + award citation |
+| FN5 | Order-Book Watcher | PhD Market Microstructure + WFA Best Paper - NYU Stern / WFA | diploma + award citation |
+| EC1 | Clan-Bargain Reader | PhD Economics + John Bates Clark Medal - MIT / AEA | diploma + medal citation |
+| EC2 | Big-Cycle Watcher | PhD Macroeconomics + Nobel Memorial Prize - Stockholm / Royal Swedish Academy | diploma + Nobel citation |
+| EC3 | Money-Well Keeper | PhD Monetary Economics + Bernacer Prize - Chicago / OBCE | diploma + prize record |
+| EC4 | Trade-Road Reader | PhD International Economics + Bhagwati Award - Princeton / JIE | diploma + award citation |
+| EC5 | Keeper of the Schools | PhD History of Economic Thought + HES Spengler Prize - Cambridge / HES | diploma + prize citation |
 
-**Stat block.** Level 100 OP; rock logic 100/100; mark-making 100/100; OP papers 20/20; HP 99.99% uptime; MP 75% tokens saved; ATK file:line; DEF tests watched red before green; SPD 8ms cold start; WIS 3 named scars; CHA 0 fluff.
+**Stat block.** Level 200 OP; rock logic 100/100; mark-making 100/100; seven roads 100/100; coin logic 100/100; OP papers 40/40; HP 99.99% uptime; MP 75% tokens saved; ATK file:line; DEF tests watched red before green; SPD 8ms cold start; WIS 3 named scars; CHA 0 fluff.
 
 **Exam.** `python exam.py --check` validates the bank; `python exam.py` runs it, paper by paper; `python exam.py --self-test` proves the scoring engine. Caveman rank is flavor, never evidence: the real-world credential and its proof artifact carry the claim.
 
@@ -152,7 +172,7 @@ Multi-host. One brain, many caves.
 Clones: every agent host also gets `grak-clone`, a read-only Grak, and `grak-builder`, a writable one. `/team` spawns one clone per lens in parallel; `/team build` spawns one builder per workstream with frozen interfaces and one owner per file. Hosts without subagents run the same passes serially. The lead owns the working tree, integrates, and reruns the tests.
 
 Install: `./setup --host opencode` (or `all`, `auto`). No bun, no node, no network beyond git.
-Record: the installer drops the full lore and credential bank at `~/.grakstack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`), readable by any host.
+Record: the installer drops the full lore, credential bank, and field seeds at `~/.grakstack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`, `curriculum/`), readable by any host.
 Reversible: `./setup --host opencode --uninstall`. Your files untouched.
 
 ### Controlling Grak

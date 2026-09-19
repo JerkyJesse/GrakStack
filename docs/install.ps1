@@ -18,7 +18,7 @@ function Die([string]$Message) {
 $repo = if ($env:GRAKSTACK_REPO) { $env:GRAKSTACK_REPO } else { "https://github.com/JerkyJesse/grakstack.git" }
 $dest = if ($env:GRAKSTACK_HOME) { $env:GRAKSTACK_HOME } else { Join-Path $HOME "grakstack" }
 $hostArg = if ($env:GRAKSTACK_HOST) { $env:GRAKSTACK_HOST } else { "claude" }
-$version = if ($env:GRAKSTACK_VERSION) { $env:GRAKSTACK_VERSION } else { "v3.6.0.0" }
+$version = if ($env:GRAKSTACK_VERSION) { $env:GRAKSTACK_VERSION } else { "v3.7.0.0" }
 $releaseBase = if ($env:GRAKSTACK_RELEASE_BASE) { $env:GRAKSTACK_RELEASE_BASE } else { "https://github.com/JerkyJesse/grakstack/releases/download" }
 $checksums = if ($env:GRAKSTACK_CHECKSUMS) { $env:GRAKSTACK_CHECKSUMS } else { "$releaseBase/$version/SHA256SUMS" }
 

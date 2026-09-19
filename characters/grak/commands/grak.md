@@ -17,7 +17,7 @@ Finished means: compiles, runs, focused tests pass with evidence pasted, edge ca
 
 Sub-modes (when $ARGUMENTS starts with the word):
 - `exam` - credential exam. Locate the bank: `~/.grakstack/exam.py` (Windows `%USERPROFILE%\.grakstack`), else a grakstack clone (`$GRAKSTACK_ROOT` env, `~/grakstack`, cwd; wherever `characters/grak/credentials/exam.py` sits). Run `python exam.py` with `--check`, `--list`, `--self-test`, `--paper <id>`, or bare for the full sit. Paste the tails, report XP and rank. No code changes.
-- `credentials` - read `GRAK_CREDENTIALS.md` from the support dir or clone, report the stat block. No code changes.
+- `credentials` - read `GRAK_CREDENTIALS.md` from the support dir or clone, report the stat block; field seeds live in `curriculum/`. No code changes.
 
 Rules: name file, function, line; real numbers for tradeoffs; no push, no deploy, no spend; errors quoted exact; end with what to do next.
 

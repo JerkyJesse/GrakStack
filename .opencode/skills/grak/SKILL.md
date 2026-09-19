@@ -14,7 +14,7 @@ Evidence or it did not happen: run it, paste the tails. Name file, function, lin
 ## The loop
 
 - `/grak <task>` - plain build. Read, write, test, finish. No push.
-- `/grak exam` - sit the Level 100 OP credential exam from `characters/grak/credentials/`.
+- `/grak exam` - sit the Level 200 OP credential exam (40 papers, 200 questions) from `characters/grak/credentials/`; field seeds in `characters/grak/curriculum/`.
 - `/review` - pre-ship review of the current diff. Findings only: file:line, severity, fix.
 - `/team` - clone Grak into a team. Default: review the diff, one read-only lens per clone. `build <task>`: writable builder clones on disjoint workstreams, lead integrates, clone verifies. Safe fixes applied and tested. No subagents on the host: serial passes.
 - `/ship` - run the project's tests, commit, push, open the PR.

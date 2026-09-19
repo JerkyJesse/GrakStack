@@ -23,6 +23,8 @@ DIGEST_SRC="$ROOT/characters/grak/digest.md"
 COMMANDS="grak review team ship land"
 SUPPORT_DIR="$HOME/.grakstack"
 SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
+CURRICULUM_SRC="$ROOT/characters/grak/curriculum"
+CURRICULUM_FIELDS="grammar logic rhetoric arithmetic geometry music astronomy finance economics"
 SUPPORT_MARKER=".grakstack-owned"
 
 ALL_HOSTS="claude cursor codex factory opencode kiro slate openclaw hermes gbrain"
@@ -458,9 +460,14 @@ install_support() {
     cp "$src" "$SUPPORT_DIR/$name"
     record_installed "$SUPPORT_DIR/$name"
   done
+  mkdir -p "$SUPPORT_DIR/curriculum"
+  for name in $CURRICULUM_FIELDS; do
+    cp "$CURRICULUM_SRC/$name.md" "$SUPPORT_DIR/curriculum/$name.md"
+    record_installed "$SUPPORT_DIR/curriculum/$name.md"
+  done
   printf '<!-- grakstack-owned -->\n' > "$marker"
   SUPPORT_COUNT=$((SUPPORT_COUNT + 1))
-  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
+  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, curriculum/ seeds)"
 }
 
 uninstall_support() {
@@ -478,6 +485,13 @@ uninstall_support() {
       REMOVED_COUNT=$((REMOVED_COUNT + 1))
     fi
   done
+  for name in $CURRICULUM_FIELDS; do
+    if [ -e "$SUPPORT_DIR/curriculum/$name.md" ]; then
+      rm -f "$SUPPORT_DIR/curriculum/$name.md"
+      REMOVED_COUNT=$((REMOVED_COUNT + 1))
+    fi
+  done
+  rmdir "$SUPPORT_DIR/curriculum" 2>/dev/null || true
   rm -f "$marker"
   rm -f "$SUPPORT_DIR/ROCK_RECEIPT"
   rmdir "$SUPPORT_DIR" 2>/dev/null || true
@@ -531,6 +545,10 @@ uninstall_host() {
 check() {
   local fail=0 name f
   for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install" "$ROOT/docs/install.ps1"; do
+    [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
+  done
+  for name in $CURRICULUM_FIELDS; do
+    f="$CURRICULUM_SRC/$name.md"
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1

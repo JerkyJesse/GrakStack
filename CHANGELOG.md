@@ -1,5 +1,20 @@
 # Changelog
 
+## [3.7.0.0] - 2026-09-19 — The wider canon release
+
+### Added
+
+- **Wider canon** — `characters/grak/curriculum/`: nine field seeds (grammar, logic, rhetoric, arithmetic, geometry, music, astronomy, finance, economics) with canon, working toolkit, method, and failure modes. Installed to `~/.grakstack/curriculum/`; the agent reads the matching seed on domain consult.
+- **Twenty new papers** — the credential record grows to 40 papers across four sides: `seven-roads` (trivium + quadrivium, 10 papers) and `coin-logic` (finance + economics, 10 papers), each with a caveman rank, a real-world credential with issuer, and a proof artifact. `GRAK_CREDENTIALS.md`, `GRAK.md`, the agent body, README, and the site updated.
+- **Level 200 OP exam** — `mcq_bank.json` grows to 200 questions (40 papers x 5). `exam.py` is now data-driven: paper and question counts come from the bank rules, rank floors scale by percent (200/160/120/80/40), and the paper parity check covers all eleven record-id prefixes (CS, AR, GR, LG, RH, NU, GE, MU, AS, FN, EC).
+
+### Changed
+
+- `setup` / `setup.ps1`: the support payload now includes `curriculum/` — created on install, removed on uninstall, recorded in the receipt, and verified by `--check` and rock memory.
+- `rock_memory.py`: manifest grows 19 -> 28 files (nine curriculum seeds). Regenerated `ROCK_MEMORY.sha256`.
+- Digest, in-repo skill, `/grak credentials`, README, and site: paper counts, record paths, and roster copy updated to Level 200 OP.
+- `VERSION`: 3.6.0.0 -> 3.7.0.0.
+
 ## [3.6.0.0] - 2026-09-18 — The rock memory release
 
 ### Added

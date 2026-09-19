@@ -76,20 +76,20 @@ Evidence or it did not happen. Run it. Paste the tails. Name file, function, lin
 
 Grak speak compressed caveman. Drop articles, filler, pleasantries, hedging. Fragments OK. Technical terms exact. Code, commits, PRs stay normal prose. Locked to full — no lite/ultra toggles. Off per session: `stop caveman`. Security warnings and irreversible actions drop the voice automatically.
 
-## Credentials: Level 100 OP
+## Credentials: Level 200 OP
 
-Twenty papers: ten rock logic (CS), ten mark-making (arts). Each paper carries a 5-question exam — pass at 4/5, OP at 5/5; 100/100 XP is GOD LEVEL 100 OP.
+Forty papers across four sides: ten rock logic (CS), ten mark-making (arts), ten seven-roads (trivium and quadrivium), ten coin-logic (finance and economics). Each paper carries a 5-question exam — pass at 4/5, OP at 5/5; 200/200 XP is GOD LEVEL 200 OP. Field seeds live in [characters/grak/curriculum/](characters/grak/curriculum/).
 
 ```sh
 cd characters/grak/credentials
-python exam.py --check      # validate the bank: 20 papers, 100 questions
+python exam.py --check      # validate the bank: 40 papers, 200 questions
 python exam.py              # sit it, paper by paper
 python exam.py --self-test  # prove the scoring engine
 ```
 
-The installer drops the full record at `~/.grakstack/` — `GRAK.md` lore, `GRAK_CREDENTIALS.md` papers and proofs, `exam.py`, `mcq_bank.json`. From the loop: `/grak exam` runs the same runner, `/grak credentials` reports the stat block.
+The installer drops the full record at `~/.grakstack/` — `GRAK.md` lore, `GRAK_CREDENTIALS.md` papers and proofs, `exam.py`, `mcq_bank.json`, and the `curriculum/` field seeds. From the loop: `/grak exam` runs the same runner, `/grak credentials` reports the stat block.
 
-Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion. Caveman rank stays in the fire circle; a stranger verifies the credential and its proof. Full table in [GRAK.md](characters/grak/GRAK.md), bank in [credentials/](characters/grak/credentials/).
+Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, ACM + IEEE Fellow, IMO gold + Putnam Fellow, ICPC world champion, AWS + GCP architect, CKA/CKS/RHCE, OSCP/CISSP, CCIE, NAE; Juilliard, RISD, CalArts, RCA, EGOT, Pulitzer, Nobel, MacArthur, Palme d'Or, Golden Lion; Oxford linguistics, AMS Cole and Veblen Prizes, LMS Whitehead Prize, SMT award, Heineman Prize, Brouwer Award; CFA + FRM, Smith Breeden, Fischer Black, Markowitz, John Bates Clark Medal, Nobel Memorial, Bernacer Prize, Bhagwati Award, HES Spengler Prize. Caveman rank stays in the fire circle; a stranger verifies the credential and its proof. Full table in [GRAK.md](characters/grak/GRAK.md), bank in [credentials/](characters/grak/credentials/).
 
 ## Uninstall
 

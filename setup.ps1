@@ -31,6 +31,8 @@ $DigestSrc = Join-Path $Root "characters\grak\digest.md"
 $CloneMissionSrc = Join-Path $Root "characters\grak\clone-mission.md"
 $BuilderMissionSrc = Join-Path $Root "characters\grak\builder-mission.md"
 $Commands = @("grak", "review", "team", "ship", "land")
+$CurriculumSrc = Join-Path $Root "characters\grak\curriculum"
+$CurriculumFields = @("grammar", "logic", "rhetoric", "arithmetic", "geometry", "music", "astronomy", "finance", "economics")
 $SupportDir = Join-Path $HOME ".grakstack"
 $SupportMarker = ".grakstack-owned"
 $SupportFiles = @(
@@ -39,6 +41,9 @@ $SupportFiles = @(
   @{ Src = Join-Path $Root "characters\grak\credentials\exam.py";             Dst = "exam.py" },
   @{ Src = Join-Path $Root "characters\grak\credentials\mcq_bank.json";       Dst = "mcq_bank.json" }
 )
+foreach ($field in $CurriculumFields) {
+  $SupportFiles += @{ Src = (Join-Path $CurriculumSrc "$field.md"); Dst = "curriculum\$field.md" }
+}
 
 $VersionPath = Join-Path $Root "VERSION"
 $script:Version = (Get-Content -LiteralPath $VersionPath -Raw).Trim()
@@ -359,12 +364,16 @@ function Install-Support {
   New-Item -ItemType Directory -Force -Path $SupportDir | Out-Null
   foreach ($f in $SupportFiles) {
     $t = Join-Path $SupportDir $f.Dst
+    $parent = Split-Path -Parent $t
+    if ($parent -and -not (Test-Path -LiteralPath $parent)) {
+      New-Item -ItemType Directory -Force -Path $parent | Out-Null
+    }
     Copy-Item -LiteralPath $f.Src -Destination $t -Force
     Add-Installed $t
   }
   Write-Utf8NoBom $marker "<!-- grakstack-owned -->`n"
   $script:Counters.Support++
-  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
+  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, curriculum/ seeds)"
 }
 
 function Uninstall-Support {
@@ -383,6 +392,10 @@ function Uninstall-Support {
   Remove-Item -LiteralPath $marker -Force
   $receipt = Join-Path $SupportDir "ROCK_RECEIPT"
   if (Test-Path -LiteralPath $receipt) { Remove-Item -LiteralPath $receipt -Force }
+  $currDir = Join-Path $SupportDir "curriculum"
+  if ((Test-Path -LiteralPath $currDir) -and -not (Get-ChildItem -LiteralPath $currDir -Force -ErrorAction SilentlyContinue)) {
+    Remove-Item -LiteralPath $currDir -Force
+  }
   if (-not (Get-ChildItem -LiteralPath $SupportDir -Force -ErrorAction SilentlyContinue)) {
     Remove-Item -LiteralPath $SupportDir -Force
   }

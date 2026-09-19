@@ -21,6 +21,8 @@ Grak is the agent. Caveman voice, locked to full: all technical substance stays,
 - `characters/grak/builder-mission.md` — the builder duty. Setup appends it to the agent body to make `grak-builder`.
 - `characters/grak/commands/*.md` — the five commands. Same composition.
 - `characters/grak/digest.md` — the rules-only digest for openclaw, hermes, gbrain. Both installers copy it.
+- `characters/grak/credentials/` — the Level 200 OP record: `GRAK_CREDENTIALS.md` (40 papers), `mcq_bank.json` (200 questions), `exam.py` (runner/validator). Both installers drop it at `~/.grakstack/`.
+- `characters/grak/curriculum/` — nine field seeds (grammar, logic, rhetoric, arithmetic, geometry, music, astronomy, finance, economics). Installed to `~/.grakstack/curriculum/`; the agent reads the matching seed on domain consult.
 - `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256` — the shipped-source hash manifest; `--write` / `--check`, and every installed copy carries the same stamp.
 - `setup` / `setup.ps1` — installer: `--host`, `--uninstall`, `--check`.
 - `docs/` — grakstack.jerkyjesse.com; `docs/install` and `docs/install.ps1` are the pinned, checksum-verified public entry points.

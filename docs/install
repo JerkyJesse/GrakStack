@@ -14,7 +14,7 @@ set -e
 
 REPO_URL="${GRAKSTACK_REPO:-https://github.com/JerkyJesse/grakstack.git}"
 DEST="${GRAKSTACK_HOME:-$HOME/grakstack}"
-VERSION="${GRAKSTACK_VERSION:-v3.6.0.0}"
+VERSION="${GRAKSTACK_VERSION:-v3.7.0.0}"
 RELEASE_BASE="${GRAKSTACK_RELEASE_BASE:-https://github.com/JerkyJesse/grakstack/releases/download}"
 CHECKSUMS="${GRAKSTACK_CHECKSUMS:-$RELEASE_BASE/$VERSION/SHA256SUMS}"
 

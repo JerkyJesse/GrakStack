@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""GRAK LEVEL 100 CREDENTIAL EXAM.
+"""GRAK LEVEL 200 OP CREDENTIAL EXAM.
 
-Runner and validator for mcq_bank.json (20 papers, 5 questions each,
-100 questions, 100 XP max). Stdlib only. No network. No deps.
+Runner and validator for mcq_bank.json (40 papers, 5 questions each,
+200 questions, 200 XP max). Four sides: rock logic (CS), mark-making
+(arts), seven roads (trivium + quadrivium), coin logic (finance +
+economics). Stdlib only. No network. No deps.
 
 Usage:
     python exam.py --check       validate the bank structure, answer keys, and
@@ -13,7 +15,7 @@ Usage:
     python exam.py --paper cs-01 take one paper
 
 Rules: 1 correct answer = 1 XP. A paper passes at 4 of 5; a
-5/5 paper is OP. 100/100 XP = GOD LEVEL 100 OP.
+5/5 paper is OP. 200/200 XP = GOD LEVEL 200 OP.
 """
 
 import argparse
@@ -24,21 +26,33 @@ import sys
 
 BANK_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "mcq_bank.json")
 LETTERS = "ABCD"
-SIDES = ("rock-logic", "mark-making")
+SIDES = ("rock-logic", "mark-making", "seven-roads", "coin-logic")
 
+# Bank paper-id prefix -> GRAK_CREDENTIALS.md record-id prefix. The paper
+# parity check runs both directions over this map.
+RECORD_PREFIXES = {
+    "cs": "CS",  # rock logic
+    "ar": "AR",  # mark-making
+    "gr": "GR", "lg": "LG", "rh": "RH", "nu": "NU", "ge": "GE", "mu": "MU", "as": "AS",  # seven roads
+    "fn": "FN", "ec": "EC",  # coin logic
+}
+
+# Rank floors are fractions of max XP, so the ladder scales with the record.
 RANKS = (
-    (100, "GOD LEVEL 100 OP - OBSIDIAN BRAIN"),
-    (80, "Cave Elder"),
-    (60, "Rock Sage"),
-    (40, "Stone Smith"),
-    (20, "Pebble Apprentice"),
-    (0, "Larva"),
+    (0.80, "Cave Elder"),
+    (0.60, "Rock Sage"),
+    (0.40, "Stone Smith"),
+    (0.20, "Pebble Apprentice"),
+    (0.00, "Larva"),
 )
 
 
-def rank_for(xp):
+def rank_for(xp, max_xp):
+    if max_xp and xp >= max_xp:
+        return "GOD LEVEL %d OP - OBSIDIAN BRAIN" % max_xp
+    ratio = (xp / max_xp) if max_xp else 0.0
     for floor, name in RANKS:
-        if xp >= floor:
+        if ratio >= floor:
             return name
     return RANKS[-1][1]
 
@@ -48,6 +62,14 @@ def load_bank(path=BANK_PATH):
         return json.load(fh)
 
 
+def expected_paper_count(bank):
+    rules = bank.get("rules", {})
+    count = rules.get("papers")
+    if isinstance(count, int) and count > 0:
+        return count
+    return len(bank.get("papers", []))
+
+
 def validate(bank):
     """Return a list of problems. Empty list means the bank is valid."""
     errors = []
@@ -55,18 +77,20 @@ def validate(bank):
         errors.append("schema must be 1")
 
     rules = bank.get("rules", {})
-    if rules.get("answers_per_paper") != 5:
-        errors.append("rules.answers_per_paper must be 5")
-    if rules.get("pass_mark_per_paper") != 4:
-        errors.append("rules.pass_mark_per_paper must be 4")
-    if rules.get("xp_per_answer") != 1:
-        errors.append("rules.xp_per_answer must be 1")
-    if rules.get("max_xp") != 100:
-        errors.append("rules.max_xp must be 100")
+    for key, want in (
+        ("answers_per_paper", 5),
+        ("pass_mark_per_paper", 4),
+        ("xp_per_answer", 1),
+    ):
+        if rules.get(key) != want:
+            errors.append("rules.%s must be %d" % (key, want))
+    expected_papers = expected_paper_count(bank)
+    if rules.get("papers") != expected_papers:
+        errors.append("rules.papers must be a positive int")
 
     papers = bank.get("papers", [])
-    if len(papers) != 20:
-        errors.append("expected 20 papers, found %d" % len(papers))
+    if len(papers) != expected_papers:
+        errors.append("expected %d papers, found %d" % (expected_papers, len(papers)))
 
     seen_papers = set()
     seen_questions = set()
@@ -118,8 +142,9 @@ def validate(bank):
             if not str(q.get("why", "")).strip():
                 errors.append("%s: missing why" % qid)
 
-    if total_questions != 100:
-        errors.append("expected 100 questions, found %d" % total_questions)
+    expected_questions = len(papers) * rules.get("answers_per_paper", 5)
+    if total_questions != expected_questions:
+        errors.append("expected %d questions, found %d" % (expected_questions, total_questions))
     if total_xp != rules.get("max_xp"):
         errors.append("paper xp sums to %d, rules.max_xp is %r"
                       % (total_xp, rules.get("max_xp")))
@@ -128,14 +153,17 @@ def validate(bank):
     try:
         with open(cred_path, "r", encoding="utf-8") as fh:
             credentials = fh.read()
-        record_ids = set(re.findall(r"^\|\s*((?:CS|AR)\d{1,2})\s*\|", credentials, re.M))
-        if len(record_ids) != 20:
-            errors.append("expected 20 credentials papers, found %d" % len(record_ids))
+        prefix_re = "|".join(sorted(RECORD_PREFIXES.values()))
+        record_ids = set(re.findall(r"^\|\s*((?:%s)\d{1,2})\s*\|" % prefix_re, credentials, re.M))
+        if len(record_ids) != expected_papers:
+            errors.append("expected %d credentials papers, found %d"
+                          % (expected_papers, len(record_ids)))
         bank_ids = set()
         for paper in papers:
             parts = str(paper.get("id", "")).split("-")
-            if len(parts) == 2 and parts[0] in ("cs", "ar") and parts[1].isdigit():
-                bank_ids.add(parts[0].upper() + str(int(parts[1])))
+            prefix = parts[0] if parts else ""
+            if len(parts) == 2 and prefix in RECORD_PREFIXES and parts[1].isdigit():
+                bank_ids.add(RECORD_PREFIXES[prefix] + str(int(parts[1])))
         for missing in sorted(record_ids - bank_ids):
             errors.append("credentials paper %s has no bank paper" % missing)
         for orphan in sorted(bank_ids - record_ids):
@@ -235,6 +263,8 @@ def run_exam(bank, only=None, answers=None, quiet=False):
 def self_test(bank):
     rules = bank["rules"]
     pass_mark = rules["pass_mark_per_paper"]
+    max_xp = rules["max_xp"]
+    total_papers = expected_paper_count(bank)
 
     key = {}
     for paper in bank["papers"]:
@@ -242,11 +272,11 @@ def self_test(bank):
             key[question["id"]] = question["answer"]
 
     xp, passed, total, perfect = run_exam(bank, answers=key, quiet=True)
-    if (xp, passed, total, perfect) != (100, 20, 20, 20):
+    if (xp, passed, total, perfect) != (max_xp, total_papers, total_papers, total_papers):
         print("self-test FAILED: got %d XP, %d/%d papers, %d perfect"
               % (xp, passed, total, perfect))
         return 1
-    if "OP" not in rank_for(xp):
+    if "OP" not in rank_for(xp, max_xp):
         print("self-test FAILED: top rank lost the OP mark")
         return 1
 
@@ -263,7 +293,8 @@ def self_test(bank):
         print("self-test FAILED: 3/5 passed %s" % paper["id"])
         return 1
 
-    print("self-test ok: 100/100 XP, 20/20 papers, 20 OP papers, rank %s" % rank_for(xp))
+    print("self-test ok: %d/%d XP, %d/%d papers, %d OP papers, rank %s"
+          % (xp, max_xp, passed, total, perfect, rank_for(xp, max_xp)))
     print("boundary ok: 4/5 passes, 3/5 held in progress")
     return 0
 
@@ -275,17 +306,18 @@ def cmd_check(bank):
         for err in errors:
             print("  - %s" % err)
         return 1
-    questions = sum(len(p["questions"]) for p in bank["papers"])
-    xp = sum(p["xp"] for p in bank["papers"])
+    papers = bank["papers"]
+    questions = sum(len(p["questions"]) for p in papers)
+    xp = sum(p["xp"] for p in papers)
     print(
-        "check ok: %d papers, %d questions, %d XP max; 20/20 match GRAK_CREDENTIALS.md"
-        % (len(bank["papers"]), questions, xp)
+        "check ok: %d papers, %d questions, %d XP max; %d/%d match GRAK_CREDENTIALS.md"
+        % (len(papers), questions, xp, len(papers), expected_paper_count(bank))
     )
     return 0
 
 
 def cmd_list(bank):
-    print("GRAK LEVEL 100 OP CREDENTIAL EXAM - 20 papers")
+    print("%s - %d papers" % (bank.get("name", "GRAK CREDENTIAL EXAM"), len(bank["papers"])))
     for paper in bank["papers"]:
         print("  %-6s %-12s %s" % (paper["id"], paper["side"], paper["caveman"]))
         print("         real: %s" % paper["real"])
@@ -293,7 +325,7 @@ def cmd_list(bank):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Grak Level 100 OP credential exam.")
+    parser = argparse.ArgumentParser(description="Grak Level 200 OP credential exam.")
     parser.add_argument("--check", action="store_true", help="validate the question bank")
     parser.add_argument("--self-test", action="store_true", help="run the scoring engine over the answer key")
     parser.add_argument("--list", action="store_true", help="list the papers")
@@ -320,8 +352,11 @@ def main():
         print("No such paper: %s (try --list)" % args.paper)
         return 1
 
-    print("GRAK LEVEL 100 OP CREDENTIAL EXAM")
-    print("20 papers, 5 questions each. 4/5 passes a paper; 5/5 is OP. 100/100 XP is GOD LEVEL 100 OP.")
+    rules = bank["rules"]
+    max_xp = rules["max_xp"]
+    print("GRAK LEVEL %d OP CREDENTIAL EXAM" % max_xp)
+    print("%d papers, 5 questions each. 4/5 passes a paper; 5/5 is OP. %d/%d XP is GOD LEVEL %d OP."
+          % (len(bank["papers"]), max_xp, max_xp, max_xp))
     print("Answer with A, B, C, or D. q quits.")
     try:
         xp, passed, total, perfect = run_exam(bank, only=args.paper)
@@ -332,8 +367,8 @@ def main():
 
     print("")
     print("=" * 68)
-    print("XP: %d of 100  |  papers passed: %d of %d  |  OP papers: %d  |  rank: %s"
-          % (xp, passed, total, perfect, rank_for(xp)))
+    print("XP: %d of %d  |  papers passed: %d of %d  |  OP papers: %d  |  rank: %s"
+          % (xp, max_xp, passed, total, perfect, rank_for(xp, max_xp)))
     return 0
 
 
