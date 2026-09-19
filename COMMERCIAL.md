@@ -15,9 +15,11 @@ To purchase a commercial license, contact: mechapip@mechapip.com
 
 ## Upstream portions
 
-cavestack is a fork of [gstack](https://github.com/garrytan/gstack) (MIT,
+cavestack began as a fork of [gstack](https://github.com/garrytan/gstack) (MIT,
 Copyright (c) 2026 Garry Tan) with [caveman](https://github.com/JuliusBrussee/caveman)
-(MIT, Copyright (c) 2025 Julius Brussee) integrated. Those portions remain
-MIT — see [LICENSE](LICENSE) for the preserved notices. The MIT grant on
-upstream code cannot be narrowed by the fork's additional terms; this
-dual-license applies only to the fork modifications authored by JerkyJesse.
+(MIT, Copyright (c) 2025 Julius Brussee) integrated. Portions derived from
+either project remain under their MIT licenses — see [LICENSE](LICENSE) for the
+preserved notices and the file-class scope. The MIT grant on upstream code
+cannot be narrowed by the fork's additional terms; this dual license applies
+only to the fork modifications authored by JerkyJesse. The upstream trees as
+originally bundled are preserved in the v2.3.0.0 tag.

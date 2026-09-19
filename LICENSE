@@ -1,13 +1,26 @@
+# Licensing
+
+cavestack is dual-licensed:
+
+1. **Fork modifications** — all files in this repository unless a file carries
+   its own upstream notice — Copyright (c) 2026 JerkyJesse. Licensed under the
+   GNU Affero General Public License v3.0 or later (see LICENSE-AGPL), or a
+   commercial license (see COMMERCIAL.md), at your option.
+2. **Upstream-derived portions** — code or text carried over from gstack
+   (Copyright (c) 2026 Garry Tan) or caveman (Copyright (c) 2025 Julius
+   Brussee) — remain under the MIT license reproduced below. The MIT grant on
+   upstream code cannot be narrowed by the fork's additional terms; the dual
+   license above applies only to the fork modifications authored by JerkyJesse.
+
+The upstream trees as originally bundled are preserved in the v2.3.0.0 tag and
+in the repository history.
+
+## MIT notice (upstream portions)
+
 MIT License
 
-cavestack is a personal fork of gstack (https://github.com/garrytan/gstack) with
-caveman (https://github.com/JuliusBrussee/caveman) integrated as an always-on
-terse-response layer. The original copyright notices from both upstream projects
-are preserved below.
-
-Copyright (c) 2026 JerkyJesse (cavestack fork modifications)
 Copyright (c) 2026 Garry Tan (gstack, upstream)
-Copyright (c) 2025 Julius Brussee (caveman, bundled under hooks/ and caveman*/)
+Copyright (c) 2025 Julius Brussee (caveman, upstream)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

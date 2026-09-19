@@ -23,10 +23,11 @@ Grak is the agent. Caveman voice, locked to full: all technical substance stays,
 - `characters/grak/digest.md` — the rules-only digest for openclaw, hermes, gbrain. Both installers copy it.
 - `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256` — the shipped-source hash manifest; `--write` / `--check`, and every installed copy carries the same stamp.
 - `setup` / `setup.ps1` — installer: `--host`, `--uninstall`, `--check`.
-- `docs/` — cavestack.jerkyjesse.com.
+- `docs/` — cavestack.jerkyjesse.com; `docs/install` and `docs/install.ps1` are the pinned, checksum-verified public entry points.
+- `tools/` — dev gates: `version_check.py` (one version story), `make_checksums.py` (release SHA256SUMS).
 
-MIT. Built by JerkyJesse.
+Built by JerkyJesse.
 
 ## License
 
-cavestack is dual-licensed: AGPL-3.0-or-later or commercial. The upstream gstack and caveman portions (both MIT) remain MIT. See LICENSE, LICENSE-AGPL, and COMMERCIAL.md.
+cavestack is dual-licensed: AGPL-3.0-or-later or commercial. Portions derived from the upstream gstack and caveman projects (both MIT) remain MIT. See LICENSE, LICENSE-AGPL, and COMMERCIAL.md.

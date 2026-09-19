@@ -4,19 +4,26 @@
 
 ### Added
 
-- **Rock memory** — `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256`: a sha256 manifest over every shipped source. `--write` regenerates it; `--check` verifies the repo and reports the installed record (`~/.cavestack/ROCK_RECEIPT`) current or stale. `setup --check` runs the deep check when python3 is present.
+- **Rock memory** — `characters/grak/rock_memory.py` + `ROCK_MEMORY.sha256`: a sha256 manifest over every shipped source. `--write` regenerates it; `--check` verifies the repo, the install receipt (`~/.cavestack/ROCK_RECEIPT`), and every landed file the receipt lists. `setup --check` runs the deep check and fails by name if python3 is missing.
 - **Provenance stamp** — every installed copy (agent, clones, commands, digest) carries `cavestack v<version> :: <manifest-hash>`; the install receipt records the same version and hash, so a stale install is named, not assumed.
 - **Paper parity** — `exam.py --check` now requires every bank paper to map to a `GRAK_CREDENTIALS.md` paper, both directions, 20/20.
+- **Pinned, verified installs** — `docs/install` and `docs/install.ps1` check out the release tag and verify the checkout's commit sha and manifest hash against the release's published `SHA256SUMS` asset before `setup` runs. `CAVESTACK_VERSION` and `CAVESTACK_CHECKSUMS` override the pin and the checksum source; the stale `docs/install.sh` (the pre-3.3.1.0 dash bug) is removed. The PowerShell installer now hard-fails on git errors instead of continuing on a stale tree.
+- **Landed-state receipt** — `setup` / `setup.ps1` write `ROCK_RECEIPT` after the payload, not before, with a sha256 for every installed file; `rock_memory.py --check` re-hashes every landed file and fails on a missing or modified one.
+- **One version story** — `tools/version_check.py` enforces VERSION == CHANGELOG head == site JSON-LD == footer == both installer pins; CI runs it, and tag pushes run a release gate that asserts the tag matches VERSION.
+- **Support surface** — `SECURITY.md` (private reporting), `CONTRIBUTING.md`, a bug report template; issues enabled. README documents release verification and maintenance status.
 
 ### Changed
 
-- `setup` / `setup.ps1`: both installers read `VERSION` + the manifest hash, write `ROCK_RECEIPT`, stamp every composed file, run the deep source check, and remove the receipt on uninstall.
-- CI: rock-memory and paper-parity checks added to both jobs; the smoke install asserts the stamp and the current record.
+- `setup` / `setup.ps1`: both installers read `VERSION` + the manifest hash, stamp every composed file, and remove the record on uninstall. Ownership matching is now the full provenance stamp or an exact marker line — a mere mention of the marker text is not proof.
+- Rock memory covers the installers too: `setup`, `setup.ps1`, `docs/install`, `docs/install.ps1` join the manifest (15 -> 19 files).
+- CI: rock-memory and paper-parity checks in both jobs; the smoke install asserts the stamp and the current record; new pinned-install positive + negative tests, the landed-receipt tamper test, `slate` in the parity loop, and `docs/install.ps1` coverage.
+- README and `AGENTS.md`: install requirements (git + curl/wget), the slate alias ledger, verification instructions, maintenance status.
 - `VERSION`: 3.5.0.0 -> 3.6.0.0.
 
 ### Fixed
 
 - `rock_memory.py`: source digests normalize CRLF to LF and the manifest is written LF, so `--check` verifies on any checkout (CI caught the Windows-committed CRLF drift).
+- `LICENSE` rewritten as a scope map: fork modifications under AGPL-3.0-or-later or commercial, upstream-derived portions remain MIT; the site JSON-LD no longer advertises MIT for the whole tree.
 
 ## [3.5.0.0] - 2026-09-18 — The build team release
 

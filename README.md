@@ -22,7 +22,7 @@ Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`.
 
 ## Install
 
-Needs git only. No bun, no node, no sudo.
+Needs git, plus curl or wget to verify release checksums. No bun, no node, no sudo.
 
 ```sh
 curl -fsSL https://cavestack.jerkyjesse.com/install | sh
@@ -36,6 +36,11 @@ Windows:
 irm https://cavestack.jerkyjesse.com/install.ps1 | iex
 ```
 
+The installer checks out the latest release tag and verifies the checkout
+against the release's published `SHA256SUMS` asset before `setup` runs. Re-run
+the same command after a release to move to the new tag. Offline or airgapped:
+point `CAVESTACK_CHECKSUMS` at a local `SHA256SUMS` file.
+
 From a clone:
 
 ```sh
@@ -43,8 +48,6 @@ git clone https://github.com/JerkyJesse/cavestack ~/cavestack
 cd ~/cavestack
 ./setup --host opencode     # or: --host all | --host auto
 ```
-
-Re-run the same command after `git pull` to refresh.
 
 ## Hosts
 
@@ -56,7 +59,7 @@ Re-run the same command after `git pull` to refresh.
 | codex | `~/.codex/agents/grak.toml` + `~/.codex/prompts/` |
 | factory | `~/.factory/droids/grak.md` + `~/.factory/commands/` |
 | kiro | `~/.kiro/agents/grak.md` |
-| slate | reads Claude Code config |
+| slate | reads Claude Code config — an alias for claude, no files of its own |
 | openclaw · hermes · gbrain | rules-only digest at `~/.<host>/skills/cavestack/` |
 
 Agent hosts also get `grak-clone` (read-only reviewer) and `grak-builder` (writable builder) for `/team`: opencode, claude, cursor, codex, factory, kiro, slate. On the digest hosts `/team` runs the lenses and workstreams as serial passes instead of subagents.
@@ -94,7 +97,25 @@ Peak roster: CMU PhD compilers + ACM Doctoral Dissertation Award, Turing Award, 
 ./setup --host opencode --uninstall
 ```
 
-Only provably-owned files are removed — a marker or a symlink into this repo. Your own files with the same names are kept and listed, never swept.
+Only provably-owned files are removed — the full provenance stamp, an exact ownership marker line, or a symlink into this repo. Your own files with the same names are kept and listed, never swept.
+
+## Verify what you installed
+
+Every installed file carries a provenance stamp, and the install receipt records
+every landed file's hash. From the clone the installer fetched:
+
+```sh
+python3 ~/cavestack/characters/grak/rock_memory.py --check
+```
+
+The check verifies the repo sources, the receipt, and every landed file. A
+missing or modified installed file fails the check; re-run the installer to heal.
+
+## Maintenance
+
+Single maintainer, no server, no runtime dependencies: the exit is built in.
+Every release is a tag whose checksums ship with it, a clone plus `./setup` is a
+full install, and the `v2.3.0.0` tag preserves the pre-Grak tree.
 
 ## What Grak is not
 
@@ -102,4 +123,4 @@ Only provably-owned files are removed — a marker or a symlink into this repo. 
 - Not a framework. No build step, no runtime, no telemetry.
 - Not a skill catalog. If it is not needed to ship, it is not shipped.
 
-Full resume: [characters/grak/GRAK.md](characters/grak/GRAK.md). Credentials + exam: [characters/grak/credentials/](characters/grak/credentials/). Dual-licensed: AGPL-3.0-or-later or commercial; upstream portions remain MIT (see [LICENSE](LICENSE), [LICENSE-AGPL](LICENSE-AGPL), [COMMERCIAL.md](COMMERCIAL.md)). Built by JerkyJesse.
+Full resume: [characters/grak/GRAK.md](characters/grak/GRAK.md). Credentials + exam: [characters/grak/credentials/](characters/grak/credentials/). Dual-licensed: AGPL-3.0-or-later or commercial; upstream-derived portions remain MIT (see [LICENSE](LICENSE), [LICENSE-AGPL](LICENSE-AGPL), [COMMERCIAL.md](COMMERCIAL.md)). Built by JerkyJesse.
