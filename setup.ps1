@@ -6,9 +6,11 @@ into supported AI coding hosts. No network, no bun, no node, no admin. Same
 contract as ./setup.
 
 The cage rule: never delete or edit a target without proof that we own it.
-A target is ours when it is a reparse point (symlink) resolving into this repo, or
-a file carrying the cavestack-owned marker (the legacy cavestack-managed marker
-also counts). Everything else is skipped and reported, never touched.
+A target is ours when it is a reparse point (symlink) resolving into this repo,
+when it carries the full provenance stamp (cavestack v<version> :: <hash12>), or
+when it carries an exact cavestack-owned / cavestack-managed marker line. A mere
+mention of the marker text elsewhere in a file is not proof. Everything else is
+skipped and reported, never touched.
 #>
 [CmdletBinding()]
 param(
@@ -21,7 +23,8 @@ param(
 $ErrorActionPreference = "Stop"
 
 $Root = Split-Path -Parent $MyInvocation.MyCommand.Path
-$OwnRegex = "cavestack-(owned|managed)"
+$OwnStampRegex = "cavestack v[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+ :: [0-9a-f]+"
+$OwnMarkerRegex = "(?m)^\s*(<!--\s*cavestack-(owned|managed)(\s*|:[^>]*?)-->\s*$|#\s*cavestack-(owned|managed)(\s*|:.*?)$)"
 $AgentSrc = Join-Path $Root "characters\grak\grak-agent.md"
 $CmdSrc = Join-Path $Root "characters\grak\commands"
 $DigestSrc = Join-Path $Root "characters\grak\digest.md"
@@ -47,6 +50,24 @@ $AllHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "slate
 $AutoHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "openclaw", "hermes", "gbrain")
 
 $script:Counters = @{ Agents = 0; Clones = 0; Builders = 0; Commands = 0; Digests = 0; Support = 0; Removed = 0; Skipped = 0 }
+
+# Every file this run lands is recorded and hashed into the install receipt
+# after the payload, so a later --check can prove the installed state itself.
+$script:Installed = New-Object System.Collections.Generic.List[string]
+function Add-Installed([string]$Path) { $script:Installed.Add($Path) | Out-Null }
+
+function Write-Receipt {
+  $lines = New-Object System.Collections.Generic.List[string]
+  $lines.Add("cavestack $($script:Version)")
+  $lines.Add("sha256 $($script:ManifestHash)")
+  foreach ($f in $script:Installed) {
+    if (Test-Path -LiteralPath $f) {
+      $h = (Get-FileHash -LiteralPath $f -Algorithm SHA256).Hash.ToLower()
+      $lines.Add("file $h $f")
+    }
+  }
+  Write-Utf8NoBom (Join-Path $SupportDir "ROCK_RECEIPT") (($lines -join "`n") + "`n")
+}
 
 function Write-Log([string]$Message) { if (-not $Quiet) { Write-Host $Message } }
 function Die([string]$Message) { Write-Host "Error: $Message" -ForegroundColor Red; exit 1 }
@@ -103,7 +124,9 @@ function Test-Owned([string]$Path) {
     $rootFull = [IO.Path]::GetFullPath($Root).TrimEnd('\') + '\'
     return $resolved.StartsWith($rootFull, [StringComparison]::OrdinalIgnoreCase)
   }
-  return (([System.IO.File]::ReadAllText($Path)) -match $OwnRegex)
+  $text = [System.IO.File]::ReadAllText($Path)
+  if ($text -match $OwnStampRegex) { return $true }
+  return ($text -match $OwnMarkerRegex)
 }
 
 function Remove-LinkIfAny([string]$Path) {
@@ -177,6 +200,7 @@ function Install-Agent([string]$HostName) {
     $content = "name = ""grak""`n" + "description = ""$desc""`n" + "developer_instructions = '''`n" + (Get-Body $AgentSrc) + "'''`n"
     Write-Utf8NoBom $target $content
     Add-CaveStamp $target "toml"
+    Add-Installed $target
     $script:Counters.Agents++
     Write-Log "Installed agent: $target"
     return
@@ -206,6 +230,7 @@ function Install-Agent([string]$HostName) {
     }
   }
   Add-CaveStamp $target "md"
+  Add-Installed $target
   $script:Counters.Agents++
   Write-Log "Installed agent: $target"
 }
@@ -230,6 +255,7 @@ function Install-Companion([string]$HostName, [string]$Name, [string]$MissionSrc
     $content = "name = ""$Name""`n" + "description = ""$escaped""`n" + "sandbox_mode = ""$sandbox""`n" + "developer_instructions = '''`n" + $body + "'''`n"
     Write-Utf8NoBom $target $content
     Add-CaveStamp $target "toml"
+    Add-Installed $target
     Write-Log "Installed companion: $target"
     return $true
   }
@@ -267,6 +293,7 @@ function Install-Companion([string]$HostName, [string]$Name, [string]$MissionSrc
     }
   }
   Add-CaveStamp $target "md"
+  Add-Installed $target
   Write-Log "Installed companion: $target"
   return $true
 }
@@ -298,6 +325,7 @@ function Install-Commands([string]$HostName) {
       Write-Utf8NoBom $target ("---`ndescription: " + $desc + "`n---`n" + (Get-Body $src))
     }
     Add-CaveStamp $target "md"
+    Add-Installed $target
     $script:Counters.Commands++
     Write-Log "Installed command: $target"
   }
@@ -315,6 +343,7 @@ function Install-Digest([string]$HostName) {
   Remove-LinkIfAny $target
   Copy-Item -LiteralPath $DigestSrc -Destination $target -Force
   Add-CaveStamp $target "md"
+  Add-Installed $target
   $script:Counters.Digests++
   Write-Log "Installed digest: $target"
 }
@@ -329,12 +358,13 @@ function Install-Support {
   }
   New-Item -ItemType Directory -Force -Path $SupportDir | Out-Null
   foreach ($f in $SupportFiles) {
-    Copy-Item -LiteralPath $f.Src -Destination (Join-Path $SupportDir $f.Dst) -Force
+    $t = Join-Path $SupportDir $f.Dst
+    Copy-Item -LiteralPath $f.Src -Destination $t -Force
+    Add-Installed $t
   }
   Write-Utf8NoBom $marker "<!-- cavestack-owned -->`n"
-  Write-Utf8NoBom (Join-Path $SupportDir "ROCK_RECEIPT") ("cavestack " + $script:Version + "`nsha256 " + $script:ManifestHash + "`n")
   $script:Counters.Support++
-  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, ROCK_RECEIPT)"
+  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json)"
 }
 
 function Uninstall-Support {
@@ -400,7 +430,8 @@ function Uninstall-Host([string]$HostName) {
 function Invoke-Check {
   $fail = 0
   $docsInstall = Join-Path $Root "docs\install"
-  $sources = @($AgentSrc, $CloneMissionSrc, $BuilderMissionSrc, $DigestSrc, $docsInstall) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src }) + @((Join-Path $Root "characters\grak\rock_memory.py"), $script:ManifestPath)
+  $docsInstallPs = Join-Path $Root "docs\install.ps1"
+  $sources = @($AgentSrc, $CloneMissionSrc, $BuilderMissionSrc, $DigestSrc, $docsInstall, $docsInstallPs) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src }) + @((Join-Path $Root "characters\grak\rock_memory.py"), $script:ManifestPath)
   foreach ($f in $sources) {
     if (-not (Test-Path -LiteralPath $f)) { Write-Host "missing source: $f" -ForegroundColor Red; $fail = 1 }
   }
@@ -414,6 +445,8 @@ function Invoke-Check {
     if (-not (Get-FmValue $BuilderMissionSrc "description")) { Write-Host "builder mission source missing description" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "one builder clone of Grak")) { Write-Host "builder mission source missing builder duty" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "exec bash")) { Write-Host "docs/install must exec bash (setup is a bash script, sh may be dash)" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "CAVESTACK_VERSION")) { Write-Host "docs/install must pin the release tag (CAVESTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $docsInstallPs -Raw) -match "CAVESTACK_VERSION")) { Write-Host "docs/install.ps1 must pin the release tag (CAVESTACK_VERSION)" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "Ship fully finished code, fast")) { Write-Host "agent source missing finish doctrine" -ForegroundColor Red; $fail = 1 }
     foreach ($name in $Commands) {
       $f = Join-Path $CmdSrc "$name.md"
@@ -428,6 +461,9 @@ function Invoke-Check {
     if ($py) {
       & python (Join-Path $Root "characters\grak\rock_memory.py") --check --no-receipt
       if ($LASTEXITCODE -ne 0) { $fail = 1 }
+    } else {
+      Write-Host "check: python is required for the deep source check" -ForegroundColor Red
+      $fail = 1
     }
   }
   if ($fail -eq 0) { Write-Host "cavestack: check ok" }
@@ -472,6 +508,8 @@ foreach ($h in $hosts) {
     }
   }
 }
+
+if (-not $Uninstall) { Write-Receipt }
 
 if ($Uninstall) {
   Write-Host "cavestack uninstall complete."

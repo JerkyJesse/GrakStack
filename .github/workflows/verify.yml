@@ -3,6 +3,7 @@ name: verify
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
 
 jobs:
@@ -14,6 +15,8 @@ jobs:
         run: |
           bash -n setup
           sh -n docs/install
+      - name: Version truth
+        run: python3 tools/version_check.py
       - name: Source check
         run: bash setup --check
       - name: Rock memory check
@@ -55,13 +58,26 @@ jobs:
           test ! -e "$HOME/.config/opencode/command/team.md"
           test ! -e "$HOME/.cavestack/GRAK.md"
           test ! -e "$HOME/.cavestack/ROCK_RECEIPT"
-      - name: sh path install (dash runs docs/install)
+      - name: Freeze release inputs
         run: |
+          V="v$(tr -d '[:space:]' < VERSION)"
+          git tag -f "$V" HEAD
+          MANIFEST_SHA="$(sha256sum characters/grak/ROCK_MEMORY.sha256 | awk '{print $1}')"
+          COMMIT="$(git rev-parse HEAD)"
+          { echo "# cavestack release checksums"; echo "$MANIFEST_SHA  ROCK_MEMORY.sha256"; echo "$COMMIT  $V"; } > "$RUNNER_TEMP/SHA256SUMS"
+          echo "frozen $V at $COMMIT"
+      - name: Pinned install (sh runs docs/install, verified against checksums)
+        run: |
+          V="v$(tr -d '[:space:]' < VERSION)"
+          COMMIT="$(git rev-parse HEAD)"
           export CAVESTACK_REPO="file://$PWD"
           export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-src"
+          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
           export HOME="$RUNNER_TEMP/home-sh"
           mkdir -p "$HOME"
-          sh docs/install --host opencode --quiet
+          OUT="$(sh docs/install --host opencode --quiet)"
+          printf '%s\n' "$OUT"
+          printf '%s\n' "$OUT" | grep -q "cavestack: verified $V ($COMMIT)"
           test -f "$HOME/.config/opencode/agent/grak.md"
           test -f "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.config/opencode/agent/grak-builder.md"
@@ -69,6 +85,41 @@ jobs:
           test -f "$HOME/.config/opencode/command/land.md"
           test -f "$HOME/.cavestack/exam.py"
           python3 "$HOME/.cavestack/exam.py" --check
+          test "$(git -C "$CAVESTACK_HOME" rev-parse HEAD)" = "$COMMIT"
+      - name: Pin negative (bad checksum aborts before setup)
+        run: |
+          COMMIT="$(git rev-parse HEAD)"
+          sed "s/^$COMMIT /0000000000000000000000000000000000000000 /" "$RUNNER_TEMP/SHA256SUMS" > "$RUNNER_TEMP/BADSUMS"
+          export CAVESTACK_REPO="file://$PWD"
+          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-bad"
+          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/BADSUMS"
+          export HOME="$RUNNER_TEMP/home-bad"
+          mkdir -p "$HOME"
+          if sh docs/install --host opencode --quiet; then
+            echo "expected checksum failure"; exit 1
+          fi
+          test ! -e "$HOME/.config/opencode/agent/grak.md"
+          test ! -e "$HOME/.cavestack/GRAK.md"
+          echo "pin negative ok"
+      - name: Landed receipt (tamper fails, reinstall heals)
+        run: |
+          export CAVESTACK_REPO="file://$PWD"
+          export CAVESTACK_CHECKSUMS="$RUNNER_TEMP/SHA256SUMS"
+          export HOME="$RUNNER_TEMP/home-tamper"
+          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-tamper"
+          mkdir -p "$HOME"
+          sh docs/install --host opencode --quiet
+          unset CAVESTACK_HOME
+          python3 characters/grak/rock_memory.py --check | grep -q "record: current"
+          printf '\nuser edit\n' >> "$HOME/.config/opencode/agent/grak.md"
+          if python3 characters/grak/rock_memory.py --check; then
+            echo "expected modified-file failure"; exit 1
+          fi
+          export CAVESTACK_HOME="$RUNNER_TEMP/cavestack-tamper"
+          sh docs/install --host opencode --quiet
+          unset CAVESTACK_HOME
+          python3 characters/grak/rock_memory.py --check | grep -q "record: current"
+          echo "landed receipt ok"
       - name: Ownership gate (foreign links and files kept, repo links removed)
         run: |
           export HOME="$RUNNER_TEMP/home-own"
@@ -82,10 +133,16 @@ jobs:
           ln -s "$PWD/characters/grak/grak-agent.md" "$HOME/.claude/commands/ship.md"
           bash setup --host claude --uninstall --quiet
           test ! -e "$HOME/.claude/commands/ship.md"
+          printf 'the cavestack-owned marker is described in the docs\n' > "$HOME/.claude/commands/grak.md"
+          bash setup --host claude --uninstall --quiet
+          test -f "$HOME/.claude/commands/grak.md"
+          printf '<!-- cavestack-owned -->\n' > "$HOME/.claude/commands/grak.md"
+          bash setup --host claude --uninstall --quiet
+          test ! -e "$HOME/.claude/commands/grak.md"
           echo "ownership gate ok"
       - name: Installer parity (bash vs powershell)
         run: |
-          for h in claude cursor codex factory opencode kiro openclaw hermes gbrain; do
+          for h in claude cursor codex factory opencode kiro slate openclaw hermes gbrain; do
             B="$RUNNER_TEMP/h-bash-$h"; P="$RUNNER_TEMP/h-ps-$h"
             mkdir -p "$B" "$P"
             HOME="$B" bash setup --host "$h" --quiet >/dev/null
@@ -146,3 +203,46 @@ jobs:
           if (Test-Path $cmd) { throw "command not removed: $cmd" }
           if (Test-Path $team) { throw "team command not removed: $team" }
           if (Test-Path $lore) { throw "record not removed: $lore" }
+      - name: Pinned install (docs/install.ps1, verified against checksums)
+        shell: pwsh
+        run: |
+          $version = "v" + (Get-Content VERSION -Raw).Trim()
+          git tag -f $version HEAD | Out-Null
+          $manifest = (Get-FileHash characters/grak/ROCK_MEMORY.sha256 -Algorithm SHA256).Hash.ToLower()
+          $commit = (git rev-parse HEAD).Trim()
+          $sums = Join-Path $env:RUNNER_TEMP "SHA256SUMS"
+          "# cavestack release checksums`n$manifest  ROCK_MEMORY.sha256`n$commit  $version`n" | Set-Content -NoNewline $sums
+          $env:CAVESTACK_REPO = $PWD.Path
+          $env:CAVESTACK_CHECKSUMS = $sums
+          $env:CAVESTACK_HOME = Join-Path $env:RUNNER_TEMP "pin-src"
+          $env:CAVESTACK_HOST = "opencode"
+          pwsh -NoProfile -File ./docs/install.ps1
+          if ($LASTEXITCODE -ne 0) { throw "docs/install.ps1 failed: $LASTEXITCODE" }
+          $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
+          if (-not (Test-Path $agent)) { throw "agent missing after pinned install" }
+          $actual = (git -C $env:CAVESTACK_HOME rev-parse HEAD).Trim()
+          if ($actual -ne $commit) { throw "checkout commit drift: $actual != $commit" }
+          $env:CAVESTACK_HOME = Join-Path $HOME ".cavestack"
+          python characters/grak/rock_memory.py --check
+          if ($LASTEXITCODE -ne 0) { throw "record check failed after pinned install" }
+          ./setup.ps1 -TargetHost opencode -Uninstall -Quiet
+
+  release:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tag matches VERSION
+        run: |
+          V="v$(tr -d '[:space:]' < VERSION)"
+          test "$GITHUB_REF_NAME" = "$V" || { echo "tag $GITHUB_REF_NAME != $V"; exit 1; }
+      - name: Release gates
+        run: |
+          bash setup --check
+          python3 characters/grak/rock_memory.py --check --no-receipt
+          python3 characters/grak/credentials/exam.py --check
+          python3 tools/version_check.py
+      - name: Release checksums
+        run: |
+          git fetch --depth 1 origin "+refs/tags/$GITHUB_REF_NAME:refs/tags/$GITHUB_REF_NAME"
+          python3 tools/make_checksums.py "$GITHUB_REF_NAME"

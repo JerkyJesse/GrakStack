@@ -3,10 +3,12 @@
 
 --write   regenerate ROCK_MEMORY.sha256 over every file the installers ship
 --check   verify the repo against the manifest; when an install receipt exists
-          (~/.cavestack/ROCK_RECEIPT, CAVESTACK_HOME overrides), report the
-          record current or stale (--no-receipt skips the record check)
+          (~/.cavestack/ROCK_RECEIPT, CAVESTACK_HOME overrides), verify the
+          record, report the record current or stale, and re-hash every landed
+          file the receipt lists (--no-receipt skips the record check)
 
-Digests normalize CRLF to LF, so the manifest verifies on any checkout.
+Digests normalize CRLF to LF, so the manifest verifies on any checkout. Landed
+files are hashed as installed bytes, so any edit after install fails the check.
 
 Stdlib only. No network. No deps.
 """
@@ -14,6 +16,7 @@ Stdlib only. No network. No deps.
 import argparse
 import hashlib
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -27,6 +30,10 @@ RECEIPT = (
 
 SOURCES = (
     "VERSION",
+    "setup",
+    "setup.ps1",
+    "docs/install",
+    "docs/install.ps1",
     "characters/grak/grak-agent.md",
     "characters/grak/clone-mission.md",
     "characters/grak/builder-mission.md",
@@ -55,6 +62,22 @@ def manifest_digest():
 
 def read_version():
     return (ROOT / "VERSION").read_text(encoding="utf-8").strip()
+
+
+def landed_path(path_str):
+    """Resolve a receipt path; on Windows, accept MSYS/Cygwin drive paths."""
+    path = Path(path_str)
+    if path.is_file():
+        return path
+    if os.name == "nt":
+        match = re.match(r"^/(?:mnt/)?([A-Za-z])/(.*)$", path_str)
+        if match:
+            candidate = Path(
+                "%s:\\%s" % (match.group(1).upper(), match.group(2).replace("/", "\\"))
+            )
+            if candidate.is_file():
+                return candidate
+    return path
 
 
 def write_manifest():
@@ -114,21 +137,39 @@ def check_receipt():
         return 0
     version = ""
     manifest_hash = ""
+    landed = []
     for line in RECEIPT.read_text(encoding="utf-8").splitlines():
         if line.startswith("cavestack "):
             version = line.split(None, 1)[1].strip()
         elif line.startswith("sha256 "):
             manifest_hash = line.split(None, 1)[1].strip()
+        elif line.startswith("file "):
+            parts = line.split(None, 2)
+            if len(parts) == 3:
+                landed.append((parts[2], parts[1]))
     current_version = read_version()
     current_hash = manifest_digest()
-    if version == current_version and manifest_hash == current_hash:
-        print("record: current (v%s)" % current_version)
+    stale = version != current_version or manifest_hash != current_hash
+    modified = []
+    for path_str, want in landed:
+        path = landed_path(path_str)
+        if not path.is_file():
+            modified.append("missing: %s" % path_str)
+            continue
+        got = hashlib.sha256(path.read_bytes()).hexdigest()
+        if got != want:
+            modified.append("modified: %s" % path_str)
+    if not stale and not modified:
+        print("record: current (v%s, %d files verified)" % (current_version, len(landed)))
         return 0
-    print(
-        "record: STALE - installed v%s, repo v%s; re-run setup"
-        % (version or "?", current_version),
-        file=sys.stderr,
-    )
+    if stale:
+        print(
+            "record: STALE - installed v%s, repo v%s; re-run setup"
+            % (version or "?", current_version),
+            file=sys.stderr,
+        )
+    for item in modified:
+        print("record: %s" % item, file=sys.stderr)
     return 1
 
 

@@ -2,11 +2,21 @@
 # cavestack installer
 #   curl -fsSL https://cavestack.jerkyjesse.com/install | sh
 #   curl -fsSL https://cavestack.jerkyjesse.com/install | sh -s -- --host opencode
-# No network beyond git; no bun, no node, no sudo.
+#
+# Pinned and verified: checks out the released tag, then verifies the checkout
+# against the release's published SHA256SUMS asset before setup runs. Needs git
+# and curl (or wget); no bun, no node, no sudo.
+#
+# Overrides: CAVESTACK_REPO, CAVESTACK_HOME (clone destination),
+# CAVESTACK_VERSION (release tag), CAVESTACK_CHECKSUMS (path or URL of
+# SHA256SUMS), CAVESTACK_RELEASE_BASE (release download base).
 set -e
 
 REPO_URL="${CAVESTACK_REPO:-https://github.com/JerkyJesse/cavestack.git}"
 DEST="${CAVESTACK_HOME:-$HOME/cavestack}"
+VERSION="${CAVESTACK_VERSION:-v3.6.0.0}"
+RELEASE_BASE="${CAVESTACK_RELEASE_BASE:-https://github.com/JerkyJesse/cavestack/releases/download}"
+CHECKSUMS="${CAVESTACK_CHECKSUMS:-$RELEASE_BASE/$VERSION/SHA256SUMS}"
 
 command -v git >/dev/null 2>&1 || {
   echo "cavestack: git is required" >&2
@@ -19,13 +29,83 @@ command -v bash >/dev/null 2>&1 || {
   exit 1
 }
 
+# fetch_checksums - print a local path to the SHA256SUMS file.
+fetch_checksums() {
+  if [ -f "$CHECKSUMS" ]; then
+    printf '%s\n' "$CHECKSUMS"
+    return 0
+  fi
+  _tmp="${TMPDIR:-/tmp}/cavestack-checksums.$$"
+  if command -v curl >/dev/null 2>&1; then
+    curl -fsSL "$CHECKSUMS" -o "$_tmp" || { rm -f "$_tmp"; return 1; }
+    printf '%s\n' "$_tmp"
+    return 0
+  fi
+  if command -v wget >/dev/null 2>&1; then
+    wget -qO "$_tmp" "$CHECKSUMS" || { rm -f "$_tmp"; return 1; }
+    printf '%s\n' "$_tmp"
+    return 0
+  fi
+  return 1
+}
+
+# sha256_of <file> - print the file's sha256.
+sha256_of() {
+  if command -v sha256sum >/dev/null 2>&1; then
+    sha256sum "$1" | awk '{print $1}'
+  elif command -v shasum >/dev/null 2>&1; then
+    shasum -a 256 "$1" | awk '{print $1}'
+  else
+    return 1
+  fi
+}
+
 if [ -d "$DEST/.git" ]; then
-  echo "cavestack: refreshing $DEST"
-  git -C "$DEST" pull --ff-only --quiet
+  echo "cavestack: updating $DEST to $VERSION"
+  git -C "$DEST" fetch --depth 1 --quiet origin "refs/tags/$VERSION:refs/tags/$VERSION"
+  git -C "$DEST" checkout --quiet --detach "refs/tags/$VERSION"
 else
-  echo "cavestack: cloning into $DEST"
+  echo "cavestack: cloning $VERSION into $DEST"
   mkdir -p "$(dirname "$DEST")"
-  git clone --depth 1 --quiet "$REPO_URL" "$DEST"
+  git clone --depth 1 --branch "$VERSION" --quiet "$REPO_URL" "$DEST"
 fi
 
+ACTUAL_COMMIT="$(git -C "$DEST" rev-parse HEAD)"
+
+SUMS_FILE="$(fetch_checksums)" || {
+  echo "cavestack: cannot fetch release checksums for $VERSION: $CHECKSUMS" >&2
+  echo "cavestack: set CAVESTACK_CHECKSUMS to a local SHA256SUMS file to install offline" >&2
+  exit 1
+}
+
+EXPECTED_COMMIT="$(awk -v tag="$VERSION" '$2 == tag { print $1; exit }' "$SUMS_FILE")"
+EXPECTED_MANIFEST="$(awk '$2 == "ROCK_MEMORY.sha256" { print $1; exit }' "$SUMS_FILE")"
+if [ -z "$EXPECTED_COMMIT" ]; then
+  echo "cavestack: SHA256SUMS has no commit line for $VERSION" >&2
+  exit 1
+fi
+if [ -z "$EXPECTED_MANIFEST" ]; then
+  echo "cavestack: SHA256SUMS has no ROCK_MEMORY.sha256 line" >&2
+  exit 1
+fi
+
+if [ "$ACTUAL_COMMIT" != "$EXPECTED_COMMIT" ]; then
+  echo "cavestack: commit mismatch - the checkout is not the released revision" >&2
+  echo "  expected: $EXPECTED_COMMIT" >&2
+  echo "  actual:   $ACTUAL_COMMIT" >&2
+  exit 1
+fi
+
+ACTUAL_MANIFEST="$(sha256_of "$DEST/characters/grak/ROCK_MEMORY.sha256")" || {
+  echo "cavestack: need sha256sum or shasum to verify the release" >&2
+  exit 1
+}
+if [ "$ACTUAL_MANIFEST" != "$EXPECTED_MANIFEST" ]; then
+  echo "cavestack: manifest mismatch - the checkout is not the released revision" >&2
+  echo "  expected: $EXPECTED_MANIFEST" >&2
+  echo "  actual:   $ACTUAL_MANIFEST" >&2
+  exit 1
+fi
+
+echo "cavestack: verified $VERSION ($ACTUAL_COMMIT)"
 exec bash "$DEST/setup" "$@"
