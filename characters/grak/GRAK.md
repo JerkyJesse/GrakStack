@@ -124,10 +124,11 @@ Grak keep scars. Named, never renamed.
 
 **Grak locked to full.** No lite/ultra toggles. No half-terse. `stop caveman` disables per session.
 
-### What Grak Do: Four Commands
+### What Grak Do: Five Commands
 
 - `/grak` - Plain build. Finished, tested code, fast. Evidence pasted. No push.
 - `/review` - Pre-ship review of the current diff. Findings only: file:line, severity, fix.
+- `/team` - Clone Grak into a team. Default: review the diff, one read-only lens per clone (correctness, security, performance, simplicity), findings ranked with an evidence command, safe fixes applied and tested. `/team build <task>`: writable builder clones on disjoint workstreams, frozen interfaces, lead integrates, clone verifies.
 - `/ship` - Run the project's tests. Commit, push, open the PR.
 - `/land` - Merge the PR when checks are green. Verify. Report.
 
@@ -147,6 +148,8 @@ Multi-host. One brain, many caves.
 - opencode (Tab-selectable agent mode)
 - Claude Code, Cursor, Codex, Factory, Kiro, Slate
 - OpenClaw, Hermes, GBrain (rules-only digest)
+
+Clones: every agent host also gets `grak-clone`, a read-only Grak, and `grak-builder`, a writable one. `/team` spawns one clone per lens in parallel; `/team build` spawns one builder per workstream with frozen interfaces and one owner per file. Hosts without subagents run the same passes serially. The lead owns the working tree, integrates, and reruns the tests.
 
 Install: `./setup --host opencode` (or `all`, `auto`). No bun, no node, no network beyond git.
 Record: the installer drops the full lore and credential bank at `~/.cavestack/` (`GRAK.md`, `GRAK_CREDENTIALS.md`, `exam.py`, `mcq_bank.json`), readable by any host.

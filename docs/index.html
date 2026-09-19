@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CaveStack — AI talk too much. Grak fix.</title>
-<meta name="description" content="One caveman agent. Four commands: /grak, /review, /ship, /land. Zero dependencies. Finished, tested code, fast. Free OSS.">
+<meta name="description" content="One caveman agent. Five commands: /grak, /review, /team, /ship, /land. Zero dependencies. Finished, tested code, fast. Free OSS.">
 <meta name="theme-color" content="#0C0C0C">
 <link rel="canonical" href="https://cavestack.jerkyjesse.com/">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -12,7 +12,7 @@
 
 <!-- Open Graph -->
 <meta property="og:title" content="CaveStack — AI talk too much. Grak fix.">
-<meta property="og:description" content="One caveman agent. Four commands. Finished, tested code, fast. Free OSS.">
+<meta property="og:description" content="One caveman agent. Five commands. Finished, tested code, fast. Free OSS.">
 <meta property="og:image" content="https://cavestack.jerkyjesse.com/images/social-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -25,7 +25,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="CaveStack — AI talk too much. Grak fix.">
-<meta name="twitter:description" content="One caveman agent. Four commands. Finished, tested code, fast. Free OSS.">
+<meta name="twitter:description" content="One caveman agent. Five commands. Finished, tested code, fast. Free OSS.">
 <meta name="twitter:image" content="https://cavestack.jerkyjesse.com/images/social-preview.png">
 <meta name="twitter:image:alt" content="CaveStack — AI talk too much. Grak fix.">
 
@@ -45,10 +45,10 @@
   "name": "CaveStack",
   "operatingSystem": "macOS, Linux, Windows",
   "applicationCategory": "DeveloperApplication",
-  "description": "One caveman agent with four commands: build, review, ship, land. Finished, tested code, fast. Zero dependencies.",
+  "description": "One caveman agent with five commands: build, review, team, ship, land. Finished, tested code, fast. Zero dependencies.",
   "url": "https://cavestack.jerkyjesse.com/",
   "downloadUrl": "https://cavestack.jerkyjesse.com/install",
-  "softwareVersion": "3.3.1.0",
+  "softwareVersion": "3.5.0.0",
   "author": {
     "@type": "Person",
     "name": "JerkyJesse",
@@ -658,9 +658,9 @@
         <h1 class="hero-brand">CaveStack</h1>
         <p class="hero-sub">AI talk too much. Grak fix.</p>
         <p class="lede">
-          One agent. Four commands. Zero dependencies.
+          One agent. Five commands. Zero dependencies.
           Grak is a caveman staff engineer for your AI coding host:
-          build, review, ship, land. Finished code, fast.
+          build, review, team, ship, land. Finished code, fast.
         </p>
         <div class="install" role="group" aria-label="Install command">
           <code id="installCmd">curl -fsSL cavestack.jerkyjesse.com/install | sh</code>
@@ -760,7 +760,7 @@ Status: Fix #1, merge.</pre>
   <!-- ═══════════════════════ COMMANDS ═══════════════════════ -->
   <section id="commands">
     <div class="container">
-      <div class="eyebrow">4 commands · the whole loop</div>
+      <div class="eyebrow">5 commands · the whole loop</div>
       <h2>Build. Review. Ship. Land.</h2>
       <p>Any repo, any language. No config. Done means landed.</p>
 
@@ -776,6 +776,12 @@ Status: Fix #1, merge.</pre>
           <div class="skill-slash">/review</div>
           <div class="skill-desc">Pre-ship diff review. Findings only: file:line, severity, one-line fix.</div>
           <svg class="skill-glyph"><use href="#glyph-spiral"/></svg>
+        </article>
+
+        <article class="skill-card">
+          <div class="skill-slash">/team</div>
+          <div class="skill-desc">Team mode: clones build a task or review a diff in parallel. One lens each, findings ranked, safe fixes tested.</div>
+          <svg class="skill-glyph"><use href="#glyph-hand"/></svg>
         </article>
 
         <article class="skill-card">

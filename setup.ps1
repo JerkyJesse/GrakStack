@@ -1,8 +1,9 @@
 #requires -version 5.1
 <#
-cavestack setup (Windows native) - install the Grak agent and the /grak, /review,
-/ship, /land commands into supported AI coding hosts. No network, no bun, no node,
-no admin. Same contract as ./setup.
+cavestack setup (Windows native) - install the Grak agent, the grak-clone and
+grak-builder subagents, and the /grak, /review, /team, /ship, /land commands
+into supported AI coding hosts. No network, no bun, no node, no admin. Same
+contract as ./setup.
 
 The cage rule: never delete or edit a target without proof that we own it.
 A target is ours when it is a reparse point (symlink) resolving into this repo, or
@@ -24,7 +25,9 @@ $OwnRegex = "cavestack-(owned|managed)"
 $AgentSrc = Join-Path $Root "characters\grak\grak-agent.md"
 $CmdSrc = Join-Path $Root "characters\grak\commands"
 $DigestSrc = Join-Path $Root "characters\grak\digest.md"
-$Commands = @("grak", "review", "ship", "land")
+$CloneMissionSrc = Join-Path $Root "characters\grak\clone-mission.md"
+$BuilderMissionSrc = Join-Path $Root "characters\grak\builder-mission.md"
+$Commands = @("grak", "review", "team", "ship", "land")
 $SupportDir = Join-Path $HOME ".cavestack"
 $SupportMarker = ".cavestack-owned"
 $SupportFiles = @(
@@ -36,7 +39,7 @@ $SupportFiles = @(
 $AllHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "slate", "openclaw", "hermes", "gbrain")
 $AutoHosts = @("claude", "cursor", "codex", "factory", "opencode", "kiro", "openclaw", "hermes", "gbrain")
 
-$script:Counters = @{ Agents = 0; Commands = 0; Digests = 0; Support = 0; Removed = 0; Skipped = 0 }
+$script:Counters = @{ Agents = 0; Clones = 0; Builders = 0; Commands = 0; Digests = 0; Support = 0; Removed = 0; Skipped = 0 }
 
 function Write-Log([string]$Message) { if (-not $Quiet) { Write-Host $Message } }
 function Die([string]$Message) { Write-Host "Error: $Message" -ForegroundColor Red; exit 1 }
@@ -188,6 +191,73 @@ function Install-Agent([string]$HostName) {
   Write-Log "Installed agent: $target"
 }
 
+function Install-Companion([string]$HostName, [string]$Name, [string]$MissionSrc, [string]$Mode) {
+  $dir = Get-HostAgentsDir $HostName
+  if (-not $dir) { return $false }
+  New-Item -ItemType Directory -Force -Path $dir | Out-Null
+
+  $desc = Get-FmValue $MissionSrc "description"
+  $body = (Get-Body $AgentSrc) + "`n" + (Get-Body $MissionSrc)
+
+  if ($HostName -eq "codex") {
+    $target = Join-Path $dir "$Name.toml"
+    if ((Test-Path -LiteralPath $target) -and -not (Test-Owned $target)) {
+      Write-Log "Not registered (a file you own already uses the name; left untouched): $target"
+      $script:Counters.Skipped++; return $false
+    }
+    $sandbox = if ($Mode -eq "rw") { "workspace-write" } else { "read-only" }
+    $escaped = $desc.Replace('"', '\"')
+    Remove-LinkIfAny $target
+    $content = "name = ""$Name""`n" + "description = ""$escaped""`n" + "sandbox_mode = ""$sandbox""`n" + "developer_instructions = '''`n" + $body + "'''`n"
+    Write-Utf8NoBom $target $content
+    Write-Log "Installed companion: $target"
+    return $true
+  }
+
+  $target = Join-Path $dir "$Name.md"
+  if ((Test-Path -LiteralPath $target) -and -not (Test-Owned $target)) {
+    Write-Log "Not registered (a file you own already uses the name; left untouched): $target"
+    $script:Counters.Skipped++; return $false
+  }
+  Remove-LinkIfAny $target
+  $head = "---`nname: $Name`ndescription: $desc`n"
+  switch ($HostName) {
+    "opencode" {
+      if ($Mode -eq "ro") { $front = "---`ndescription: $desc`nmode: subagent`npermission:`n  edit: deny`n---`n" }
+      else { $front = "---`ndescription: $desc`nmode: subagent`n---`n" }
+      Write-Utf8NoBom $target ($front + $body)
+    }
+    "claude" {
+      if ($Mode -eq "ro") { $front = $head + "model: inherit`ntools: Read, Grep, Glob, Bash`n---`n" }
+      else { $front = $head + "model: inherit`n---`n" }
+      Write-Utf8NoBom $target ($front + $body)
+    }
+    "factory" {
+      if ($Mode -eq "ro") { $front = $head + "model: inherit`ntools: read-only`n---`n" }
+      else { $front = $head + "model: inherit`n---`n" }
+      Write-Utf8NoBom $target ($front + $body)
+    }
+    "cursor" {
+      if ($Mode -eq "ro") { $front = $head + "model: inherit`nreadonly: true`n---`n" }
+      else { $front = $head + "model: inherit`n---`n" }
+      Write-Utf8NoBom $target ($front + $body)
+    }
+    "kiro" {
+      Write-Utf8NoBom $target ($head + "---`n" + $body)
+    }
+  }
+  Write-Log "Installed companion: $target"
+  return $true
+}
+
+function Install-Clone([string]$HostName) {
+  if (Install-Companion $HostName "grak-clone" $CloneMissionSrc "ro") { $script:Counters.Clones++ }
+}
+
+function Install-Builder([string]$HostName) {
+  if (Install-Companion $HostName "grak-builder" $BuilderMissionSrc "rw") { $script:Counters.Builders++ }
+}
+
 function Install-Commands([string]$HostName) {
   $dir = Get-HostCommandsDir $HostName
   if (-not $dir) { return }
@@ -278,8 +348,15 @@ function Uninstall-File([string]$Target) {
 function Uninstall-Host([string]$HostName) {
   $adir = Get-HostAgentsDir $HostName
   if ($adir) {
-    if ($HostName -eq "codex") { Uninstall-File (Join-Path $adir "grak.toml") }
-    else { Uninstall-File (Join-Path $adir "grak.md") }
+    if ($HostName -eq "codex") {
+      Uninstall-File (Join-Path $adir "grak.toml")
+      Uninstall-File (Join-Path $adir "grak-clone.toml")
+      Uninstall-File (Join-Path $adir "grak-builder.toml")
+    } else {
+      Uninstall-File (Join-Path $adir "grak.md")
+      Uninstall-File (Join-Path $adir "grak-clone.md")
+      Uninstall-File (Join-Path $adir "grak-builder.md")
+    }
   }
   $cdir = Get-HostCommandsDir $HostName
   if ($cdir) {
@@ -297,13 +374,19 @@ function Uninstall-Host([string]$HostName) {
 function Invoke-Check {
   $fail = 0
   $docsInstall = Join-Path $Root "docs\install"
-  $sources = @($AgentSrc, $DigestSrc, $docsInstall) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src })
+  $sources = @($AgentSrc, $CloneMissionSrc, $BuilderMissionSrc, $DigestSrc, $docsInstall) + ($Commands | ForEach-Object { Join-Path $CmdSrc "$_.md" }) + ($SupportFiles | ForEach-Object { $_.Src })
   foreach ($f in $sources) {
     if (-not (Test-Path -LiteralPath $f)) { Write-Host "missing source: $f" -ForegroundColor Red; $fail = 1 }
   }
   if ($fail -eq 0) {
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "cavestack-owned")) { Write-Host "agent source missing ownership marker" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $DigestSrc -Raw) -match "cavestack-owned")) { Write-Host "digest source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $CloneMissionSrc -Raw) -match "cavestack-owned")) { Write-Host "clone mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not (Get-FmValue $CloneMissionSrc "description")) { Write-Host "clone mission source missing description" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $CloneMissionSrc -Raw) -match "one clone of Grak")) { Write-Host "clone mission source missing clone duty" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "cavestack-owned")) { Write-Host "builder mission source missing ownership marker" -ForegroundColor Red; $fail = 1 }
+    if (-not (Get-FmValue $BuilderMissionSrc "description")) { Write-Host "builder mission source missing description" -ForegroundColor Red; $fail = 1 }
+    if (-not ((Get-Content -LiteralPath $BuilderMissionSrc -Raw) -match "one builder clone of Grak")) { Write-Host "builder mission source missing builder duty" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $docsInstall -Raw) -match "exec bash")) { Write-Host "docs/install must exec bash (setup is a bash script, sh may be dash)" -ForegroundColor Red; $fail = 1 }
     if (-not ((Get-Content -LiteralPath $AgentSrc -Raw) -match "Ship fully finished code, fast")) { Write-Host "agent source missing finish doctrine" -ForegroundColor Red; $fail = 1 }
     foreach ($name in $Commands) {
@@ -328,6 +411,8 @@ if ($AllHosts -notcontains $TargetHost -and $TargetHost -ne "all" -and $TargetHo
 
 $script:AgentDesc = Get-FmValue $AgentSrc "description"
 if (-not $script:AgentDesc) { Die "cannot read description from $AgentSrc" }
+if (-not (Get-FmValue $CloneMissionSrc "description")) { Die "cannot read description from $CloneMissionSrc" }
+if (-not (Get-FmValue $BuilderMissionSrc "description")) { Die "cannot read description from $BuilderMissionSrc" }
 
 $hosts = @()
 switch ($TargetHost) {
@@ -344,13 +429,13 @@ foreach ($h in $hosts) {
     "slate" {
       $verb = if ($Uninstall) { "uninstalling" } else { "installing" }
       Write-Log "Slate reads Claude Code config; $verb claude instead."
-      if ($Uninstall) { Uninstall-Host "claude" } else { Install-Agent "claude"; Install-Commands "claude" }
+      if ($Uninstall) { Uninstall-Host "claude" } else { Install-Agent "claude"; Install-Clone "claude"; Install-Builder "claude"; Install-Commands "claude" }
     }
     { $_ -in @("openclaw", "hermes", "gbrain") } {
       if ($Uninstall) { Uninstall-Host $h } else { Install-Digest $h }
     }
     default {
-      if ($Uninstall) { Uninstall-Host $h } else { Install-Agent $h; Install-Commands $h }
+      if ($Uninstall) { Uninstall-Host $h } else { Install-Agent $h; Install-Clone $h; Install-Builder $h; Install-Commands $h }
     }
   }
 }
@@ -362,6 +447,8 @@ if ($Uninstall) {
 } else {
   Write-Host "cavestack ready ($TargetHost)."
   Write-Host "  agents installed:   $($script:Counters.Agents)"
+  Write-Host "  clones installed:   $($script:Counters.Clones)"
+  Write-Host "  builders installed: $($script:Counters.Builders)"
   Write-Host "  commands installed: $($script:Counters.Commands)"
   Write-Host "  digests installed:  $($script:Counters.Digests)"
   if ($script:Counters.Support -gt 0) { Write-Host "  record installed:   $SupportDir" }

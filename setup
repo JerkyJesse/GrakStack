@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# cavestack setup - install the Grak agent and the /grak, /review, /ship, /land
-# commands into supported AI coding hosts. No network, no bun, no node, no sudo.
+# cavestack setup - install the Grak agent, the grak-clone and grak-builder
+# subagents, and the /grak, /review, /team, /ship, /land commands into supported
+# AI coding hosts. No network, no bun, no node, no sudo.
 #
 # The cage rule: never delete or edit a target without proof that we own it.
 # A target is ours when it is a symlink resolving into this repo, or a file
@@ -13,8 +14,10 @@ ROOT="$(cd "$(dirname "$0")" && pwd -P)"
 OWN_GREP="cavestack-(owned|managed)"
 AGENT_SRC="$ROOT/characters/grak/grak-agent.md"
 CMD_SRC="$ROOT/characters/grak/commands"
+CLONE_MISSION_SRC="$ROOT/characters/grak/clone-mission.md"
+BUILDER_MISSION_SRC="$ROOT/characters/grak/builder-mission.md"
 DIGEST_SRC="$ROOT/characters/grak/digest.md"
-COMMANDS="grak review ship land"
+COMMANDS="grak review team ship land"
 SUPPORT_DIR="$HOME/.cavestack"
 SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
 SUPPORT_MARKER=".cavestack-owned"
@@ -27,6 +30,8 @@ UNINSTALL=0
 CHECK=0
 QUIET=0
 AGENT_COUNT=0
+CLONE_COUNT=0
+BUILDER_COUNT=0
 COMMAND_COUNT=0
 DIGEST_COUNT=0
 SUPPORT_COUNT=0
@@ -35,7 +40,7 @@ SKIP_COUNT=0
 
 usage() {
   cat <<'EOF'
-cavestack setup - Grak agent + /grak, /review, /ship, /land commands
+cavestack setup - Grak agent + grak-clone/grak-builder subagents + /grak, /review, /team, /ship, /land commands
 
 Usage: ./setup [options]
 
@@ -51,7 +56,7 @@ Options:
 
 Examples:
   ./setup                     # install for Claude Code
-  ./setup --host opencode     # Grak agent mode + the four commands
+  ./setup --host opencode     # Grak agent mode + the five commands
   ./setup --host all          # every supported host
   ./setup --host auto         # hosts whose config dir already exists
   ./setup --host opencode --uninstall
@@ -228,6 +233,93 @@ install_agent() {
   log "Installed agent: $target"
 }
 
+# install_companion <host> <name> <mission-src> <ro|rw>
+# Composes the shared Grak body with one mission fragment: ro = read-only
+# reviewer clone, rw = write-enabled builder clone. Returns 1 when skipped.
+install_companion() {
+  local host="$1" name="$2" mission_src="$3" mode="$4" dir target desc sandbox
+  dir="$(_host_agents_dir "$host")"
+  [ -n "$dir" ] || return 1
+  mkdir -p "$dir"
+  desc="$(fm_value "$mission_src" description)"
+
+  if [ "$host" = "codex" ]; then
+    target="$dir/$name.toml"
+    if [ -e "$target" ] && ! is_owned "$target"; then
+      log "Not registered (a file you own already uses the name; left untouched): $target"
+      SKIP_COUNT=$((SKIP_COUNT + 1)); return 1
+    fi
+    replace_link "$target"
+    if [ "$mode" = "rw" ]; then sandbox="workspace-write"; else sandbox="read-only"; fi
+    {
+      printf 'name = "%s"\n' "$name"
+      printf 'description = "%s"\n' "$(printf '%s' "$desc" | sed 's/"/\\"/g')"
+      printf 'sandbox_mode = "%s"\n' "$sandbox"
+      printf "developer_instructions = '''\n"
+      body_of "$AGENT_SRC"
+      printf '\n'
+      body_of "$mission_src"
+      printf "'''\n"
+    } > "$target"
+    log "Installed companion: $target"
+    return 0
+  fi
+
+  target="$dir/$name.md"
+  if [ -e "$target" ] && ! is_owned "$target"; then
+    log "Not registered (a file you own already uses the name; left untouched): $target"
+    SKIP_COUNT=$((SKIP_COUNT + 1)); return 1
+  fi
+  replace_link "$target"
+  case "$host" in
+    opencode)
+      if [ "$mode" = "ro" ]; then
+        { printf -- '---\ndescription: %s\nmode: subagent\npermission:\n  edit: deny\n---\n' "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      else
+        { printf -- '---\ndescription: %s\nmode: subagent\n---\n' "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      fi
+      ;;
+    claude)
+      if [ "$mode" = "ro" ]; then
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ntools: Read, Grep, Glob, Bash\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      else
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      fi
+      ;;
+    factory)
+      if [ "$mode" = "ro" ]; then
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ntools: read-only\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      else
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      fi
+      ;;
+    cursor)
+      if [ "$mode" = "ro" ]; then
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\nreadonly: true\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      else
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      fi
+      ;;
+    kiro)
+      { printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      ;;
+  esac
+  log "Installed companion: $target"
+  return 0
+}
+
+install_clone() {
+  if install_companion "$1" grak-clone "$CLONE_MISSION_SRC" ro; then
+    CLONE_COUNT=$((CLONE_COUNT + 1))
+  fi
+}
+
+install_builder() {
+  if install_companion "$1" grak-builder "$BUILDER_MISSION_SRC" rw; then
+    BUILDER_COUNT=$((BUILDER_COUNT + 1))
+  fi
+}
+
 install_commands() {
   local host="$1" dir name src target desc
   dir="$(_host_commands_dir "$host")"
@@ -270,6 +362,8 @@ install_digest() {
 
 install_host() {
   install_agent "$1"
+  install_clone "$1"
+  install_builder "$1"
   install_commands "$1"
 }
 
@@ -339,8 +433,12 @@ uninstall_host() {
   if [ -n "$adir" ]; then
     if [ "$host" = "codex" ]; then
       uninstall_file "$adir/grak.toml"
+      uninstall_file "$adir/grak-clone.toml"
+      uninstall_file "$adir/grak-builder.toml"
     else
       uninstall_file "$adir/grak.md"
+      uninstall_file "$adir/grak-clone.md"
+      uninstall_file "$adir/grak-builder.md"
     fi
   fi
   cdir="$(_host_commands_dir "$host")"
@@ -360,12 +458,18 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/docs/install"; do
+  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/docs/install"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   [ "$fail" -eq 0 ] || exit 1
   grep -q 'cavestack-owned' "$AGENT_SRC" || { echo 'agent source missing ownership marker' >&2; fail=1; }
   grep -q 'cavestack-owned' "$DIGEST_SRC" || { echo 'digest source missing ownership marker' >&2; fail=1; }
+  grep -q 'cavestack-owned' "$CLONE_MISSION_SRC" || { echo 'clone mission source missing ownership marker' >&2; fail=1; }
+  [ -n "$(fm_value "$CLONE_MISSION_SRC" description)" ] || { echo 'clone mission source missing description' >&2; fail=1; }
+  grep -q 'one clone of Grak' "$CLONE_MISSION_SRC" || { echo 'clone mission source missing clone duty' >&2; fail=1; }
+  grep -q 'cavestack-owned' "$BUILDER_MISSION_SRC" || { echo 'builder mission source missing ownership marker' >&2; fail=1; }
+  [ -n "$(fm_value "$BUILDER_MISSION_SRC" description)" ] || { echo 'builder mission source missing description' >&2; fail=1; }
+  grep -q 'one builder clone of Grak' "$BUILDER_MISSION_SRC" || { echo 'builder mission source missing builder duty' >&2; fail=1; }
   grep -q 'exec bash' "$ROOT/docs/install" || { echo 'docs/install must exec bash (setup is a bash script, sh may be dash)' >&2; fail=1; }
   grep -q 'Ship fully finished code, fast' "$AGENT_SRC" || { echo 'agent source missing finish doctrine' >&2; fail=1; }
   for name in $COMMANDS; do
@@ -407,6 +511,8 @@ fi
 
 AGENT_DESC="$(fm_value "$AGENT_SRC" description)"
 [ -n "$AGENT_DESC" ] || die "cannot read description from $AGENT_SRC"
+[ -n "$(fm_value "$CLONE_MISSION_SRC" description)" ] || die "cannot read description from $CLONE_MISSION_SRC"
+[ -n "$(fm_value "$BUILDER_MISSION_SRC" description)" ] || die "cannot read description from $BUILDER_MISSION_SRC"
 
 HOSTS="$(expand_hosts)"
 [ -n "$HOSTS" ] || die "no hosts selected (nothing to do)"
@@ -442,6 +548,8 @@ if [ "$UNINSTALL" -eq 1 ]; then
 else
   echo "cavestack ready ($HOST)."
   echo "  agents installed:   $AGENT_COUNT"
+  echo "  clones installed:   $CLONE_COUNT"
+  echo "  builders installed: $BUILDER_COUNT"
   echo "  commands installed: $COMMAND_COUNT"
   echo "  digests installed:  $DIGEST_COUNT"
   if [ "$SUPPORT_COUNT" -gt 0 ]; then echo "  record installed:   $SUPPORT_DIR"; fi

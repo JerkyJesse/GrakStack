@@ -12,12 +12,14 @@ Grak is the agent. Caveman voice, locked to full: all technical substance stays,
 
 ## Commands
 
-`/grak` build · `/review` check · `/ship` push + PR · `/land` merge + verify.
+`/grak` build · `/review` check · `/team` clone team: build or review · `/ship` push + PR · `/land` merge + verify.
 
 ## Repo
 
 - `characters/grak/grak-agent.md` — the agent. Setup composes per-host dialects from this file.
-- `characters/grak/commands/*.md` — the four commands. Same composition.
+- `characters/grak/clone-mission.md` — the clone duty. Setup appends it to the agent body to make `grak-clone`.
+- `characters/grak/builder-mission.md` — the builder duty. Setup appends it to the agent body to make `grak-builder`.
+- `characters/grak/commands/*.md` — the five commands. Same composition.
 - `characters/grak/digest.md` — the rules-only digest for openclaw, hermes, gbrain. Both installers copy it.
 - `setup` / `setup.ps1` — installer: `--host`, `--uninstall`, `--check`.
 - `docs/` — cavestack.jerkyjesse.com.

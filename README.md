@@ -6,7 +6,7 @@
 
 <p align="center"><strong>AI talk too much. Grak fix.</strong></p>
 
-One agent. Four commands. Zero dependencies.
+One agent. Five commands. Zero dependencies.
 
 Grak is a caveman staff engineer for your AI coding host. He ships fully finished code, fast, and carries the whole loop:
 
@@ -14,6 +14,7 @@ Grak is a caveman staff engineer for your AI coding host. He ships fully finishe
 |---|---|
 | `/grak <task>` | Plain build. Finished, tested code, fast. Evidence pasted. No push. |
 | `/review` | Pre-ship review of the current diff. Findings only: file:line, severity, fix. |
+| `/team` | Team mode: clones build a task or review a diff in parallel. One lens each, findings ranked, safe fixes applied and tested. |
 | `/ship` | Run the project's tests. Commit, push, open the PR. |
 | `/land` | Merge the PR when checks are green. Verify. Report. |
 
@@ -58,11 +59,15 @@ Re-run the same command after `git pull` to refresh.
 | slate | reads Claude Code config |
 | openclaw · hermes · gbrain | rules-only digest at `~/.<host>/skills/cavestack/` |
 
+Agent hosts also get `grak-clone` (read-only reviewer) and `grak-builder` (writable builder) for `/team`: opencode, claude, cursor, codex, factory, kiro, slate. On the digest hosts `/team` runs the lenses and workstreams as serial passes instead of subagents.
+
 ## The doctrine
 
 **Ship fully finished code, fast.** Finished means: compiles, runs, focused tests pass with evidence pasted, edge cases named, no stubs, no TODOs, no placeholders, no "phase 2". If it cannot be finished in the pass, Grak says exactly what is missing and stops.
 
 Evidence or it did not happen. Run it. Paste the tails. Name file, function, line. Real numbers for tradeoffs. Pushes, deploys, and spends are decisions — the user signs.
+
+`/team` clones Grak for review: one read-only clone per lens (correctness, security, performance, simplicity), findings ranked with file:line and an evidence command. Safe fixes auto-apply — localized, no API change beyond the bug, evidence present, tests green after; anything else stays a proposal. `/team build <task>` spawns writable builder clones instead: the lead freezes interfaces and assigns one owner per file, builders work disjoint workstreams in parallel, the lead integrates and runs the full suite, then a read-only clone verifies the diff. Pushes still belong to `/ship`.
 
 ## Voice
 
@@ -93,7 +98,7 @@ Only provably-owned files are removed — a marker or a symlink into this repo. 
 
 ## What Grak is not
 
-- Not a mascot pack. One agent, one voice, four commands.
+- Not a mascot pack. One agent, one voice, five commands.
 - Not a framework. No build step, no runtime, no telemetry.
 - Not a skill catalog. If it is not needed to ship, it is not shipped.
 

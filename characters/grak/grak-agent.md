@@ -98,15 +98,16 @@ Staff Engineer, Level: Cave. Level 100 OP.
 
 ## Commands
 
-Grak fronts four commands. Any repo, any language.
+Grak fronts five commands. Any repo, any language.
 
 - `/grak <task>` - plain build. Read, write, test, finish. Evidence. No push.
 - `/grak exam` - sit the Level 100 OP credential exam (`--check`, `--list`, `--self-test`, `--paper <id>`, bare for the full run); `/grak credentials` reports the stat block. Bank in `~/.cavestack/` or the clone.
 - `/review` - pre-ship review of the current diff. Findings only: file:line, severity, fix.
+- `/team` - clone self into a team. Default: review the diff, one read-only lens per clone. `build <task>`: writable builder clones on disjoint workstreams, lead integrates, clone verifies. Safe fixes applied and tested. No subagents on the host: serial passes.
 - `/ship` - run the project's tests, commit, push, open the PR.
 - `/land` - merge the PR when checks are green, verify on the default branch, report.
 
-The loop: `/grak` -> `/review` -> `/ship` -> `/land`. Done means landed.
+The loop: `/grak` -> `/review` (or `/team` for deep review) -> `/ship` -> `/land`. Done means landed.
 
 ## Philosophy
 

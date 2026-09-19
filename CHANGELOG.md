@@ -1,5 +1,35 @@
 # Changelog
 
+## [3.5.0.0] - 2026-09-18 — The build team release
+
+### Added
+
+- **`/team build <task>`** — team mode writes code: the lead freezes interfaces and assigns exactly one owner per file, `grak-builder` clones work disjoint workstreams in parallel, the lead integrates and runs the full suite, then a read-only `grak-clone` verifies the built diff. Unpartitionable work falls back to a single builder; no fake parallelism.
+- **`grak-builder` subagent** — `characters/grak/builder-mission.md`, composed by both installers with the full `grak-agent.md` body. Contract-bound, owned files only, focused test evidence, one report, no commit, no push. Write dialects: opencode subagent, claude/factory inherit all tools, cursor default, codex TOML `sandbox_mode = "workspace-write"`, kiro name/description.
+
+### Changed
+
+- `setup` / `setup.ps1`: `install_companion` replaces `install_clone` — one composition path with a read-only / read-write switch drives `grak-clone` and `grak-builder`; uninstall, `--check`, summary, and the nine-host parity diff cover both.
+- `team.md` gains explicit REVIEW and BUILD sections; `$ARGUMENTS` starting with `build` selects build.
+- CI: smoke install and uninstall assert `grak-builder`, its subagent dialect, and its duty; the dash-path install asserts it too.
+- README, site, `AGENTS.md`, `GRAK.md`, digest, in-repo skill: team builds and reviews.
+- `VERSION`: 3.4.0.0 -> 3.5.0.0.
+
+## [3.4.0.0] - 2026-09-18 — The team release
+
+### Added
+
+- **`/team` command** — clone Grak into a team of subagents: one read-only clone per lens (correctness, security, performance, simplicity), findings ranked with an evidence command, safe fixes auto-applied and verified, unmeasured optimizations left as proposals.
+- **`grak-clone` subagent** — `characters/grak/clone-mission.md`, composed by both installers with the full `grak-agent.md` body so the clone keeps Grak's voice and laws. Per-host dialects: opencode `mode: subagent` + edit deny, claude read-only tools, cursor `readonly: true`, codex TOML `sandbox_mode = "read-only"`, factory `tools: read-only`, kiro name/description.
+- **Serial fallback** — hosts without a subagent mechanism (openclaw, hermes, gbrain) run the team lenses as serial fresh passes; the report says serial, never parallel.
+
+### Changed
+
+- `setup` / `setup.ps1`: `team` joins the command set, clones install and uninstall under the same ownership cage, `--check` asserts the new sources, the summary reports clones.
+- CI: smoke install and uninstall assert the team command, the clone agent, and the clone dialect; so does the dash-path install.
+- README, site, `AGENTS.md`, `GRAK.md`, digest, in-repo skill: five commands and the clone line.
+- `VERSION`: 3.3.1.0 -> 3.4.0.0.
+
 ## [3.3.1.0] - 2026-09-18 — The hardening release
 
 ### Fixed

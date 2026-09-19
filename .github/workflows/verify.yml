@@ -20,10 +20,19 @@ jobs:
         run: |
           bash setup --host opencode --quiet
           test -f "$HOME/.config/opencode/agent/grak.md"
+          test -f "$HOME/.config/opencode/agent/grak-clone.md"
+          test -f "$HOME/.config/opencode/agent/grak-builder.md"
           test -f "$HOME/.config/opencode/command/grak.md"
           test -f "$HOME/.config/opencode/command/review.md"
+          test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/ship.md"
           test -f "$HOME/.config/opencode/command/land.md"
+          grep -q 'mode: subagent' "$HOME/.config/opencode/agent/grak-clone.md"
+          grep -q 'edit: deny' "$HOME/.config/opencode/agent/grak-clone.md"
+          grep -q 'Clone duty' "$HOME/.config/opencode/agent/grak-clone.md"
+          grep -q 'mode: subagent' "$HOME/.config/opencode/agent/grak-builder.md"
+          grep -q 'Builder duty' "$HOME/.config/opencode/agent/grak-builder.md"
+          ! grep -q 'edit: deny' "$HOME/.config/opencode/agent/grak-builder.md"
           test -f "$HOME/.cavestack/GRAK.md"
           test -f "$HOME/.cavestack/GRAK_CREDENTIALS.md"
           test -f "$HOME/.cavestack/mcq_bank.json"
@@ -31,7 +40,10 @@ jobs:
           python3 "$HOME/.cavestack/exam.py" --self-test
           bash setup --host opencode --uninstall --quiet
           test ! -e "$HOME/.config/opencode/agent/grak.md"
+          test ! -e "$HOME/.config/opencode/agent/grak-clone.md"
+          test ! -e "$HOME/.config/opencode/agent/grak-builder.md"
           test ! -e "$HOME/.config/opencode/command/grak.md"
+          test ! -e "$HOME/.config/opencode/command/team.md"
           test ! -e "$HOME/.cavestack/GRAK.md"
       - name: sh path install (dash runs docs/install)
         run: |
@@ -41,6 +53,9 @@ jobs:
           mkdir -p "$HOME"
           sh docs/install --host opencode --quiet
           test -f "$HOME/.config/opencode/agent/grak.md"
+          test -f "$HOME/.config/opencode/agent/grak-clone.md"
+          test -f "$HOME/.config/opencode/agent/grak-builder.md"
+          test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/land.md"
           test -f "$HOME/.cavestack/exam.py"
           python3 "$HOME/.cavestack/exam.py" --check
@@ -81,9 +96,19 @@ jobs:
         run: |
           ./setup.ps1 -TargetHost opencode -Quiet
           $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
+          $clone = Join-Path $HOME ".config/opencode/agent/grak-clone.md"
+          $builder = Join-Path $HOME ".config/opencode/agent/grak-builder.md"
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          $team = Join-Path $HOME ".config/opencode/command/team.md"
           if (-not (Test-Path $agent)) { throw "agent missing: $agent" }
+          if (-not (Test-Path $clone)) { throw "clone missing: $clone" }
+          if (-not (Test-Path $builder)) { throw "builder missing: $builder" }
           if (-not (Test-Path $cmd)) { throw "command missing: $cmd" }
+          if (-not (Test-Path $team)) { throw "team command missing: $team" }
+          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "mode: subagent")) { throw "clone missing subagent mode" }
+          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "Clone duty")) { throw "clone missing clone duty" }
+          if (-not ((Get-Content -LiteralPath $builder -Raw) -match "mode: subagent")) { throw "builder missing subagent mode" }
+          if (-not ((Get-Content -LiteralPath $builder -Raw) -match "Builder duty")) { throw "builder missing builder duty" }
           $lore = Join-Path $HOME ".cavestack/GRAK.md"
           $exam = Join-Path $HOME ".cavestack/exam.py"
           if (-not (Test-Path $lore)) { throw "record missing: $lore" }
@@ -95,8 +120,14 @@ jobs:
         run: |
           ./setup.ps1 -TargetHost opencode -Uninstall -Quiet
           $agent = Join-Path $HOME ".config/opencode/agent/grak.md"
+          $clone = Join-Path $HOME ".config/opencode/agent/grak-clone.md"
+          $builder = Join-Path $HOME ".config/opencode/agent/grak-builder.md"
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          $team = Join-Path $HOME ".config/opencode/command/team.md"
           $lore = Join-Path $HOME ".cavestack/GRAK.md"
           if (Test-Path $agent) { throw "agent not removed: $agent" }
+          if (Test-Path $clone) { throw "clone not removed: $clone" }
+          if (Test-Path $builder) { throw "builder not removed: $builder" }
           if (Test-Path $cmd) { throw "command not removed: $cmd" }
+          if (Test-Path $team) { throw "team command not removed: $team" }
           if (Test-Path $lore) { throw "record not removed: $lore" }
