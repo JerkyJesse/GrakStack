@@ -1,7 +1,7 @@
 #requires -version 5.1
 <#
 grakstack setup (Windows native) - install the Grak agent, the grak-clone and
-grak-builder subagents, and the /grak, /review, /team, /ship, /land commands
+grak-builder subagents, and the /plan, /grak, /review, /team, /ship, /land commands
 into supported AI coding hosts. No network, no bun, no node, no admin. Same
 contract as ./setup.
 
@@ -30,7 +30,7 @@ $CmdSrc = Join-Path $Root "characters\grak\commands"
 $DigestSrc = Join-Path $Root "characters\grak\digest.md"
 $CloneMissionSrc = Join-Path $Root "characters\grak\clone-mission.md"
 $BuilderMissionSrc = Join-Path $Root "characters\grak\builder-mission.md"
-$Commands = @("grak", "review", "team", "ship", "land")
+$Commands = @("plan", "grak", "review", "team", "ship", "land")
 $CurriculumSrc = Join-Path $Root "characters\grak\curriculum"
 $CurriculumFields = @("grammar", "logic", "rhetoric", "arithmetic", "geometry", "music", "astronomy", "finance", "economics")
 $SupportDir = Join-Path $HOME ".grakstack"

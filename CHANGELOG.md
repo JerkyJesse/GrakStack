@@ -1,5 +1,18 @@
 # Changelog
 
+## [3.8.0.0] - 2026-09-21 — The plan release
+
+### Added
+
+- **`/plan` — the sixth and final command.** Read-only recon before a build: restate the task, map exact files with line anchors, freeze interfaces, order one-verifiable-edit steps with a command each, name risks and exit criteria, then stop for sign-off. No edits, no commits. The executor (`/grak` or `/team build`) runs after.
+
+### Changed
+
+- `setup` / `setup.ps1`: the command set grows to six, plan first in the loop; smoke install/uninstall and pinned-install asserts cover `plan.md`.
+- `rock_memory.py`: manifest grows 28 -> 29 files. Regenerated `ROCK_MEMORY.sha256`.
+- Agent body, digest, `GRAK.md`, in-repo skill, README, site, `AGENTS.md`: six commands, loop plan -> build -> review/team -> ship -> land.
+- `VERSION`: 3.7.0.0 -> 3.8.0.0.
+
 ## [3.7.0.0] - 2026-09-19 — The wider canon release
 
 ### Added

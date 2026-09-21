@@ -29,6 +29,7 @@ jobs:
           test -f "$HOME/.config/opencode/agent/grak.md"
           test -f "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.config/opencode/agent/grak-builder.md"
+          test -f "$HOME/.config/opencode/command/plan.md"
           test -f "$HOME/.config/opencode/command/grak.md"
           test -f "$HOME/.config/opencode/command/review.md"
           test -f "$HOME/.config/opencode/command/team.md"
@@ -55,6 +56,7 @@ jobs:
           test ! -e "$HOME/.config/opencode/agent/grak.md"
           test ! -e "$HOME/.config/opencode/agent/grak-clone.md"
           test ! -e "$HOME/.config/opencode/agent/grak-builder.md"
+          test ! -e "$HOME/.config/opencode/command/plan.md"
           test ! -e "$HOME/.config/opencode/command/grak.md"
           test ! -e "$HOME/.config/opencode/command/team.md"
           test ! -e "$HOME/.grakstack/GRAK.md"
@@ -83,6 +85,7 @@ jobs:
           test -f "$HOME/.config/opencode/agent/grak.md"
           test -f "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.config/opencode/agent/grak-builder.md"
+          test -f "$HOME/.config/opencode/command/plan.md"
           test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/land.md"
           test -f "$HOME/.grakstack/exam.py"
@@ -175,11 +178,13 @@ jobs:
           $clone = Join-Path $HOME ".config/opencode/agent/grak-clone.md"
           $builder = Join-Path $HOME ".config/opencode/agent/grak-builder.md"
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          $plan = Join-Path $HOME ".config/opencode/command/plan.md"
           $team = Join-Path $HOME ".config/opencode/command/team.md"
           if (-not (Test-Path $agent)) { throw "agent missing: $agent" }
           if (-not (Test-Path $clone)) { throw "clone missing: $clone" }
           if (-not (Test-Path $builder)) { throw "builder missing: $builder" }
           if (-not (Test-Path $cmd)) { throw "command missing: $cmd" }
+          if (-not (Test-Path $plan)) { throw "plan command missing: $plan" }
           if (-not (Test-Path $team)) { throw "team command missing: $team" }
           if (-not ((Get-Content -LiteralPath $clone -Raw) -match "mode: subagent")) { throw "clone missing subagent mode" }
           if (-not ((Get-Content -LiteralPath $clone -Raw) -match "Clone duty")) { throw "clone missing clone duty" }
@@ -206,6 +211,7 @@ jobs:
           $clone = Join-Path $HOME ".config/opencode/agent/grak-clone.md"
           $builder = Join-Path $HOME ".config/opencode/agent/grak-builder.md"
           $cmd = Join-Path $HOME ".config/opencode/command/grak.md"
+          $plan = Join-Path $HOME ".config/opencode/command/plan.md"
           $team = Join-Path $HOME ".config/opencode/command/team.md"
           $lore = Join-Path $HOME ".grakstack/GRAK.md"
           $seed = Join-Path $HOME ".grakstack/curriculum/finance.md"
@@ -213,6 +219,7 @@ jobs:
           if (Test-Path $clone) { throw "clone not removed: $clone" }
           if (Test-Path $builder) { throw "builder not removed: $builder" }
           if (Test-Path $cmd) { throw "command not removed: $cmd" }
+          if (Test-Path $plan) { throw "plan command not removed: $plan" }
           if (Test-Path $team) { throw "team command not removed: $team" }
           if (Test-Path $lore) { throw "record not removed: $lore" }
           if (Test-Path $seed) { throw "curriculum seed not removed: $seed" }

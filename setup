@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # grakstack setup - install the Grak agent, the grak-clone and grak-builder
-# subagents, and the /grak, /review, /team, /ship, /land commands into supported
+# subagents, and the /plan, /grak, /review, /team, /ship, /land commands into supported
 # AI coding hosts. No network, no bun, no node, no sudo.
 #
 # The cage rule: never delete or edit a target without proof that we own it.
@@ -20,7 +20,7 @@ CMD_SRC="$ROOT/characters/grak/commands"
 CLONE_MISSION_SRC="$ROOT/characters/grak/clone-mission.md"
 BUILDER_MISSION_SRC="$ROOT/characters/grak/builder-mission.md"
 DIGEST_SRC="$ROOT/characters/grak/digest.md"
-COMMANDS="grak review team ship land"
+COMMANDS="plan grak review team ship land"
 SUPPORT_DIR="$HOME/.grakstack"
 SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
 CURRICULUM_SRC="$ROOT/characters/grak/curriculum"
@@ -45,7 +45,7 @@ SKIP_COUNT=0
 
 usage() {
   cat <<'EOF'
-grakstack setup - Grak agent + grak-clone/grak-builder subagents + /grak, /review, /team, /ship, /land commands
+grakstack setup - Grak agent + grak-clone/grak-builder subagents + /plan, /grak, /review, /team, /ship, /land commands
 
 Usage: ./setup [options]
 
@@ -61,7 +61,7 @@ Options:
 
 Examples:
   ./setup                     # install for Claude Code
-  ./setup --host opencode     # Grak agent mode + the five commands
+  ./setup --host opencode     # Grak agent mode + the six commands
   ./setup --host all          # every supported host
   ./setup --host auto         # hosts whose config dir already exists
   ./setup --host opencode --uninstall
@@ -544,7 +544,7 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install" "$ROOT/docs/install.ps1"; do
+  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/plan.md" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install" "$ROOT/docs/install.ps1"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   for name in $CURRICULUM_FIELDS; do

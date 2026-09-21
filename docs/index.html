@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GrakStack — AI talk too much. Grak fix.</title>
-<meta name="description" content="One caveman agent. Five commands: /grak, /review, /team, /ship, /land. Zero dependencies. Finished, tested code, fast. Free OSS.">
+<meta name="description" content="One caveman agent. Six commands: /plan, /grak, /review, /team, /ship, /land. Zero dependencies. Finished, tested code, fast. Free OSS.">
 <meta name="theme-color" content="#0C0C0C">
 <link rel="canonical" href="https://grakstack.jerkyjesse.com/">
 <link rel="icon" type="image/png" href="favicon.png">
@@ -12,7 +12,7 @@
 
 <!-- Open Graph -->
 <meta property="og:title" content="GrakStack — AI talk too much. Grak fix.">
-<meta property="og:description" content="One caveman agent. Five commands. Finished, tested code, fast. Free OSS.">
+<meta property="og:description" content="One caveman agent. Six commands. Finished, tested code, fast. Free OSS.">
 <meta property="og:image" content="https://grakstack.jerkyjesse.com/images/social-preview.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -25,7 +25,7 @@
 <!-- Twitter -->
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="GrakStack — AI talk too much. Grak fix.">
-<meta name="twitter:description" content="One caveman agent. Five commands. Finished, tested code, fast. Free OSS.">
+<meta name="twitter:description" content="One caveman agent. Six commands. Finished, tested code, fast. Free OSS.">
 <meta name="twitter:image" content="https://grakstack.jerkyjesse.com/images/social-preview.png">
 <meta name="twitter:image:alt" content="GrakStack — AI talk too much. Grak fix.">
 
@@ -45,10 +45,10 @@
   "name": "GrakStack",
   "operatingSystem": "macOS, Linux, Windows",
   "applicationCategory": "DeveloperApplication",
-  "description": "One caveman agent with five commands: build, review, team, ship, land. Finished, tested code, fast. Zero dependencies.",
+  "description": "One caveman agent with six commands: plan, build, review, team, ship, land. Finished, tested code, fast. Zero dependencies.",
   "url": "https://grakstack.jerkyjesse.com/",
   "downloadUrl": "https://grakstack.jerkyjesse.com/install",
-  "softwareVersion": "3.7.0.0",
+  "softwareVersion": "3.8.0.0",
   "author": {
     "@type": "Person",
     "name": "JerkyJesse",
@@ -658,9 +658,9 @@
         <h1 class="hero-brand">GrakStack</h1>
         <p class="hero-sub">AI talk too much. Grak fix.</p>
         <p class="lede">
-          One agent. Five commands. Zero dependencies.
+          One agent. Six commands. Zero dependencies.
           Grak is a caveman staff engineer for your AI coding host:
-          build, review, team, ship, land. Finished code, fast.
+          plan, build, review, team, ship, land. Finished code, fast.
         </p>
         <div class="install" role="group" aria-label="Install command">
           <code id="installCmd">curl -fsSL grakstack.jerkyjesse.com/install | sh</code>
@@ -760,11 +760,17 @@ Status: Fix #1, merge.</pre>
   <!-- ═══════════════════════ COMMANDS ═══════════════════════ -->
   <section id="commands">
     <div class="container">
-      <div class="eyebrow">5 commands · the whole loop</div>
-      <h2>Build. Review. Ship. Land.</h2>
+      <div class="eyebrow">6 commands · the whole loop</div>
+      <h2>Plan. Build. Review. Ship. Land.</h2>
       <p>Any repo, any language. No config. Done means landed.</p>
 
       <div class="skills-grid">
+
+        <article class="skill-card">
+          <div class="skill-slash">/plan</div>
+          <div class="skill-desc">Read-only recon plus a step-by-step build plan. No edits. Sign off, then build.</div>
+          <svg class="skill-glyph"><use href="#glyph-torch"/></svg>
+        </article>
 
         <article class="skill-card">
           <div class="skill-slash">/grak</div>
@@ -906,7 +912,7 @@ curl -fsSL grakstack.jerkyjesse.com/install | sh -s -- --host opencode</code></p
              If it cannot be finished in the pass, Grak says exactly what is missing and stops.</p>
 
           <h3>Hosts</h3>
-          <pre><code>opencode   ~/.config/opencode/agent/grak.md + command/{grak,review,ship,land}.md
+          <pre><code>opencode   ~/.config/opencode/agent/grak.md + command/{plan,grak,review,team,ship,land}.md
 claude     ~/.claude/agents/grak.md + ~/.claude/commands/
 cursor     ~/.cursor/agents/grak.md + ~/.cursor/commands/
 codex      ~/.codex/agents/grak.toml + ~/.codex/prompts/
@@ -959,7 +965,7 @@ gbrain     ~/.gbrain/skills/grakstack/ (digest)</code></pre>
       <span>by Julius Brussee.</span>
     </div>
     <div class="foot-meta">
-      <span>v3.7.0.0 · AGPL-3.0-or-later or commercial</span>
+      <span>v3.8.0.0 · AGPL-3.0-or-later or commercial</span>
       <span>Built by JerkyJesse</span>
       <span>Fire kept burning since 2026</span>
       <span>Grak keeps watch</span>

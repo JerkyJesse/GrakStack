@@ -6,19 +6,20 @@
 
 <p align="center"><strong>AI talk too much. Grak fix.</strong></p>
 
-One agent. Five commands. Zero dependencies.
+One agent. Six commands. Zero dependencies.
 
 Grak is a caveman staff engineer for your AI coding host. He ships fully finished code, fast, and carries the whole loop:
 
 | Command | Does |
 |---|---|
+| `/plan <task>` | Read-only recon plus a step-by-step build plan. No edits. Sign off, then build. |
 | `/grak <task>` | Plain build. Finished, tested code, fast. Evidence pasted. No push. |
 | `/review` | Pre-ship review of the current diff. Findings only: file:line, severity, fix. |
 | `/team` | Team mode: clones build a task or review a diff in parallel. One lens each, findings ranked, safe fixes applied and tested. |
 | `/ship` | Run the project's tests. Commit, push, open the PR. |
 | `/land` | Merge the PR when checks are green. Verify. Report. |
 
-Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`.
+Zero to landed: clone, `./setup`, Tab to `grak`, `/plan`, `/grak`, `/ship`, `/land`.
 
 ## Install
 
@@ -53,7 +54,7 @@ cd ~/grakstack
 
 | Host | Grak lands at |
 |---|---|
-| opencode | `~/.config/opencode/agent/grak.md` + `command/{grak,review,ship,land}.md` — Tab to `grak` |
+| opencode | `~/.config/opencode/agent/grak.md` + `command/{plan,grak,review,team,ship,land}.md` — Tab to `grak` |
 | claude | `~/.claude/agents/grak.md` + `~/.claude/commands/` |
 | cursor | `~/.cursor/agents/grak.md` + `~/.cursor/commands/` |
 | codex | `~/.codex/agents/grak.toml` + `~/.codex/prompts/` |
@@ -119,7 +120,7 @@ full install, and the `v2.3.0.0` tag preserves the pre-Grak tree.
 
 ## What Grak is not
 
-- Not a mascot pack. One agent, one voice, five commands.
+- Not a mascot pack. One agent, one voice, six commands.
 - Not a framework. No build step, no runtime, no telemetry.
 - Not a skill catalog. If it is not needed to ship, it is not shipped.
 

@@ -49,6 +49,7 @@ SOURCES = (
     "characters/grak/curriculum/economics.md",
     "characters/grak/GRAK.md",
     "characters/grak/rock_memory.py",
+    "characters/grak/commands/plan.md",
     "characters/grak/commands/grak.md",
     "characters/grak/commands/review.md",
     "characters/grak/commands/team.md",

@@ -144,15 +144,16 @@ Grak keep scars. Named, never renamed.
 
 **Grak locked to full.** No lite/ultra toggles. No half-terse. `stop caveman` disables per session.
 
-### What Grak Do: Five Commands
+### What Grak Do: Six Commands
 
+- `/plan` - Read-only recon and a step-by-step build plan. Files with line anchors, risks, exit criteria. No edits. Sign off, then build.
 - `/grak` - Plain build. Finished, tested code, fast. Evidence pasted. No push.
 - `/review` - Pre-ship review of the current diff. Findings only: file:line, severity, fix.
 - `/team` - Clone Grak into a team. Default: review the diff, one read-only lens per clone (correctness, security, performance, simplicity), findings ranked with an evidence command, safe fixes applied and tested. `/team build <task>`: writable builder clones on disjoint workstreams, frozen interfaces, lead integrates, clone verifies.
 - `/ship` - Run the project's tests. Commit, push, open the PR.
 - `/land` - Merge the PR when checks are green. Verify. Report.
 
-Zero to landed: clone, `./setup`, Tab to `grak`, `/grak`, `/ship`, `/land`. Done means landed.
+Zero to landed: clone, `./setup`, Tab to `grak`, `/plan`, `/grak`, `/ship`, `/land`. Done means landed.
 
 ### The Doctrine
 
