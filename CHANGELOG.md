@@ -1,5 +1,21 @@
 # Changelog
 
+## [3.9.0.0] - 2026-09-28 — The color release
+
+### Added
+
+- **Per-host Grak colors** — the Grak family renders in tan where the host supports a color field: opencode subagents (`grak-clone`, `grak-builder`) carry `color: '#C49A6C'`, matching the primary agent; Claude Code agents (`grak`, `grak-clone`, `grak-builder`) carry `color: orange`, the named palette's nearest to Grak tan. Both installers compose identical values.
+
+### Fixed
+
+- **Frontmatter descriptions are quoted YAML scalars** — the primary agent's unquoted description contains a colon, which Claude Code failed to parse; it silently dropped every frontmatter field. `claude plugin validate` failed the old file and passes the fixed one. Every synthesized description, all hosts, both installers, now quotes and escapes its value.
+
+### Changed
+
+- Hosts without a color field (Cursor, Codex, Factory, Kiro) keep their field sets; their generated files change only in the quoted description.
+- `rock_memory.py` manifest regenerated (29 files); version story to 3.9.0.0.
+- CI: smoke, pinned, and parity steps assert the tan and orange values.
+
 ## [3.8.0.0] - 2026-09-21 — The plan release
 
 ### Added

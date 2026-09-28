@@ -82,6 +82,8 @@ function Write-Utf8NoBom([string]$Path, [string]$Text) {
   [System.IO.File]::WriteAllText($Path, $Text, $enc)
 }
 
+function Get-YamlQuoted([string]$Value) { return $Value.Replace('\','\\').Replace('"','\"') }
+
 function Add-CaveStamp([string]$Target, [string]$Kind) {
   $stamp = if ($Kind -eq "toml") {
     "`n# grakstack v$($script:Version) :: $($script:Hash12)`n"
@@ -222,16 +224,16 @@ function Install-Agent([string]$HostName) {
       Copy-Item -LiteralPath $AgentSrc -Destination $target -Force
     }
     "claude" {
-      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDesc + "`nmodel: inherit`n---`n" + (Get-Body $AgentSrc))
+      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDescQ + "`nmodel: inherit`ncolor: orange`n---`n" + (Get-Body $AgentSrc))
     }
     "factory" {
-      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDesc + "`nmodel: inherit`n---`n" + (Get-Body $AgentSrc))
+      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDescQ + "`nmodel: inherit`n---`n" + (Get-Body $AgentSrc))
     }
     "cursor" {
-      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDesc + "`n---`n" + (Get-Body $AgentSrc))
+      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDescQ + "`n---`n" + (Get-Body $AgentSrc))
     }
     "kiro" {
-      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDesc + "`n---`n" + (Get-Body $AgentSrc))
+      Write-Utf8NoBom $target ("---`nname: grak`ndescription: " + $script:AgentDescQ + "`n---`n" + (Get-Body $AgentSrc))
     }
   }
   Add-CaveStamp $target "md"
@@ -246,6 +248,7 @@ function Install-Companion([string]$HostName, [string]$Name, [string]$MissionSrc
   New-Item -ItemType Directory -Force -Path $dir | Out-Null
 
   $desc = Get-FmValue $MissionSrc "description"
+  $descQ = '"' + (Get-YamlQuoted $desc) + '"'
   $body = (Get-Body $AgentSrc) + "`n" + (Get-Body $MissionSrc)
 
   if ($HostName -eq "codex") {
@@ -271,16 +274,16 @@ function Install-Companion([string]$HostName, [string]$Name, [string]$MissionSrc
     $script:Counters.Skipped++; return $false
   }
   Remove-LinkIfAny $target
-  $head = "---`nname: $Name`ndescription: $desc`n"
+  $head = "---`nname: $Name`ndescription: $descQ`n"
   switch ($HostName) {
     "opencode" {
-      if ($Mode -eq "ro") { $front = "---`ndescription: $desc`nmode: subagent`npermission:`n  edit: deny`n---`n" }
-      else { $front = "---`ndescription: $desc`nmode: subagent`n---`n" }
+      if ($Mode -eq "ro") { $front = "---`ndescription: $descQ`nmode: subagent`ncolor: '#C49A6C'`npermission:`n  edit: deny`n---`n" }
+      else { $front = "---`ndescription: $descQ`nmode: subagent`ncolor: '#C49A6C'`n---`n" }
       Write-Utf8NoBom $target ($front + $body)
     }
     "claude" {
-      if ($Mode -eq "ro") { $front = $head + "model: inherit`ntools: Read, Grep, Glob, Bash`n---`n" }
-      else { $front = $head + "model: inherit`n---`n" }
+      if ($Mode -eq "ro") { $front = $head + "model: inherit`ncolor: orange`ntools: Read, Grep, Glob, Bash`n---`n" }
+      else { $front = $head + "model: inherit`ncolor: orange`n---`n" }
       Write-Utf8NoBom $target ($front + $body)
     }
     "factory" {
@@ -324,10 +327,11 @@ function Install-Commands([string]$HostName) {
     }
     Remove-LinkIfAny $target
     $desc = Get-FmValue $src "description"
+    $descQ = '"' + (Get-YamlQuoted $desc) + '"'
     if ($HostName -eq "opencode") {
-      Write-Utf8NoBom $target ("---`ndescription: " + $desc + "`nagent: grak`n---`n" + (Get-Body $src))
+      Write-Utf8NoBom $target ("---`ndescription: " + $descQ + "`nagent: grak`n---`n" + (Get-Body $src))
     } else {
-      Write-Utf8NoBom $target ("---`ndescription: " + $desc + "`n---`n" + (Get-Body $src))
+      Write-Utf8NoBom $target ("---`ndescription: " + $descQ + "`n---`n" + (Get-Body $src))
     }
     Add-CaveStamp $target "md"
     Add-Installed $target
@@ -492,6 +496,7 @@ if ($AllHosts -notcontains $TargetHost -and $TargetHost -ne "all" -and $TargetHo
 }
 
 $script:AgentDesc = Get-FmValue $AgentSrc "description"
+$script:AgentDescQ = '"' + (Get-YamlQuoted $script:AgentDesc) + '"'
 if (-not $script:AgentDesc) { Die "cannot read description from $AgentSrc" }
 if (-not (Get-FmValue $CloneMissionSrc "description")) { Die "cannot read description from $CloneMissionSrc" }
 if (-not (Get-FmValue $BuilderMissionSrc "description")) { Die "cannot read description from $BuilderMissionSrc" }

@@ -41,6 +41,9 @@ jobs:
           grep -q 'mode: subagent' "$HOME/.config/opencode/agent/grak-builder.md"
           grep -q 'Builder duty' "$HOME/.config/opencode/agent/grak-builder.md"
           ! grep -q 'edit: deny' "$HOME/.config/opencode/agent/grak-builder.md"
+          grep -q "color: '#C49A6C'" "$HOME/.config/opencode/agent/grak-clone.md"
+          grep -q "color: '#C49A6C'" "$HOME/.config/opencode/agent/grak-builder.md"
+          grep -q 'description: "' "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.grakstack/GRAK.md"
           test -f "$HOME/.grakstack/GRAK_CREDENTIALS.md"
           test -f "$HOME/.grakstack/mcq_bank.json"
@@ -88,6 +91,7 @@ jobs:
           test -f "$HOME/.config/opencode/command/plan.md"
           test -f "$HOME/.config/opencode/command/team.md"
           test -f "$HOME/.config/opencode/command/land.md"
+          grep -q "color: '#C49A6C'" "$HOME/.config/opencode/agent/grak-clone.md"
           test -f "$HOME/.grakstack/exam.py"
           test -f "$HOME/.grakstack/curriculum/economics.md"
           python3 "$HOME/.grakstack/exam.py" --check
@@ -153,6 +157,16 @@ jobs:
             mkdir -p "$B" "$P"
             HOME="$B" bash setup --host "$h" --quiet >/dev/null
             HOME="$P" pwsh -NoProfile -File ./setup.ps1 -TargetHost "$h" -Quiet >/dev/null
+            if [ "$h" = "opencode" ]; then
+              grep -q "color: '#C49A6C'" "$B/.config/opencode/agent/grak-clone.md" || { echo "opencode clone missing tan ($h)"; exit 1; }
+              grep -q "color: '#C49A6C'" "$B/.config/opencode/agent/grak-builder.md" || { echo "opencode builder missing tan ($h)"; exit 1; }
+            fi
+            if [ "$h" = "claude" ] || [ "$h" = "slate" ]; then
+              grep -q 'color: orange' "$B/.claude/agents/grak.md" || { echo "claude grak missing orange ($h)"; exit 1; }
+              grep -q 'color: orange' "$B/.claude/agents/grak-clone.md" || { echo "claude clone missing orange ($h)"; exit 1; }
+              grep -q 'color: orange' "$B/.claude/agents/grak-builder.md" || { echo "claude builder missing orange ($h)"; exit 1; }
+              grep -q 'description: "' "$B/.claude/agents/grak.md" || { echo "claude grak description not quoted ($h)"; exit 1; }
+            fi
             # the receipt records absolute landed paths; normalize each HOME
             # prefix before the diff so the comparison is content, not location
             if [ -f "$B/.grakstack/ROCK_RECEIPT" ] && [ -f "$P/.grakstack/ROCK_RECEIPT" ]; then
@@ -190,6 +204,8 @@ jobs:
           if (-not ((Get-Content -LiteralPath $clone -Raw) -match "Clone duty")) { throw "clone missing clone duty" }
           if (-not ((Get-Content -LiteralPath $builder -Raw) -match "mode: subagent")) { throw "builder missing subagent mode" }
           if (-not ((Get-Content -LiteralPath $builder -Raw) -match "Builder duty")) { throw "builder missing builder duty" }
+          if (-not ((Get-Content -LiteralPath $clone -Raw) -match "color: '#C49A6C'")) { throw "clone missing tan color" }
+          if (-not ((Get-Content -LiteralPath $builder -Raw) -match "color: '#C49A6C'")) { throw "builder missing tan color" }
           $lore = Join-Path $HOME ".grakstack/GRAK.md"
           $exam = Join-Path $HOME ".grakstack/exam.py"
           $seed = Join-Path $HOME ".grakstack/curriculum/finance.md"

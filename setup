@@ -87,6 +87,9 @@ fm_value() {
     }' "$1"
 }
 
+# yaml_quote <value> - escape a value for a double-quoted YAML scalar.
+yaml_quote() { printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g'; }
+
 is_owned() {
   if [ -L "$1" ]; then
     local resolved
@@ -284,11 +287,14 @@ install_agent() {
     opencode)
       cp -f "$AGENT_SRC" "$target"
       ;;
-    claude|factory)
-      { printf -- '---\nname: grak\ndescription: %s\nmodel: inherit\n---\n' "$AGENT_DESC"; body_of "$AGENT_SRC"; } > "$target"
+    claude)
+      { printf -- '---\nname: grak\ndescription: %s\nmodel: inherit\ncolor: orange\n---\n' "$AGENT_DESC_Q"; body_of "$AGENT_SRC"; } > "$target"
+      ;;
+    factory)
+      { printf -- '---\nname: grak\ndescription: %s\nmodel: inherit\n---\n' "$AGENT_DESC_Q"; body_of "$AGENT_SRC"; } > "$target"
       ;;
     cursor|kiro)
-      { printf -- '---\nname: grak\ndescription: %s\n---\n' "$AGENT_DESC"; body_of "$AGENT_SRC"; } > "$target"
+      { printf -- '---\nname: grak\ndescription: %s\n---\n' "$AGENT_DESC_Q"; body_of "$AGENT_SRC"; } > "$target"
       ;;
   esac
   grakstack_stamp "$target" >> "$target"
@@ -306,6 +312,7 @@ install_companion() {
   [ -n "$dir" ] || return 1
   mkdir -p "$dir"
   desc="$(fm_value "$mission_src" description)"
+  desc_q="\"$(yaml_quote "$desc")\""
 
   if [ "$host" = "codex" ]; then
     target="$dir/$name.toml"
@@ -340,34 +347,34 @@ install_companion() {
   case "$host" in
     opencode)
       if [ "$mode" = "ro" ]; then
-        { printf -- '---\ndescription: %s\nmode: subagent\npermission:\n  edit: deny\n---\n' "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\ndescription: %s\nmode: subagent\ncolor: \047#C49A6C\047\npermission:\n  edit: deny\n---\n' "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       else
-        { printf -- '---\ndescription: %s\nmode: subagent\n---\n' "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\ndescription: %s\nmode: subagent\ncolor: \047#C49A6C\047\n---\n' "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       fi
       ;;
     claude)
       if [ "$mode" = "ro" ]; then
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ntools: Read, Grep, Glob, Bash\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ncolor: orange\ntools: Read, Grep, Glob, Bash\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       else
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ncolor: orange\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       fi
       ;;
     factory)
       if [ "$mode" = "ro" ]; then
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ntools: read-only\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\ntools: read-only\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       else
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       fi
       ;;
     cursor)
       if [ "$mode" = "ro" ]; then
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\nreadonly: true\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\nreadonly: true\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       else
-        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+        { printf -- '---\nname: %s\ndescription: %s\nmodel: inherit\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       fi
       ;;
     kiro)
-      { printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$desc"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
+      { printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$desc_q"; body_of "$AGENT_SRC"; printf '\n'; body_of "$mission_src"; } > "$target"
       ;;
   esac
   grakstack_stamp "$target" >> "$target"
@@ -402,10 +409,11 @@ install_commands() {
     fi
     replace_link "$target"
     desc="$(fm_value "$src" description)"
+    desc_q="\"$(yaml_quote "$desc")\""
     if [ "$host" = "opencode" ]; then
-      { printf -- '---\ndescription: %s\nagent: grak\n---\n' "$desc"; body_of "$src"; } > "$target"
+      { printf -- '---\ndescription: %s\nagent: grak\n---\n' "$desc_q"; body_of "$src"; } > "$target"
     else
-      { printf -- '---\ndescription: %s\n---\n' "$desc"; body_of "$src"; } > "$target"
+      { printf -- '---\ndescription: %s\n---\n' "$desc_q"; body_of "$src"; } > "$target"
     fi
     grakstack_stamp "$target" >> "$target"
     record_installed "$target"
@@ -610,6 +618,7 @@ if [ "$CHECK" -eq 1 ]; then
 fi
 
 AGENT_DESC="$(fm_value "$AGENT_SRC" description)"
+AGENT_DESC_Q="\"$(yaml_quote "$AGENT_DESC")\""
 [ -n "$AGENT_DESC" ] || die "cannot read description from $AGENT_SRC"
 [ -n "$(fm_value "$CLONE_MISSION_SRC" description)" ] || die "cannot read description from $CLONE_MISSION_SRC"
 [ -n "$(fm_value "$BUILDER_MISSION_SRC" description)" ] || die "cannot read description from $BUILDER_MISSION_SRC"
