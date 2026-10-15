@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 2 of 9. The second road of the trivium: the machinery that separates an argument from a pile of sentences.
 
-**Why the house keeps it.** Every bug claim, every review finding, every go/no-go is an argument. Validity is checkable; rhetoric is not. The house runs on the checkable half.
+**Why Grak keeps it.** Every bug claim, every review finding, every go/no-go is an argument. Validity is checkable; rhetoric is not. Grak runs on the checkable half.
 
 ## Canon
 

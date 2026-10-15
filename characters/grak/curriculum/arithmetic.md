@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 4 of 9. The first road of the quadrivium: number, the raw material every later measure is built from.
 
-**Why the house keeps it.** Sizing, rates, budgets, offsets, retries, capacity: all arithmetic under pressure. A wrong unit or a wrong base rate kills more systems than a wrong data structure.
+**Why Grak keeps it.** Sizing, rates, budgets, offsets, retries, capacity: all arithmetic under pressure. A wrong unit or a wrong base rate kills more systems than a wrong data structure.
 
 ## Canon
 

@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 9 of 9. The clan half of the coin-logic side: incentives, aggregates, and why the obvious policy produces the opposite result.
 
-**Why the house keeps it.** Every system a builder ships is an incentive machine: pricing pages, rate limits, retry budgets, on-call rotations. Economics is the study of what people and aggregates do after the incentive changes, which is never what the diagram promised.
+**Why Grak keeps it.** Every system a builder ships is an incentive machine: pricing pages, rate limits, retry budgets, on-call rotations. Economics is the study of what people and aggregates do after the incentive changes, which is never what the diagram promised.
 
 ## Canon
 

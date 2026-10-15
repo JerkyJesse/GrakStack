@@ -39,7 +39,10 @@ $SupportFiles = @(
   @{ Src = Join-Path $Root "characters\grak\GRAK.md";                          Dst = "GRAK.md" },
   @{ Src = Join-Path $Root "characters\grak\credentials\GRAK_CREDENTIALS.md"; Dst = "GRAK_CREDENTIALS.md" },
   @{ Src = Join-Path $Root "characters\grak\credentials\exam.py";             Dst = "exam.py" },
-  @{ Src = Join-Path $Root "characters\grak\credentials\mcq_bank.json";       Dst = "mcq_bank.json" }
+  @{ Src = Join-Path $Root "characters\grak\credentials\mcq_bank.json";       Dst = "mcq_bank.json" },
+  @{ Src = Join-Path $Root "characters\grak\standard.md";                     Dst = "standard.md" },
+  @{ Src = Join-Path $Root "characters\grak\scenes.md";                       Dst = "scenes.md" },
+  @{ Src = Join-Path $Root "characters\grak\scorer.py";                       Dst = "scorer.py" }
 )
 foreach ($field in $CurriculumFields) {
   $SupportFiles += @{ Src = (Join-Path $CurriculumSrc "$field.md"); Dst = "curriculum\$field.md" }
@@ -377,7 +380,7 @@ function Install-Support {
   }
   Write-Utf8NoBom $marker "<!-- grakstack-owned -->`n"
   $script:Counters.Support++
-  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, curriculum/ seeds)"
+  Write-Log "Installed record: $SupportDir (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, standard.md, scenes.md, scorer.py, curriculum/ seeds)"
 }
 
 function Uninstall-Support {

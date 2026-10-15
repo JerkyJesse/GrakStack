@@ -23,6 +23,8 @@ jobs:
         run: python3 characters/grak/rock_memory.py --check --no-receipt
       - name: Paper parity
         run: python3 characters/grak/credentials/exam.py --check
+      - name: Claims check
+        run: python3 tools/claims_check.py --check
       - name: Smoke install + uninstall
         run: |
           bash setup --host opencode --quiet
@@ -47,10 +49,14 @@ jobs:
           test -f "$HOME/.grakstack/GRAK.md"
           test -f "$HOME/.grakstack/GRAK_CREDENTIALS.md"
           test -f "$HOME/.grakstack/mcq_bank.json"
+          test -f "$HOME/.grakstack/standard.md"
+          test -f "$HOME/.grakstack/scenes.md"
+          test -f "$HOME/.grakstack/scorer.py"
           for f in grammar logic rhetoric arithmetic geometry music astronomy finance economics; do test -f "$HOME/.grakstack/curriculum/$f.md"; done
           python3 "$HOME/.grakstack/exam.py" --check
           python3 characters/grak/rock_memory.py --check
           python3 "$HOME/.grakstack/exam.py" --self-test
+          python3 "$HOME/.grakstack/scorer.py" --self-test
           test -f "$HOME/.grakstack/ROCK_RECEIPT"
           python3 characters/grak/rock_memory.py --check
           grep -q 'grakstack v' "$HOME/.config/opencode/agent/grak.md"

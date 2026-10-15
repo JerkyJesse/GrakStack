@@ -15,7 +15,7 @@ Grak is a caveman staff engineer for your AI coding host. He ships fully finishe
 | `/plan <task>` | Read-only recon plus a step-by-step build plan. No edits. Sign off, then build. |
 | `/grak <task>` | Plain build. Finished, tested code, fast. Evidence pasted. No push. |
 | `/review` | Pre-ship review of the current diff. Findings only: file:line, severity, fix. |
-| `/team` | Team mode: clones build a task or review a diff in parallel. One lens each, findings ranked, safe fixes applied and tested. |
+| `/team` | Team mode: clones build a task or review a diff in parallel. Two rounds (takes, exchange), findings ranked, safe fixes applied and tested. |
 | `/ship` | Run the project's tests. Commit, push, open the PR. |
 | `/land` | Merge the PR when checks are green. Verify. Report. |
 
@@ -71,7 +71,31 @@ Agent hosts also get `grak-clone` (read-only reviewer) and `grak-builder` (writa
 
 Evidence or it did not happen. Run it. Paste the tails. Name file, function, line. Real numbers for tradeoffs. Pushes, deploys, and spends are decisions — the user signs.
 
-`/team` clones Grak for review: one read-only clone per lens (correctness, security, performance, simplicity), findings ranked with file:line and an evidence command. Safe fixes auto-apply — localized, no API change beyond the bug, evidence present, tests green after; anything else stays a proposal. `/team build <task>` spawns writable builder clones instead: the lead freezes interfaces and assigns one owner per file, builders work disjoint workstreams in parallel, the lead integrates and runs the full suite, then a read-only clone verifies the diff. Pushes still belong to `/ship`.
+`/team` clones Grak for review: one read-only clone per lens (correctness, security, performance, simplicity), findings ranked with file:line and an evidence command. Safe fixes auto-apply — localized, no API change beyond the bug, evidence present, tests green after; anything else stays a proposal. `/team build <task>` spawns writable builder clones instead: the lead freezes interfaces and assigns one owner per file, builders work disjoint workstreams in parallel, the lead integrates and runs the full suite, then a read-only clone verifies the diff. Team rounds are bounded at two: the takes first (one clone per lens on the same brief, no clone seeing another's take before it lands), then the exchange (one compact reply each: affirm, contest a named clone with a fact, or revise). Every clone holds [the standard](characters/grak/standard.md) the same as Grak. Pushes still belong to `/ship`.
+
+## The standard
+
+Grak does not carry a prompt; he carries a standard. The full text lives in [characters/grak/standard.md](characters/grak/standard.md), read on demand, and it binds Grak and every clone the same way. The short version:
+
+- **The engineer's layer.** Read the file before you rule. Run the command before you claim. Paste the tail before you count. Watch it red once: a check that cannot fail is deleted.
+- **The optimizer's ledger.** Optimization is a budget: tokens, seconds, compute, cents. No number, no tuning. If the number does not move, revert.
+- **Receipts.** Every claim carries one of three: a command line with its output, a file:line, or a pinned check that runs and reports. No receipt, no claim; red tails are kept, never erased.
+- **The first sentence.** Open with the point. Close with the verdict or the next step. A report without its first sentence is not finished.
+
+How Grak sounds under load is its own book: [characters/grak/scenes.md](characters/grak/scenes.md) holds the format models, not evidence. The claims gate: [tools/claims_check.py](tools/claims_check.py) checks the tree's claims against the tree itself (commands, hosts, curriculum, support, pointers, boundary); CI runs it.
+
+## The scorer
+
+Grak keeps score. Wins pay a credit, failures charge a debt, and every row carries its receipt. The ledger is append-only JSON Lines, lives outside the repo at `~/.grakstack/score.jsonl`, and keeps conduct, not dollars. [characters/grak/scorer.py](characters/grak/scorer.py) is stdlib only, and the installer drops it at `~/.grakstack/scorer.py`:
+
+```sh
+python characters/grak/scorer.py --log ship --ref "cmd: pytest -q"
+python characters/grak/scorer.py --read       # standings, all-time, last day, streak
+python characters/grak/scorer.py --check      # validate every row
+python characters/grak/scorer.py --self-test  # prove the engine; live ledger untouched
+```
+
+Credits: `ship`, `kill`, `red_first`, `receipt`, `debt_cleared`. Debts: `gate_fail`, `stub`, `no_receipt`, `red_left_open`. Rows are never rewritten; a correction is a compensating row, and a red left open is named and charged, never erased.
 
 ## Voice
 

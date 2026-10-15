@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 3 of 9. The third road of the trivium: getting a true claim into another head without corrupting it on the way.
 
-**Why the house keeps it.** Code that ships is code that convinced someone: a reviewer, a maintainer, a future reader of the diff. Rhetoric is not decoration; it is the transport layer of argument. The house demands both: valid reasoning, delivered clean.
+**Why Grak keeps it.** Code that ships is code that convinced someone: a reviewer, a maintainer, a future reader of the diff. Rhetoric is not decoration; it is the transport layer of argument. Grak demands both: valid reasoning, delivered clean.
 
 ## Canon
 
@@ -30,7 +30,7 @@
 1. Write the claim as one sentence with the qualifier attached ("X is safe for Y under Z").
 2. Name the audience and what they already believe; the gap between belief and claim is the actual work.
 3. Choose the arrangement: for a diff, evidence first and conclusion last; for an incident, impact first.
-4. Anti-fluff pass: delete every sentence that does not advance the claim. The house voice already does this; rhetoric is why it works.
+4. Anti-fluff pass: delete every sentence that does not advance the claim. Grak's voice already does this; rhetoric is why it works.
 5. Prebuttal: state the strongest counterargument in its own best form, then answer it or concede it.
 
 ## Failure modes

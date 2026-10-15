@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 8 of 9. The money half of the coin-logic side: pricing, risk, and the market's actual mechanics.
 
-**Why the house keeps it.** The house trades 15-minute binaries, but the same arithmetic prices every vendor contract, every build-vs-buy, every "just add more instances" argument. Finance is the discipline of pricing the future without lying about the uncertainty.
+**Why Grak keeps it.** The same arithmetic prices every vendor contract, every build-vs-buy, every "just add more instances" argument. Finance is the discipline of pricing the future without lying about the uncertainty.
 
 ## Canon
 
@@ -13,7 +13,7 @@
 - **William Sharpe, John Lintner, Jan Mossin** (1964-66): CAPM; beta and the risk premium.
 - **Franco Modigliani and Merton Miller** (1958): capital structure irrelevance in a frictionless world; every deviation is a friction story.
 - **Fischer Black, Myron Scholes, Robert Merton** (1973): options pricing; assumptions stated, then priced.
-- **Eugene Fama** (1965-70): efficient markets; the null hypothesis the house must beat to earn its rent.
+- **Eugene Fama** (1965-70): efficient markets; the null hypothesis every idea must beat.
 - **John Kelly Jr.** (1956): bet sizing from information theory; growth rate over payout.
 - **Maureen O'Hara**, *Market Microstructure Theory* (1995): order books, spreads, adverse selection.
 - **Marcos López de Prado**, *Advances in Financial Machine Learning* (2018): backtest overfitting; the seven sins as a checklist.

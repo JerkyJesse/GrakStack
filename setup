@@ -22,7 +22,7 @@ BUILDER_MISSION_SRC="$ROOT/characters/grak/builder-mission.md"
 DIGEST_SRC="$ROOT/characters/grak/digest.md"
 COMMANDS="plan grak review team ship land"
 SUPPORT_DIR="$HOME/.grakstack"
-SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json"
+SUPPORT_FILES="GRAK.md GRAK_CREDENTIALS.md exam.py mcq_bank.json standard.md scenes.md scorer.py"
 CURRICULUM_SRC="$ROOT/characters/grak/curriculum"
 CURRICULUM_FIELDS="grammar logic rhetoric arithmetic geometry music astronomy finance economics"
 SUPPORT_MARKER=".grakstack-owned"
@@ -451,8 +451,11 @@ install_host() {
 
 _support_src() {
   case "$1" in
-    GRAK.md) printf '%s\n' "$ROOT/characters/grak/GRAK.md" ;;
-    *)       printf '%s\n' "$ROOT/characters/grak/credentials/$1" ;;
+    GRAK.md)     printf '%s\n' "$ROOT/characters/grak/GRAK.md" ;;
+    standard.md) printf '%s\n' "$ROOT/characters/grak/standard.md" ;;
+    scenes.md)   printf '%s\n' "$ROOT/characters/grak/scenes.md" ;;
+    scorer.py)   printf '%s\n' "$ROOT/characters/grak/scorer.py" ;;
+    *)           printf '%s\n' "$ROOT/characters/grak/credentials/$1" ;;
   esac
 }
 
@@ -475,7 +478,7 @@ install_support() {
   done
   printf '<!-- grakstack-owned -->\n' > "$marker"
   SUPPORT_COUNT=$((SUPPORT_COUNT + 1))
-  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, curriculum/ seeds)"
+  log "Installed record: $SUPPORT_DIR (GRAK.md, GRAK_CREDENTIALS.md, exam.py, mcq_bank.json, standard.md, scenes.md, scorer.py, curriculum/ seeds)"
 }
 
 uninstall_support() {
@@ -552,7 +555,7 @@ uninstall_host() {
 
 check() {
   local fail=0 name f
-  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/plan.md" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install" "$ROOT/docs/install.ps1"; do
+  for f in "$AGENT_SRC" "$DIGEST_SRC" "$CMD_SRC/plan.md" "$CMD_SRC/grak.md" "$CMD_SRC/review.md" "$CMD_SRC/team.md" "$CMD_SRC/ship.md" "$CMD_SRC/land.md" "$CLONE_MISSION_SRC" "$BUILDER_MISSION_SRC" "$ROOT/characters/grak/GRAK.md" "$ROOT/characters/grak/standard.md" "$ROOT/characters/grak/scenes.md" "$ROOT/characters/grak/scorer.py" "$ROOT/characters/grak/credentials/GRAK_CREDENTIALS.md" "$ROOT/characters/grak/credentials/exam.py" "$ROOT/characters/grak/credentials/mcq_bank.json" "$ROOT/characters/grak/rock_memory.py" "$MANIFEST" "$ROOT/docs/install" "$ROOT/docs/install.ps1"; do
     [ -f "$f" ] || { printf 'missing source: %s\n' "$f" >&2; fail=1; }
   done
   for name in $CURRICULUM_FIELDS; do

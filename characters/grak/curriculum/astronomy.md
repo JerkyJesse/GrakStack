@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 7 of 9. The fourth road of the quadrivium: the sky as the first instrument, the first clock, and the first dataset.
 
-**Why the house keeps it.** Scheduling, timezones, calendars, GPS, eclipse tables, tide charts: the sky is the oldest distributed system, and its mechanics set every clock the machine runs on.
+**Why Grak keeps it.** Scheduling, timezones, calendars, GPS, eclipse tables, tide charts: the sky is the oldest distributed system, and its mechanics set every clock the machine runs on.
 
 ## Canon
 

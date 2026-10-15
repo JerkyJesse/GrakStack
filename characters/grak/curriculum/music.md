@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 6 of 9. The third road of the quadrivium: number made audible. Harmony is arithmetic you can hear.
 
-**Why the house keeps it.** Audio, motion, timing curves, UI easing, latency budgets: all are perceived rhythm and pitch. Music theory is the measured psychology of those quantities, written down for a thousand years before anyone called it HCI.
+**Why Grak keeps it.** Audio, motion, timing curves, UI easing, latency budgets: all are perceived rhythm and pitch. Music theory is the measured psychology of those quantities, written down for a thousand years before anyone called it HCI.
 
 ## Canon
 

@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 5 of 9. The second road of the quadrivium: form, space, and the discipline of proving from postulates.
 
-**Why the house keeps it.** Layouts, maps, graphics, robotics, coordinates, and every spatial claim in a spec are geometry. It is also the cleanest training ground for the axiomatic habit: assumptions stated, consequences derived, diagrams never trusted.
+**Why Grak keeps it.** Layouts, maps, graphics, robotics, coordinates, and every spatial claim in a spec are geometry. It is also the cleanest training ground for the axiomatic habit: assumptions stated, consequences derived, diagrams never trusted.
 
 ## Canon
 

@@ -2,7 +2,7 @@
 
 > Grak wider canon seed 1 of 9. The first road of the trivium: how language is built, so every later claim has a parseable shape.
 
-**Why the house keeps it.** Code review, specs, contracts, and error messages are all language under load. A reader who cannot parse a sentence cannot find the load-bearing clause in a requirement. Grammar is the cheapest correctness tool there is: it runs before the compiler and it runs on prose.
+**Why Grak keeps it.** Code review, specs, contracts, and error messages are all language under load. A reader who cannot parse a sentence cannot find the load-bearing clause in a requirement. Grammar is the cheapest correctness tool there is: it runs before the compiler and it runs on prose.
 
 ## Canon
 

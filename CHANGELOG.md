@@ -1,5 +1,21 @@
 # Changelog
 
+## [Unreleased] - 2026-10-15 — The raised standard
+
+### Added
+
+- **The standard** - `characters/grak/standard.md`: the engineer's layer (read the file before you rule, run the command before you claim, paste the tail before you count, watch it red once), the optimizer's ledger (budgets; no number, no tuning), receipts (command tail, file:line, or a pinned check), and the first sentence. Binds Grak and every clone; shipped to `~/.grakstack/`.
+- **Scenes** - `characters/grak/scenes.md`: ten format models for how Grak sounds under load, first-run red through the two-round team. Not evidence; loaded on demand.
+- **The scorer** - `characters/grak/scorer.py`: `--log KIND --ref RECEIPT [--subject] [--note]`, `--read`, `--check`, `--self-test`; append-only ledger at `~/.grakstack/score.jsonl`. Wins pay a credit, failures charge a debt, every row carries its receipt.
+- **Claims gate + CI** - `tools/claims_check.py` audits the tree's claims (commands, hosts, curriculum, support, pointers, boundary) and self-tests one mutation per section; `.github/workflows/verify.yml` runs it.
+- **Two-round team discipline** - `/team` clones run the takes, then one exchange each: affirm, contest a named clone with a fact, or revise. Bounded at two rounds; the lead logs the round's receipts with the scorer.
+
+### Changed
+
+- **Installer and manifest wiring** - `setup` / `setup.ps1` ship `standard.md`, `scenes.md`, and `scorer.py` to `~/.grakstack/`; `rock_memory.py` manifest grows to 32 files.
+- **Curriculum cleanup** - the nine field seeds lose the last borrowed dialect; headers and body lines rewritten to Grak's own frame.
+- **Docs** - README, `AGENTS.md`, and the site document the standard, the scorer, scenes, the two-round team, and the claims gate.
+
 ## [3.9.0.0] - 2026-09-28 — The color release
 
 ### Added
